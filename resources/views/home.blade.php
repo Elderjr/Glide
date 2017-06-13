@@ -12,13 +12,10 @@
         <title>Stylish Portfolio - Start Bootstrap Theme</title>
 
         <!-- Bootstrap Core CSS -->
-        <link href="css/bootstrap.min.css" rel="stylesheet">
+        <link href="custom/bootstrap.min.css" rel="stylesheet">
 
         <!-- Custom CSS -->
-        <link href="css/stylish-portfolio.css" rel="stylesheet">
-
-        <!-- Custom Fonts -->
-        <link href="font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">        
+        <link href="custom/login/login.css" rel="stylesheet">
 
         <!-- Angular Js -->
         <script src="js/angular.min.js"></script>
@@ -40,19 +37,19 @@
 
     <body>
 
-        <header id="top" class="header container" ng-app="homeApp" ng-controller="homeController" >
-            <div class="text-vertical-center">
+        <header id="top" class="header container-fluid" ng-app="homeApp" ng-controller="homeController" >
+            <div class="title">
                 <h1>Glide</h1>
-                <h4>Gerenciador de Despesas</h4>
-                <!-- Divs Alertas
+                <h4>Gerenciador de Despesas</h4>    
+                <!--
                 <div class="alert alert-success">
                     <strong>Conta criada com sucesso!</strong>
                 </div>
-                <div class="alert alert-danger">
-                    <strong>Login ou senha incorreto(s)</strong>
-                </div>
                 -->
-                <div class="home-container" ng-if="login">
+            </div>
+            <div class="form-container">
+
+                <div class="form-box" ng-if="login">
                     <form>
                         <div class="form-group">
                             <label for="email">Username:</label>
@@ -72,7 +69,7 @@
                         <button type="submit" class="btn btn-warning btn-block" ng-click="goToRegister()">Cadastre-se</button>
                     </form>
                 </div>
-                <div class="home-container" ng-if="!login">
+                <div class="form-box" ng-if="!login">
                     <div class="form-group">
                         <form>
                             <div class="row form-group">
@@ -109,9 +106,7 @@
                         </form> 
                     </div>
                 </div>
-
             </div>
-
         </header>
 
     </body>

@@ -1903,8 +1903,9 @@ h4.graph_title {
     font-weight: bold;
     line-height: 1.65857
 }
+
 .tile-stats .count,
-.tile-stats h3,
+.tile-stats
 .tile-stats p {
     position: relative;
     margin: 0;
@@ -2371,14 +2372,20 @@ a.btn-danger {
     padding: 15px 5px;
     margin: 0 0 10px 10px;
     min-width: 80px;
-    height: 60px;
+    min-height: 60px;  /* alterado */
     box-shadow: none;
     border-radius: 0;
     text-align: center;
     color: #666;
     border: 1px solid #ddd;
     background-color: #fafafa;
-    font-size: 12px
+    font-size: 12px;
+}
+.custom-btn-size{
+    /* criado */
+    width: 150px !important;
+    height: 100px !important;
+    font-size: 30px !important;
 }
 .btn.btn-app>.fa,
 .btn.btn-app>.glyphicon,

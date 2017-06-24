@@ -20,10 +20,15 @@
         <!-- Angular Js -->
         <script src="js/angular.min.js"></script>
         <script>
-            var app = angular.module("homeApp", []);
+            var app = angular.module('homeApp', [], function ($interpolateProvider) {
+                $interpolateProvider.startSymbol('<%');
+                $interpolateProvider.endSymbol('%>');
+            });
             app.controller("homeController", function ($scope) {
                 $scope.login = true;
-
+                @if(session('errors'))
+                    $scope.login = false;
+                @endif
                 $scope.goToRegister = function () {
                     $scope.login = false;
                 }
@@ -40,24 +45,38 @@
         <header id="top" class="header container-fluid" ng-app="homeApp" ng-controller="homeController" >
             <div class="title">
                 <h1>Glide</h1>
-                <h4>Gerenciador de Despesas</h4>    
-                <!--
-                <div class="alert alert-success">
-                    <strong>Conta criada com sucesso!</strong>
-                </div>
-                -->
+                <h4>Gerenciador de Despesas</h4>
+                @if(session('errors'))
+                    <div class="alert alert-danger">
+                        Os seguintes erros foram encontrados:
+                        <ul>
+                            @foreach(session('errors') as $error)
+                                <li>{{$error}}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @elseif(session('login_fail'))
+                    <div class="alert alert-danger">
+                        Login ou senha incorreto(s)
+                    </div>
+                @elseif(session('register_success'))
+                    <div class="alert alert-success">
+                        Cadastro feito com sucesso
+                    </div>
+                @endif
             </div>
             <div class="form-container">
-
+                
                 <div class="form-box" ng-if="login">
-                    <form>
+                    <form action="{{action('AuthenticationController@authenticate')}}" method='post'>
+                        {{ csrf_field()}}
                         <div class="form-group">
                             <label for="email">Username:</label>
-                            <input type="email" class="form-control" id="email">
+                            <input type="text" class="form-control" id="email" name='username' required>
                         </div>
                         <div class="form-group">
                             <label for="pwd">Senha:</label>
-                            <input type="password" class="form-control" id="pwd">
+                            <input type="password" class="form-control" id="pwd" name='password' required>
                         </div>
                         <div class="checkbox">
                             <label><input type="checkbox">Lembrar de mim</label>
@@ -66,43 +85,44 @@
                         <div class="or-span">
                             <span> ou </span>
                         </div>
-                        <button type="submit" class="btn btn-warning btn-block" ng-click="goToRegister()">Cadastre-se</button>
+                        <button type="button" class="btn btn-warning btn-block" ng-click="goToRegister()">Cadastre-se</button>
                     </form>
                 </div>
                 <div class="form-box" ng-if="!login">
                     <div class="form-group">
-                        <form>
+                        <form action="{{action('UserController@store')}}" method="post">
+                            {{ csrf_field()}}
                             <div class="row form-group">
                                 <div class="col-md-6">
-                                    <label for="email">Nome:</label>
-                                    <input type="email" class="form-control" id="email">
+                                    <label for="name">Nome:</label>
+                                    <input type="text" class="form-control" id="name" name="name">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="email">Username:</label>
-                                    <input type="email" class="form-control" id="email">
+                                    <label for="username">Username:</label>
+                                    <input type="text" class="form-control" id="username" name="username">
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <div class="col-md-12">
                                     <label for="email">Email:</label>
-                                    <input type="email" class="form-control" id="email">
+                                    <input type="email" class="form-control" id="email" name="email">
                                 </div>
                             </div>
                             <div class="row form-group">
                                 <div class="col-md-6">
-                                    <label for="email">Senha:</label>
-                                    <input type="email" class="form-control" id="email">
+                                    <label for="password">Senha:</label>
+                                    <input type="password" class="form-control" id="password" name="password">
                                 </div>
                                 <div class="col-md-6">
-                                    <label for="email">Confirmar senha:</label>
-                                    <input type="email" class="form-control" id="email">
+                                    <label for="confirmPassword">Confirmar senha:</label>
+                                    <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-success btn-block">Cadastrar</button>
                             <div class="or-span">
                                 <span> ou </span>
                             </div>
-                            <button type="submit" class="btn btn-default btn-block" ng-click="goToLogin()">Voltar para Login</button>
+                            <button type="button" class="btn btn-default btn-block" ng-click="goToLogin()">Voltar para Login</button>
                         </form> 
                     </div>
                 </div>

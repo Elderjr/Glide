@@ -23,14 +23,14 @@ Route::post('/registrar','UserController@store');
 Route::get('/usuario', 'GeneralController@index');
 
 //grupos
+Route::get('/usuario/grupos', 'GroupController@index');
 Route::get('/usuario/grupos/cadastrar', 'GroupController@create');
 Route::post('/usuario/grupos/cadastrar', 'GroupController@store');
 Route::get('/usuario/grupos/{groupId}/setAdminAsTrue/{userId}', 'GroupController@setAdminAsTrue');
 Route::get('/usuario/grupos/{groupId}/setAdminAsFalse/{userId}', 'GroupController@setAdminAsFalse');
-Route::get('/usuario/grupos/{groupId}/removeMember/{userId}', 'GroupController@removeMember');
+Route::post('/usuario/grupos/{groupId}/sair', 'GroupController@leaveGroup');
+Route::post('/usuario/grupos/removeMember', 'GroupController@removeMember');
 Route::get('/usuario/grupos/{groupId}/storeMember/{username}', 'GroupController@storeMember');
-
-
 
 //despesa
 Route::get('/usuario/despesas/cadastrar', 'BillController@create');

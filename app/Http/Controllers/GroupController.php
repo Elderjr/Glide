@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\Auth;
 use App\Group;
 use App\GroupMembers;
 use Illuminate\Http\Request;
 use App\User;
+use App\Util;
 
 
 class GroupController extends Controller
@@ -15,9 +17,15 @@ class GroupController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
-    {
-        //
+    public function index(){
+        $user = Auth::user();
+        if($user != null){
+            $generalInformation = User::getGeneralInformation($user);
+            $myGroups = $generalInformation->user->myGroups;
+            return view('gerenciadorGrupos')->with('generalInformation', json_encode($generalInformation))
+                    ->with('myGroupsJson', json_encode($myGroups));
+        }
+        return redirect('/');
     }
 
     /**
@@ -61,8 +69,25 @@ class GroupController extends Controller
         Group::setAdmin($groupId, $userId, false);
     }
     
-    public function removeMember($groupId, $userId){
+    public function removeMember(Request $request){
+        $userId = $request->get("userId");
+        $groupId = $request->get("groupId");
         Group::removeMember($groupId, $userId);
+        return "deletei um membro";
+    }
+    
+    public function leaveGroup($groupId){
+        $user = Auth::user();
+        if($user != null){
+            $feedback = Util::generateFeedbackObject();
+            $group = Group::find($groupId);
+            if($group != null){
+                Group::removeMember($groupId, $user->id);
+                $feedback->success = "Saiu do grupo ".$group->name." com sucesso";
+            }
+            return back()->with('feedback', $feedback);
+        }
+        //TODO: redirect para home
     }
     
     public function storeMember(){

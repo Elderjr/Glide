@@ -5,5 +5,10 @@
         <data xmlns="http://www.netbeans.org/ns/php-project/1">
             <name>Glide</name>
         </data>
+        <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>dsadsa</word>
+            <word>elseif</word>
+            <word>sdaas</word>
+        </spellchecker-wordlist>
     </configuration>
 </project>

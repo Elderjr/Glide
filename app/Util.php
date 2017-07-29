@@ -14,19 +14,13 @@ namespace App;
  * @author elderjr
  */
 class Util {
-    
-    public static function getGeneralInformation(User $user){
-        $user->load('myGroups');
-        $pendingValues = Bill::getPendingValues($user->id);
-        $alertBills = Bill::getAlertBills($user->id);
+
+    public static function generateFeedbackObject() {
         return (object) array(
-            'user'  => $user,
-            'pendingValues' => $pendingValues,
-            'alertBills' =>$alertBills
+                    'success' => null,
+                    'alert' => null,
+                    'error' => null
         );
     }
-    
-    public static function getGeneralInformationByUserId($userId){
-        return Util::getGeneralInformation(User::find($userId));
-    }
+
 }

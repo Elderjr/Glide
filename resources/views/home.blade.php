@@ -26,12 +26,12 @@
             });
             app.controller("homeController", function ($scope) {
                 $scope.login = true;
-                @if(session('errors'))
-                    $scope.login = false;
-                @endif
-                $scope.goToRegister = function () {
-                    $scope.login = false;
-                }
+                        @if (session('errors'))
+                        $scope.login = false;
+                        @endif
+                        $scope.goToRegister = function () {
+                            $scope.login = false;
+                        }
 
                 $scope.goToLogin = function () {
                     $scope.login = true;
@@ -47,32 +47,32 @@
                 <h1>Glide</h1>
                 <h4>Gerenciador de Despesas</h4>
                 @if(session('errors'))
-                    <div class="alert alert-danger">
-                        Os seguintes erros foram encontrados:
-                        <ul>
-                            @foreach(session('errors') as $error)
-                                <li>{{$error}}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                <div class="alert alert-danger">
+                    Os seguintes erros foram encontrados:
+                    <ul>
+                        @foreach(session('errors') as $error)
+                        <li>{{$error}}</li>
+                        @endforeach
+                    </ul>
+                </div>
                 @elseif(session('login_fail'))
-                    <div class="alert alert-danger">
-                        Login ou senha incorreto(s)
-                    </div>
+                <div class="alert alert-danger">
+                    Login ou senha incorreto(s)
+                </div>
                 @elseif(session('register_success'))
-                    <div class="alert alert-success">
-                        Cadastro feito com sucesso
-                    </div>
+                <div class="alert alert-success">
+                    Cadastro feito com sucesso
+                </div>
                 @endif
             </div>
             <div class="form-container">
-                
+
                 <div class="form-box" ng-if="login">
                     <form action="{{action('AuthenticationController@authenticate')}}" method='post'>
                         {{ csrf_field()}}
                         <div class="form-group">
-                            <label for="email">Username:</label>
-                            <input type="text" class="form-control" id="email" name='username' required>
+                            <label for="username">Username:</label>
+                            <input type="text" class="form-control" id="username" name='username' required>
                         </div>
                         <div class="form-group">
                             <label for="pwd">Senha:</label>

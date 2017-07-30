@@ -1,5 +1,5 @@
 <?php
-    $myGroups = json_decode($myGroupsJson);
+    $userId = Illuminate\Support\Facades\Auth::user()->id;
 ?>
 <html>
     <head>
@@ -9,16 +9,9 @@ var app = angular.module('myApp', [], function ($interpolateProvider) {
     $interpolateProvider.startSymbol('@{');
     $interpolateProvider.endSymbol('}');
 });
-
-app.controller('groupManager', ['$scope', function ($scope) {
-    $scope.myGroups = JSON.parse('{!!$myGroupsJson!!}');
-}]);
         </script>
     </head>
-
     <body>
-        Todos os Grupos: {{$myGroupsJson}}<br/><br/>
-        <hr>
         <div ng-app="myApp" >
             @if(session('feedback'))
                 @if(session('feedback')->success != null)
@@ -39,8 +32,8 @@ app.controller('groupManager', ['$scope', function ($scope) {
                         @foreach($myGroups as $group)
                         <tr>
                             <td>
-                                {{$group->name}}
-                                @if($group->admin)
+                                <a href="{{action("GroupController@show", $group->id)}}">{{$group->name}}</a>
+                                @if($group->getMemberById($userId)->admin)
                                 <span>
                                     (administrador)
                                 </span>
@@ -56,8 +49,7 @@ app.controller('groupManager', ['$scope', function ($scope) {
                         @endforeach
                     </tbody>
                 </table>
-            </div>
-            
+            </div>         
         </div>
     </body>
 </html>

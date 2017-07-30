@@ -12,6 +12,24 @@ class Group extends Model {
         return $this->hasMany('App\GroupMembers', 'groupId', 'id');
     }
 
+    public function getMemberById($userId) {
+        foreach ($this->members as $member) {
+            if ($member->userId == $userId) {
+                return $member;
+            }
+        }
+        return null;
+    }
+
+    public function hasAdmin() {
+        foreach ($this->members as $member) {
+            if($member->admin){
+                return true;
+            }
+        }
+        return false;
+    }
+
     public static function getGroupById($id) {
         $group = Group::where('id', $id)->first();
         if ($group != null) {
@@ -36,17 +54,17 @@ class Group extends Model {
         }
         return $groups;
     }
-    
-    public static function setAdmin($groupId, $userId, $isAdmin){
-        GroupMembers::where('groupId',$groupId)
-            ->where('userId',$userId)
-            ->update(['admin' => $isAdmin]);
+
+    public static function setAdmin($groupId, $userId, $isAdmin) {
+        GroupMembers::where('groupId', $groupId)
+                ->where('userId', $userId)
+                ->update(['admin' => $isAdmin]);
     }
 
-    
-    public static function removeMember($groupId, $userId){
-        GroupMembers::where('groupId',$groupId)
-            ->where('userId',$userId)
-            ->delete();
+    public static function removeMember($groupId, $userId) {
+        GroupMembers::where('groupId', $groupId)
+                ->where('userId', $userId)
+                ->delete();
     }
+
 }

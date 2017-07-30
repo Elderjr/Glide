@@ -8,6 +8,8 @@ use App\GroupMembers;
 use Illuminate\Http\Request;
 use App\User;
 use App\Util;
+use App\Feedback;
+
 
 
 class GroupController extends Controller
@@ -23,7 +25,7 @@ class GroupController extends Controller
             $generalInformation = User::getGeneralInformation($user);
             $myGroups = $generalInformation->user->myGroups;
             return view('gerenciadorGrupos')->with('generalInformation', json_encode($generalInformation))
-                    ->with('myGroupsJson', json_encode($myGroups));
+                    ->with('myGroups', $myGroups);
         }
         return redirect('/');
     }
@@ -61,19 +63,38 @@ class GroupController extends Controller
     }
 
     
-    public function setAdminAsTrue($groupId, $userId){
-        Group::setAdmin($groupId, $userId, true);
-    }
-    
-    public function setAdminAsFalse($groupId, $userId){
-        Group::setAdmin($groupId, $userId, false);
-    }
-    
-    public function removeMember(Request $request){
+    public function setAdminAsTrue(Request $request, $groupId){
+        $feedback = Util::generateFeedbackObject();
         $userId = $request->get("userId");
-        $groupId = $request->get("groupId");
+        Group::setAdmin($groupId, $userId, true);
+        $user = User::find($userId);
+        $feedback->success = "O usuário ".$user->username." agora é administrador";
+        return back()->with('feedback', $feedback);
+    }
+    
+    public function setAdminAsFalse(Request $request, $groupId){
+        $feedback = Util::generateFeedbackObject();
+        $userId = $request->get("userId");
+        Group::setAdmin($groupId, $userId, false);
+        $user = User::find($userId);
+        $feedback->success = "O usuário ".$user->username." não é mais administrador";
+        return back()->with('feedback', $feedback);
+    }
+    
+    public function removeMember(Request $request, $groupId){
+        $feedback = Util::generateFeedbackObject();
+        $userId = $request->get("userId");
         Group::removeMember($groupId, $userId);
-        return "deletei um membro";
+        $user = User::find($userId);
+        $feedback->success = "O usuário ".$user->username." foi removido do grupo";
+        if(GroupMembers::where('groupId','=',$groupId)->count() == 0){
+            return redirect(action("GroupController@index"));
+        }else if(GroupMembers::where('groupId','=',$groupId)->where('admin','=', true)->count() == 0){
+            $member = GroupMembers::where('groupId','=',$groupId)->first();
+            $member->admin = true;
+            $member->save();
+        }
+        return back()->with('feedback', $feedback);
     }
     
     public function leaveGroup($groupId){
@@ -90,13 +111,26 @@ class GroupController extends Controller
         //TODO: redirect para home
     }
     
-    public function storeMember(){
-        $user = User::Find(2);
-        $groupMember = new GroupMembers();
-        $groupMember->userId = $user->id;
-        $groupMember->groupId = 1;
-        $groupMember->admin = false;
-        $groupMember->save();
+    public function storeMember(Request $request, $groupId){
+        $feedback = Util::generateFeedbackObject();
+        $username = $request->get("username");
+        $user = User::where("username", "=", $username)->first();
+        if($user != null){
+            $find = GroupMembers::where("userId", "=", $user->id)->where("groupId", "=", $groupId);
+            if($find == null){
+                $groupMember = new GroupMembers();
+                $groupMember->userId = $user->id;
+                $groupMember->groupId = $groupId;
+                $groupMember->admin = false;
+                $groupMember->save();
+                $feedback->success = $user->name." adicionado com sucesso";
+            }else{
+                $feedback->error = $user->name." já se encontra no grupo";
+            }
+        }else{
+            $feedback->error = "O usuário não encontrado";
+        }
+        return back()->with('feedback', $feedback);
     }
     
     /**
@@ -106,12 +140,21 @@ class GroupController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function show($id){
-        $group = Group::find($id);
-        $group->load('members');
-        foreach($group->members as $member){
-            $member->load('user');
+        $user = Auth::user();
+        $feedback = new Feedback();
+        if($user != null){
+            $group = Group::find($id);
+            $group->load('members');
+            if($group->getMemberById($user->id) != null){
+                foreach($group->members as $member){
+                    $member->load('user');
+                }
+                return view('grupoDetalhes')->with('group', $group);
+            }
+            $feedback->error = "Você não está cadastrado neste grupo";
+            return redirect(action('GroupController@index'))->with('feedback', $feedback);
         }
-        return $group->toJson();
+        return redirect('/');
     }
 
     /**

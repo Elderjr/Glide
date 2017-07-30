@@ -27,6 +27,7 @@ app.controller('generalController', ['$scope', function ($scope) {
                     <li><a href="">Historico</a></li>
                     <li><a href="">Cadastrar Despesa</a></li>
                     <li><a href="">Despesas Pendentes</a></li>
+                    <li><a href="{{action("GroupController@create")}}">Cadastrar Grupo</a></li>
                     <li><a href="{{action("GroupController@index")}}">Gerenciador de Grupos</a></li>
                     <li><a href="">Registrar Pagamento</a></li>
                     <li><a href="">Registrar Requerimento</a></li>

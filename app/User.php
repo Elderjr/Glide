@@ -31,9 +31,10 @@ class User extends Model implements Authenticatable{
     }
     
     public static function getGroups($userId){
-        return Group::join('groupMembers as GM', 'GM.groupId', '=', 'groups.id')
-                        ->where('GM.userId', '=', $userId)
-                        ->get();
+        return Group::select("groups.*")
+                ->join('groupMembers as GM', 'GM.groupId', '=', 'groups.id')
+                ->where('GM.userId', '=', $userId)
+                ->get();
     }
 
     

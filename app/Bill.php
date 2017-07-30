@@ -75,15 +75,15 @@ class Bill extends Model {
                 ->join('billsMembers as PU', 'PU.billId', '=', 'bills.id')
                 ->whereRaw('RU.paid > RU.value')
                 ->whereRaw('PU.paid < RU.value')
-                ->where('RU.userId', '=', '1')
-                ->where('PU.userId', '=', '2')
+                ->where('RU.userId', '=', $receiverId)
+                ->where('PU.userId', '=', $paidId)
                 ->get();
         foreach ($bills as $bill) {
             $bill->load('members');
         }
         return $bills;
     }
-
+    
     public static function getPendingBills($userId) {
         return Bill::select('bills.*')
                         ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')

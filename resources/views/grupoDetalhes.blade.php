@@ -21,9 +21,11 @@ app.controller('groupDetailsController', ['$scope', function ($scope) {
             @if(session('feedback'))
                 @if(session('feedback')->success != null)
                     {{session('feedback')->success}}
-                @elseif(session('feedback')->alert != null)
+                @endif
+                @if(session('feedback')->alert != null)
                     {{session('feedback')->alert}}
-                @elseif(session('feedback')->error != null)
+                @endif
+                @if(session('feedback')->error != null)
                     {{session('feedback')->error}}
                 @endif
             @endif

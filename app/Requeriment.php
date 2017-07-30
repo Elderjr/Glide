@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Requirement extends Model{
+class Requeriment extends Model{
     
     protected $table = "requirements";
     

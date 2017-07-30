@@ -46,8 +46,10 @@ Route::post('/usuario/pagamentos/cadastrar', 'PaymentController@store');
 Route::get('/usuario/pagamentos/rollback/{id}', 'PaymentController@rollback');
 
 //requerimentos
-Route::get('/usuario/requerimentos/cadastrar', 'RequirementController@store');
-Route::get('/usuario/requerimentos/{id}', 'RequirementController@show');
+Route::get('/usuario/requerimentos', 'RequerimentController@index');
+Route::get('/usuario/requerimentos/cadastrar', 'RequerimentController@create');
+Route::post('/usuario/requerimentos/cadastrar', 'RequerimentController@store');
+Route::get('/usuario/requerimentos/{id}/accept', 'RequerimentController@showAccept');
 
 //api
 Route::get('/api/usuario/{username}','ApiController@getUserByUsername');

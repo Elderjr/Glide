@@ -13,6 +13,15 @@ class User extends Model implements Authenticatable{
     protected $table = "users";
     protected $hidden = ['password'];
 
+    
+    public function receiveRequeriments(){
+        return $this->hasMany('App\Requeriment', 'destinationUserId', 'id');
+    }
+    
+    public function sendRequeriments(){
+        return $this->hasMany('App\Requeriment', 'sourceUserId', 'id');
+    }
+    
     public static function getGeneralInformation(User $user){
         $user->myGroups = User::getGroups($user->id);
         $alertBills = Bill::getAlertBills($user->id);

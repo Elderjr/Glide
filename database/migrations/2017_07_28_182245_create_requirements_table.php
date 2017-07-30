@@ -22,6 +22,7 @@ class CreateRequirementsTable extends Migration
             $table->foreign('destinationUserId')->references('id')->on('users')
                     ->onDelete('cascade')->onUpdate('cascade');
             $table->float('value', 8, 2);
+            $table->enum('status', ['accepted', 'rejected', 'waiting']);
             $table->text('description')->nullable();
             $table->timestamps();
         });

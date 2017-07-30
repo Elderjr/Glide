@@ -27,7 +27,7 @@ $userId = Auth::user()->id;
 
             @foreach(App\Bill::makeSuggestionToPay($pending->bills, $userId) as $name => $suggestion)
             <li>
-                Receber de {{$name}}: R$ {{$suggestion}}
+                Pagar para {{$name}}: R$ {{$suggestion}}
             </li>
             @endforeach
 

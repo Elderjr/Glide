@@ -21,7 +21,7 @@ class Payment extends Model {
     }
 
     public function doPayment() {
-        foreach ($this->paymentBills() as $payment) {
+        foreach ($this->paymentBills as $payment) {
             BillMember::where('billId', $payment->billId)
                     ->where('userId', $this->receiverUserId)
                     ->decrement('paid', $payment->value);

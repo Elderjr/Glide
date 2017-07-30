@@ -87,4 +87,19 @@ class BillController extends Controller {
         $bill = Bill::getCompleteBillById($id);
         return view('billDetails')->with('billJson', $bill->toJson());
     }
+    
+    
+    public function pendingBills(){
+        $user = Auth::user();
+        if($user != null){
+            $bills = Bill::getPendingBills($user->id);
+            $values = Bill::getPendingValues($user->id);
+            $pending = (object) array(
+                'bills' => $bills,
+                'values' => $values
+            );
+            return view('despesasPendentes')->with('pending', $pending);
+        }
+        return redirect('/');
+    }
 }

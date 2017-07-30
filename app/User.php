@@ -39,6 +39,10 @@ class User extends Model implements Authenticatable{
 
     
     
+    public function toString(){
+        return $this->name." (".$this->username.")";
+    }
+    
     //interface methods
     public function getAuthIdentifier() {
         return $this->username;

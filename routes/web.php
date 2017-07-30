@@ -35,7 +35,9 @@ Route::get('/usuario/grupos/{groupId}/storeMember/{username}', 'GroupController@
 //despesa
 Route::get('/usuario/despesas/cadastrar', 'BillController@create');
 Route::post('/usuario/despesas/cadastrar', 'BillController@store');
+Route::get('/usuario/despesas/pendentes', 'BillController@pendingBills');
 Route::get('/usuario/despesas/{id}', 'BillController@show');
+
 
 //pagamentos
 Route::get('/usuario/pagamentos/cadastrar', 'PaymentController@create');

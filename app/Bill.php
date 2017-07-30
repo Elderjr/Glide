@@ -5,7 +5,6 @@ namespace App;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 
-
 class Bill extends Model {
 
     //
@@ -20,85 +19,135 @@ class Bill extends Model {
     }
 
     public function group() {
-        return $this->hasOne('App\Group','id','groupId');
+        return $this->hasOne('App\Group', 'id', 'groupId');
     }
 
-    public function getMemberById($id){
-        foreach($this->members as $member){
-            if($member->userId == $id){
+    public function getMemberById($id) {
+        foreach ($this->members as $member) {
+            if ($member->userId == $id) {
                 return $member;
             }
         }
         return null;
     }
-    
-    public function getDebt($receiverId, $paidId){
+
+    public function getDebt($receiverId, $paidId) {
         $receiverUser = $this->getMemberById($receiverId);
         $paidUser = $this->getMemberById($paidId);
-        if($receiverUser != null && $paidUser != null){            
-            if($receiverUser->valueToReceiver() > $paidUser->valueToPay()){
+        if ($receiverUser != null && $paidUser != null) {
+            if ($receiverUser->valueToReceiver() > $paidUser->valueToPay()) {
                 return $paidUser->valueToPay();
-            }else{
+            } else {
                 return $receiverUser->valueToReceiver();
             }
         }
         return 0;
     }
-    
-    public static function getCompleteBillById($id){
+
+    public function getPendingValue($userId) {
+        $userMember = $this->getMemberById($userId);
+        if ($userMember != null) {
+            return $userMember->getPendingValue();
+        }
+        return 0;
+    }
+
+    public static function getCompleteBillById($id) {
         $bill = Bill::find($id);
         $bill->load('group');
         $bill->load('members');
         $bill->load('items');
-        foreach($bill->members as $member){
+        foreach ($bill->members as $member) {
             $member->load('user');
         }
-        foreach($bill->items as $item){
+        foreach ($bill->items as $item) {
             $item->load('members');
-            foreach($item->members as $member){
+            foreach ($item->members as $member) {
                 $member->load('user');
             }
         }
+        return $bill;
     }
-    
-    public static function getBillsInDebtWithUser($receiverId, $paidId){
+
+    public static function getBillsInDebtWithUser($receiverId, $paidId) {
         $bills = Bill::select('bills.*')
-            ->join('billsMembers as RU', 'RU.billId', '=', 'bills.id')
-            ->join('billsMembers as PU', 'PU.billId', '=', 'bills.id')
-            ->whereRaw('RU.paid > RU.value')
-            ->whereRaw('PU.paid < RU.value')
-            ->where('RU.userId','=','1')
-            ->where('PU.userId','=','2')
-            ->get();
-        foreach($bills as $bill){
+                ->join('billsMembers as RU', 'RU.billId', '=', 'bills.id')
+                ->join('billsMembers as PU', 'PU.billId', '=', 'bills.id')
+                ->whereRaw('RU.paid > RU.value')
+                ->whereRaw('PU.paid < RU.value')
+                ->where('RU.userId', '=', '1')
+                ->where('PU.userId', '=', '2')
+                ->get();
+        foreach ($bills as $bill) {
             $bill->load('members');
         }
         return $bills;
     }
-    
-    public static function getPendingBills($userId){
+
+    public static function getPendingBills($userId) {
         return Bill::select('bills.*')
-            ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
-            ->whereRaw('BM.paid != BM.value')
-            ->where('BM.userId','=',$userId)
-            ->get();
-        
+                        ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
+                        ->whereRaw('BM.paid != BM.value')
+                        ->where('BM.userId', '=', $userId)
+                        ->get();
     }
-    
-    public static function getPendingValues($userId){
+
+    public static function getPendingValues($userId) {
         return DB::table("billsMembers as BM")
-            ->select(DB::raw("sum(IF(BM.paid > BM.value,BM.paid - BM.value, 0)) as valueToReceive"),
-                    DB::raw("sum(IF(BM.paid < BM.value,BM.value - BM.paid, 0)) as valueToPay"),
-                    DB::raw("count(BM.paid != BM.value) as totalPendingBills"))
-            ->where("BM.userId",'=',$userId)->first();
+                        ->select(DB::raw("sum(IF(BM.paid > BM.value,BM.paid - BM.value, 0)) as valueToReceive"), DB::raw("sum(IF(BM.paid < BM.value,BM.value - BM.paid, 0)) as valueToPay"), DB::raw("count(BM.paid != BM.value) as totalPendingBills"))
+                        ->where("BM.userId", '=', $userId)->first();
     }
-    
-    public static function getAlertBills($userId){
+
+    public static function getAlertBills($userId) {
         return Bill::select('bills.*')
-            ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
-            ->whereRaw('BM.paid != BM.value')
-            ->where('BM.userId','=',$userId)
-            ->where('bills.alertDate','<', date('yyyy-MM-dddd'))
-            ->get();
+                        ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
+                        ->whereRaw('BM.paid != BM.value')
+                        ->where('BM.userId', '=', $userId)
+                        ->where('bills.alertDate', '<', date('yyyy-MM-dddd'))
+                        ->get();
     }
+
+    private static function makeSuggestion($bills, $userId, $receiverSugestion) {
+        $sugestions = [];
+        foreach ($bills as $bill) {
+            $userMember = $bill->getMemberById($userId);
+            if (($userMember->needToReceiver() && $receiverSugestion) ||
+                    ($userMember->needToPay() && !$receiverSugestion)) {
+                $value = $userMember->getPendingValue();
+                foreach ($bill->members as $member) {
+                    if ($member->userId != $userId) {
+                        if ($receiverSugestion) {
+                            $debt = $bill->getDebt($userId, $member->userId);
+                        } else {
+                            $debt = $bill->getDebt($member->userId, $userId);
+                        }
+                        if ($value > $debt) {
+                            if (!isset($sugestions[$member->user->toString()])) {
+                                $sugestions[$member->user->toString()] = 0.0;
+                            }
+                            $sugestions[$member->user->toString()] += $debt;
+                            $value -= $debt;
+                        } else {
+                            if (!isset($sugestions[$member->user->toString()])) {
+                                $sugestions[$member->user->toString()] = 0.0;
+                            }
+                            $sugestions[$member->user->toString()] += $value;
+                            $value = 0;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return $sugestions;
+    }
+
+    public static function makeSuggestionToPay($bills, $userId) {
+        return Bill::makeSuggestion($bills, $userId, false);
+    }
+
+    public static function makeSuggestionToReceiver($bills, $userId) {
+        return Bill::makeSuggestion($bills, $userId, true);
+    }
+
 }

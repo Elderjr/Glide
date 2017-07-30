@@ -34,4 +34,13 @@ class BillMember extends Model
         }
         return 0;
     }
+    
+    public function getPendingValue(){
+        if($this->needToPay()){
+            return $this->valueToPay();
+        }else if($this->needToReceiver()){
+            return $this->valueToReceiver();
+        }
+        return 0;
+    }
 }

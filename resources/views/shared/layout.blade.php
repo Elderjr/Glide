@@ -20,17 +20,7 @@
             <div class="main_container">
                 @include('shared.menu')
                 <div class="right_col" role="main">
-                    @if(session('feedback'))
-                        @if(session('feedback')->success != null)
-                            {{session('feedback')->success}}
-                        @endif
-                        @if(session('feedback')->alert != null)
-                            {{session('feedback')->alert}}
-                        @endif
-                        @if(session('feedback')->error != null)
-                            {{session('feedback')->error}}
-                        @endif
-                    @endif
+                    @include('shared.feedback')
                     @yield('content')
                 </div>
                 <!-- footer content -->

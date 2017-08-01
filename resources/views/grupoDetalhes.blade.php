@@ -42,7 +42,7 @@
                                     </form>
                                 </td>
                                 <td>
-                                    <form action="{{action('GroupController@removeMember', $group->id)}}" method="post">
+                                    <form action="{{action('GroupController@removeMember', $pageInfo->group->id)}}" method="post">
                                         {{ csrf_field()}}
                                         <input type="hidden" name="userId" value="{{$member->user->id}}" />
                                         <input type="submit" value="Remover">

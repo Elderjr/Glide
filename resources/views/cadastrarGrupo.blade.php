@@ -4,12 +4,16 @@
 <script src='{{URL::asset('js/angular.min.js')}}'></script>
 <script>
         var app = angular.module('myApp', [], function ($interpolateProvider) {
-            $interpolateProvider.startSymbol('<%');
-            $interpolateProvider.endSymbol('%>');
+            $interpolateProvider.startSymbol('@{');
+            $interpolateProvider.endSymbol('}');
         });
 app.controller("myCtrl", function ($scope, $http) {
-    $scope.members = [];
+    $scope.group = {
+        name: "",
+        members: []
+    };
     $scope.loadMsg = "";
+    
     $scope.searchUser = function () {
         if($scope.username != ""){
             $scope.loadMsg = "Procurando usuario...";
@@ -19,12 +23,11 @@ app.controller("myCtrl", function ($scope, $http) {
 
     function addIntegrant(response) {
         if (response.data != "null") {
-            var member = {id: response.data.id,
-                name: response.data.name,
-                username: response.data.username,
-                checked: false
+            var member = {
+                user: response.data,
+                admin: false
             }
-            $scope.members.push(member);
+            $scope.group.members.push(member);
             $scope.loadMsg = "";
             $scope.username = "";
         } else {
@@ -33,9 +36,9 @@ app.controller("myCtrl", function ($scope, $http) {
     }
 
     $scope.removeIntegrant = function (integrant) {
-        var index = $scope.members.indexOf(integrant);
+        var index = $scope.group.members.indexOf(integrant);
         if (index >= 0) {
-            $scope.members.splice(index, 1);
+            $scope.group.members.splice(index, 1);
         }
     }
 });
@@ -51,12 +54,14 @@ app.controller("myCtrl", function ($scope, $http) {
             </div>
             <div class="x_content" ng-app="myApp" ng-controller="myCtrl">
                 <br />
-                <form id="demo-form2" data-parsley-validate class="form-horizontal form-label-left">
+                <form class="form-horizontal form-label-left" action="{{action("GroupController@store")}}" method="post">
+                    {{csrf_field()}}
+                    <input type="hidden" name="groupJson" value="@{group}" />
                     <div class="form-group">
                         <label class="control-label col-md-3 col-sm-3 col-xs-12" for="groupName"> Nome do Grupo <span class="required">*</span>
                         </label>
                         <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="groupName" required="required" class="form-control col-md-7 col-xs-12">
+                            <input type="text" id="groupName" required="required" class="form-control col-md-7 col-xs-12" ng-model="group.name" required>
                         </div>
                     </div>
                     <div class="form-group">
@@ -71,9 +76,9 @@ app.controller("myCtrl", function ($scope, $http) {
                         
                     </div>
                     <div style="text-align: center;">
-                        <% loadMsg %>
+                        @{ loadMsg }
                     </div>
-                    
+                    json: @{group}
                     <div class='row'>
                         <div class="col-md-6 col-md-offset-3">
                             <table class='table table-striped'>
@@ -90,20 +95,17 @@ app.controller("myCtrl", function ($scope, $http) {
                                         </td>
                                         <td>
                                             <input type="checkbox"  ng-model="member.checked"/>
-                                            <input type="hidden" name="memberAdmin[]" value="true" />
                                         </td>
-                                        <td><button>Remove</button></td>
+                                        <td><button class="btn btn-danger btn-sm">remover</button></td>
                                     </tr>
-                                    <tr ng-repeat="member in members">
+                                    <tr ng-repeat="member in group.members">
                                         <td>
-                                            <%member.name%> (<%member.username%>)
-                                            <input type="hidden" name="memberId[]" value="<%member.id%>" />
+                                            @{member.user.name} (@{member.user.username})
                                         </td>
                                         <td>
-                                            <input type="checkbox"  ng-model="member.checked"/>
-                                            <input type="hidden" name="memberAdmin[]" value="<%member.checked%>" />
+                                            <input type="checkbox"  ng-model="member.admin"/>
                                         </td>
-                                        <td><button ng-click="removeIntegrant(member)">Remove</button></td>
+                                        <td><button ng-click="removeIntegrant(member)" class="btn btn-danger btn-sm">Remove</button></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -111,13 +113,10 @@ app.controller("myCtrl", function ($scope, $http) {
                     </div>
                     <div class='divider'></div>
                     <div class="form-group">
-                        <div class="col-md-6 col-sm-6 col-xs-12 col-md-offset-3">
-                            <button class="btn btn-primary" type="button">Cancel</button>
-                            <button class="btn btn-primary" type="reset">Reset</button>
-                            <button type="submit" class="btn btn-success">Submit</button>
+                        <div class="col-md-2 col-md-offset-5">
+                            <button type="submit" class="btn btn-block btn-success">Cadastrar</button>
                         </div>
                     </div>
-
                 </form>
             </div>
         </div>

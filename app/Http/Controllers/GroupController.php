@@ -49,18 +49,24 @@ class GroupController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
+        $user = Auth::user();
+        $object = json_decode($request->get("groupJson"));
         $group = new Group();
-        $group->name = $request->get("name");
-        $members = [];
-        for ($i = 0; $i < count($request->get("memberId")); $i++) {
-            $members[$i] = new GroupMembers();
-            $members[$i]->userId = $request->get("memberId")[$i];
-            $members[$i]->admin = $request->get("memberAdmin")[$i] == "true";
+        $group->name = $object->name;
+        $creatorMember = new GroupMembers();
+        $creatorMember->userId = $user->id;
+        $creatorMember->admin = true;
+        $members = [$creatorMember];
+        foreach ($object->members as $memberInput) {
+            $member = new GroupMembers();
+            $member->userId = $memberInput->user->id;
+            $member->admin = $memberInput->admin;
+            array_push($members, $member);
         }
-
+        
         $group->save();
         $group->members()->saveMany($members);
-        return "cadastrado";
+        return redirect(action("GroupController@show", $group->id));
     }
 
     public function setAdminAsTrue(Request $request, $groupId) {

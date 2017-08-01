@@ -75,6 +75,7 @@ class RequerimentController extends Controller {
             array_push($simpleBills, $simpleBill);
         }
         $requerimentObject = (object) array(
+          'id' => $requeriment->id,
           'destinationUser'  => $requeriment->destinationUser,
           'sourceUser' => $requeriment->sourceUser,
           'value' => $requeriment->value,
@@ -88,7 +89,7 @@ class RequerimentController extends Controller {
         $requirement = Requeriment::Find($object->$requirement->id);
         $payment = new Payment();
         $payment->value = 0.0;
-        $payment->payerUserId = $object->payerUser->id;
+        $payment->payerUserId = $object->destinationUser->id;
         $payment->receiverUserId = $object->receiverUser->id;
         $paymentsBills = [];
         foreach ($object->bills as $bill) {
@@ -102,12 +103,12 @@ class RequerimentController extends Controller {
             $payment->save();
             $payment->paymentBills()->saveMany($paymentsBills);
             $payment->doPayment();
-            $requirement->delete();
+            $requirement->updateToAccept();
         }
     }
 
     public function reject($id) {
-        Requeriment::Find($id)->delete();
+        Requeriment::Find($id)->updateToReject();
     }
 
     public function store(Request $request) {

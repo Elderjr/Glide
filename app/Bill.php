@@ -83,7 +83,7 @@ class Bill extends Model {
         }
         return $bills;
     }
-    
+
     public static function getPendingBills($userId) {
         return Bill::select('bills.*')
                         ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
@@ -92,10 +92,22 @@ class Bill extends Model {
                         ->get();
     }
 
-    public static function getPendingValues($userId) {
-        return DB::table("billsMembers as BM")
-                        ->select(DB::raw("sum(IF(BM.paid > BM.value,BM.paid - BM.value, 0)) as valueToReceive"), DB::raw("sum(IF(BM.paid < BM.value,BM.value - BM.paid, 0)) as valueToPay"), DB::raw("count(BM.paid != BM.value) as totalPendingBills"))
-                        ->where("BM.userId", '=', $userId)->first();
+    public static function getPendingValues($bills, $userId) {
+        $pendingValues = (object) array(
+                    'valueToReceiver' => 0.0,
+                    'valueToPay' => 0.0
+        );
+        foreach ($bills as $bill) {
+            $member = $bill->getMemberById($userId);
+            if ($member != null) {
+                if ($member->needToPay()) {
+                    $pendingValues->valueToPay += $member->valueToPay();
+                } else if ($member->needToReceiver()) {
+                    $pendingValues->valueToReceiver += $member->valueToReceiver();
+                }
+            }
+        }
+        return $pendingValues;
     }
 
     public static function getAlertBills($userId) {

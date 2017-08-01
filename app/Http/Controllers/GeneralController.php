@@ -14,9 +14,14 @@ class GeneralController extends Controller
         $user = Auth::user();
         if($user != null){
             $generalInformation = User::getGeneralInformation($user);
-            $pendingValues = Bill::getPendingValues($user->id);
-            return view('general')->with('generalInformation', json_encode($generalInformation))
-                    ->with('pendingValues', json_encode($pendingValues));
+            $billsInDebt = Bill::getPendingBills($user->id);            
+            $pageInfo = (object) array(
+                'billsInDebt' => $billsInDebt,
+                'pendingValues' => Bill::getPendingValues($billsInDebt, $user->id),
+                'user' => $user
+            );
+            return view('general')->with('generalInformation', $generalInformation)
+                    ->with('pageInfo', $pageInfo);
         }
         return redirect('/');
     }

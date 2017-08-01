@@ -1,38 +1,27 @@
-<?php
-    $userId = Illuminate\Support\Facades\Auth::user()->id;
-?>
-<html>
-    <head>
-        <script src="{{URL::asset('js/angular.min.js')}}"></script>
-        <script>
-var app = angular.module('myApp', [], function ($interpolateProvider) {
-    $interpolateProvider.startSymbol('@{');
-    $interpolateProvider.endSymbol('}');
-});
-        </script>
-    </head>
-    <body>
-        <div ng-app="myApp" >
-            @if(session('feedback'))
-                @if(session('feedback')->success != null)
-                    {{session('feedback')->success}}
-                @elseif(session('feedback')->alert != null)
-                    {{session('feedback')->alert}}
-                @elseif(session('feedback')->error != null)
-                    {{session('feedback')->error}}
-                @endif
-            @endif
-            <div ng-controller="groupManager">
-                <table border="1">
+@extends('shared.layout')
+<?php $userId = $pageInfo->user->id; ?>
+@section('content')
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Meus Grupos</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content" style="text-align: center;">
+                <table class="table table-striped" width='30%'>
                     <thead>
+                        <th>#</th>
                         <th>Grupo</th>
                         <th>Sair</th>
                     </thead>
                     <tbody>
-                        @foreach($myGroups as $group)
+                        <?php $count = 1; ?>
+                        @foreach($pageInfo->myGroups as $group)
                         <tr>
+                            <td>{{$count}}</td>
                             <td>
-                                <a href="{{action("GroupController@show", $group->id)}}">{{$group->name}}</a>
+                                <a href="{{action("GroupController@show", $group-> id)}}">{{$group-> name}}</a>
                                 @if($group->getMemberById($userId)->admin)
                                 <span>
                                     (administrador)
@@ -40,16 +29,16 @@ var app = angular.module('myApp', [], function ($interpolateProvider) {
                                 @endif
                             </td>
                             <td>
-                                <form action="{{action("GroupController@leaveGroup", $group->id)}}" method="post">
-                                    {{ csrf_field()}}
-                                    <button> Sair </button>
-                                </form>
+                                <a href="{{action("GroupController@leaveGroup", $group-> id)}}" class="btn btn-danger btn-sm"> Sair </a>
                             </td>
                         </tr>
+                        <?php $count++;?>
                         @endforeach
                     </tbody>
                 </table>
-            </div>         
+            </div>
         </div>
-    </body>
-</html>
+    </div>
+    <div class="clearfix"></div>
+</div>
+@stop

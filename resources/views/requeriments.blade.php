@@ -28,7 +28,7 @@ and open the template in the editor.
                     <td>
                         {{$requeriment->sourceUser->toString()}}
                         @if($requeriment->status == "waiting")
-                            (<a href="{{action("RequerimentController@accept", $requeriment->id)}}">aceitar</a>)
+                            (<a href="{{action("RequerimentController@showAccept", $requeriment->id)}}">aceitar</a>)
                         @endif
                     </td>
                     <td>{{$requeriment->destinationUser->toString()}}</td>

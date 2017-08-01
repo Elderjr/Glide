@@ -49,14 +49,14 @@ Route::get('/usuario/pagamentos/rollback/{id}', 'PaymentController@rollback');
 Route::get('/usuario/requerimentos', 'RequerimentController@index');
 Route::get('/usuario/requerimentos/cadastrar', 'RequerimentController@create');
 Route::post('/usuario/requerimentos/cadastrar', 'RequerimentController@store');
-Route::get('/usuario/requerimentos/{id}/accept', 'RequerimentController@showAccept');
+Route::get('/usuario/requerimentos/{id}/aceitar', 'RequerimentController@showAccept');
+Route::post('/usuario/requerimentos/{id}/aceitar', 'RequerimentController@accept');
 
 //api
 Route::get('/api/usuario/{username}','ApiController@getUserByUsername');
 Route::get('/api/grupo/{groupId}', 'ApiController@getGroupById');
 
 //test
-use App\Bill;
 Route::get('/test', function(){
-    return dump(Bill::getPendingValues(1));
+    return view('test');
 });

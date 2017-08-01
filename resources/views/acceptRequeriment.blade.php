@@ -24,26 +24,31 @@ and open the template in the editor.
         <div ng-app="myApp" ng-controller="myCtrl">
             Requerimento de @{requeriment.sourceUser.name} (@{requeriment.sourceUser.username}) para @{requeriment.destinationUser.name} (@{requeriment.destinationUser.username})
             <br/>
+            Valor Requerimento: @{requeriment.value} <br/>
             Dividas em debto:
-            <table border="1">
-                <thead>
-                <th>Despesa</th>
-                <th>Divida</th>
-                <th>Pagamento</th>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="bill in requeriment.bills">
-                        <td>@{bill.name}</td>
-                        <td>@{bill.debt}</td>
-                        <td>
-                            <div ng-if="bill.payment > bill.debt">
-                                Atençao, o pagemento esta maior que a divida
-                            </div>
-                            <input type="number" step="0.01" ng-model="bill.payment" min="0"/>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <form action="{{action(RequerimentController@accept"))}} method="post">
+                <input type="hidden" value="@{requeriment}" />
+                <table border="1">
+                    <thead>
+                    <th>Despesa</th>
+                    <th>Divida</th>
+                    <th>Pagamento</th>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="bill in requeriment.bills">
+                            <td>@{bill.name}</td>
+                            <td>@{bill.debt}</td>
+                            <td>
+                                <div ng-if="bill.payment > bill.debt">
+                                    Atençao, o pagemento esta maior que a divida
+                                </div>
+                                <input type="number" step="0.01" ng-model="bill.payment" min="0"/>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <input type="submit" value="aceitar requerimento" />
+            </form>
         </div>
     </body>
 </html>

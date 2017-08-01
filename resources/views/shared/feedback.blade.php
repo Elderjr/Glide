@@ -9,7 +9,7 @@
         </div>
     @endif
     @if(session('feedback')->alert != null)
-        <div class="alert alert-alert alert-dismissible fade in" role="alert">
+        <div class="alert alert-warning alert-dismissible fade in" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
             </button>
             {{session('feedback')->alert}}
@@ -33,7 +33,7 @@
         </div>
     @endif
     @if($feedback->alert != null)
-        <div class="alert alert-alert alert-dismissible fade in" role="alert">
+        <div class="alert alert-warning alert-dismissible fade in" role="alert">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span>
             </button>
             {{$feedback->alert}}

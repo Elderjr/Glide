@@ -23,7 +23,7 @@ class Group extends Model {
 
     public function hasAdmin() {
         foreach ($this->members as $member) {
-            if($member->admin){
+            if ($member->admin) {
                 return true;
             }
         }
@@ -59,6 +59,12 @@ class Group extends Model {
         GroupMembers::where('groupId', $groupId)
                 ->where('userId', $userId)
                 ->update(['admin' => $isAdmin]);
+    }
+
+
+    public static function updateName($groupId, $newName) {
+        Group::where('id', $groupId)
+                ->update(['name' => $newName]);
     }
 
     public static function removeMember($groupId, $userId) {

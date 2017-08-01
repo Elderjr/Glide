@@ -158,7 +158,8 @@ class GroupController extends Controller {
                 }
                 $pageInfo = (object) array(
                             'user' => $user,
-                            'group' => $group
+                            'group' => $group,
+                            'isAdmin' => $group->getMemberById($user->id)->admin
                 );
                 return view('grupoDetalhes')->with('generalInformation', $generalInformation)
                                 ->with('pageInfo', $pageInfo);
@@ -175,8 +176,37 @@ class GroupController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id) {
-        //
+    public function edit(Request $request, $id) {
+        $user = Auth::user();
+        $group = Group::find($id);
+        $userMember = $group->getMemberById($user->id);
+        $feedback = new Feedback();
+        if($group != null && $userMember != null){
+            if($userMember->admin){
+                $object = json_decode($request->get("groupJson"));
+                Group::updateName($id, $object->name);
+                foreach($object->members as $member){
+                    if($member->remove){
+                        Group::removeMember($group->id, $member->user->id);
+                    }else if($member->add){
+                        $groupMember = new GroupMembers();
+                        $groupMember->userId = $member->user->id;
+                        $groupMember->admin = $member->turnAdmin;
+                        $group->members()->save($groupMember);
+                    }else if($member->turnAdmin){
+                        Group::setAdmin($group->id, $member->user->id, true);
+                    }
+                }
+                $feedback->success = "Alteracoes feitas com sucesso";
+            }else{
+                $feedback->error = "Voce nao e' admin";
+            }
+        }elseif($group != null && member == null){
+            $feedback->error = "Voce nao e' membro do grupo";
+        }else{
+            $feedback->error = "Grupo nao encontrado";
+        }
+        return back()->with('feedback', $feedback);
     }
 
     /**

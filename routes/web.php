@@ -32,6 +32,7 @@ Route::post('/usuario/grupos/{groupId}/sair', 'GroupController@leaveGroup');
 Route::post('/usuario/grupos/{groupId}/removeMember', 'GroupController@removeMember');
 Route::post('/usuario/grupos/{groupId}/storeMember', 'GroupController@storeMember');
 Route::get('/usuario/grupos/{groupId}', 'GroupController@show');
+Route::post('/usuario/grupos/{groupId}/edit', 'GroupController@edit');
 
 //despesa
 Route::get('/usuario/despesas/cadastrar', 'BillController@create');

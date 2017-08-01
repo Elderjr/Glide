@@ -45,13 +45,6 @@
     <script src="{{URL::asset('/theme/vendors/nprogress/nprogress.js')}}"></script>
     <!-- bootstrap-progressbar -->
     <script src="{{URL::asset('/theme/vendors/bootstrap-progressbar/bootstrap-progressbar.min.js')}}"></script>
-    <!-- iCheck -->
-    <script src="{{URL::asset('/theme/vendors/iCheck/icheck.min.js')}}"></script>
-    <!-- PNotify -->
-    <script src="{{URL::asset('/theme/vendors/pnotify/dist/pnotify.js')}}"></script>
-    <script src="{{URL::asset('/theme/vendors/pnotify/dist/pnotify.buttons.js')}}"></script>
-    <script src="{{URL::asset('/theme/vendors/pnotify/dist/pnotify.nonblock.js')}}"></script>
-
     <!-- Custom Theme Scripts -->
     <script src="{{URL::asset('theme/build/js/custom.min.js')}}"></script>
     @yield('jsImport')

@@ -78,7 +78,6 @@ app.controller("myCtrl", function ($scope, $http) {
                     <div style="text-align: center;">
                         @{ loadMsg }
                     </div>
-                    json: @{group}
                     <div class='row'>
                         <div class="col-md-6 col-md-offset-3">
                             <table class='table table-striped'>

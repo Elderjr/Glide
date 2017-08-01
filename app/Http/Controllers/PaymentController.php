@@ -14,8 +14,9 @@ class PaymentController extends Controller {
 
     public function create(Request $request) {
         $user = Auth::user();
+        $generalInformation = User::getGeneralInformation($user);
         if ($request->get("username") == null) {
-            return view('payment')->with('paymentsJson', "[]");
+            return view('payment')->with('generalInformation', $generalInformation);
         } else {
             $payerUser = User::where('username', $request->get("username"))->first();
             if ($payerUser != null) {
@@ -34,14 +35,13 @@ class PaymentController extends Controller {
                             'payerUser' => $payerUser,
                             'bills' => $billsInDebt
                 );
-                return view('payment')->with('paymentsJson', json_encode($payement));
-            }else{
+                return view('payment')->with('generalInformation', $generalInformation)->with('paymentsJson', $payement);
+            } else {
                 $feedback = new Feedback();
-                $feedback->alert = "Usuario nao encontrado";
-                return view('payment')->with('paymentsJson', "[]")->with('feedback', $feedback);
+                $feedback->alert = "Usuário não encontrado";
+                return view('payment')->with('generalInformation', $generalInformation)->with('feedback', $feedback);
             }
         }
-        
     }
 
     public function store(Request $request) {

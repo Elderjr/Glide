@@ -11,8 +11,27 @@ use App\Feedback;
 
 class RequerimentController extends Controller {
 
-    public function index() {
-        return view('requeriments');
+    public function index(Request $request) {
+        $user = Auth::user();
+        $feedback = new Feedback();
+        if ($user != null && $request->get("search")) {
+            if ($request->get("username") != null) {
+                $filterUser = User::getUserByUsername($request->get("username"));
+                if ($filterUser != null) {
+                    $requirements = Requeriment::filterSearch($user->id, $filterUser->id, $request->get("status"), $request->get("sentOrReceived"), $request->get("date"));
+                    //return view('requeriments')->with('requeriments');
+                } else {
+                    $feedback->error = "Usuario " . $request->get("username") . " nao foi encontrado";
+                    return view('requirements')->with('feedback', $feedback);
+                }
+            } else {
+                $requirements = Requeriment::filterSearch($user->id, null, $request->get("status"), $request->get("sentOrReceived"), $request->get("date"));
+            }
+            return view('requirements')->with('requeriments', $requirements);
+        } else if ($user != null) {
+            return view('requirements');
+        }
+        return redirect('/');
     }
 
     public function create(Request $request) {
@@ -59,10 +78,10 @@ class RequerimentController extends Controller {
         $value = $requeriment->value;
         foreach ($billsInDebt as $bill) {
             $debt = $bill->getDebt($requeriment->destinationUserId, $requeriment->sourceUserId);
-            if($value > $debt){
+            if ($value > $debt) {
                 $payment = $debt;
                 $value -= $debt;
-            }else{
+            } else {
                 $payment = $value;
                 $value = 0;
             }
@@ -75,11 +94,11 @@ class RequerimentController extends Controller {
             array_push($simpleBills, $simpleBill);
         }
         $requerimentObject = (object) array(
-          'id' => $requeriment->id,
-          'destinationUser'  => $requeriment->destinationUser,
-          'sourceUser' => $requeriment->sourceUser,
-          'value' => $requeriment->value,
-          'bills' => $simpleBills
+                    'id' => $requeriment->id,
+                    'destinationUser' => $requeriment->destinationUser,
+                    'sourceUser' => $requeriment->sourceUser,
+                    'value' => $requeriment->value,
+                    'bills' => $simpleBills
         );
         return view('acceptRequeriment')->with('requeriment', json_encode($requerimentObject));
     }

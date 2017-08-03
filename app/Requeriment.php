@@ -17,7 +17,6 @@ class Requeriment extends Model {
     }
 
     public static function filterSearch($myId, $userId, $status, $sentOrReceived, $date) {
-        dump($userId);
         $requirements = Requeriment::select('requirements.*');
         if ($sentOrReceived != null && $sentOrReceived == 'sent') {
             $requirements = $requirements->where('sourceUserId', $myId);
@@ -39,7 +38,7 @@ class Requeriment extends Model {
                         ->orWhere('destinationUserId', $userId);
             });
         }
-        if ($status != null && in_array(["waiting", "accepted", "rejected"], $status)) {
+        if ($status != null && in_array($status, ["waiting", "accepted", "rejected"])) {
             $requirements = $requirements->where('status', $status);
         }
         if ($date != null) {

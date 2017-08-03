@@ -14,20 +14,19 @@ class RequerimentController extends Controller {
     public function index(Request $request) {
         $user = Auth::user();
         $feedback = new Feedback();
-        if ($user != null && $request->get("search")) {
-            if ($request->get("username") != null) {
-                $filterUser = User::getUserByUsername($request->get("username"));
+        if ($user != null && $request->exists("username")) {
+            if ($request->username != null) {
+                $filterUser = User::getUserByUsername($request->username);
                 if ($filterUser != null) {
-                    $requirements = Requeriment::filterSearch($user->id, $filterUser->id, $request->get("status"), $request->get("sentOrReceived"), $request->get("date"));
-                    //return view('requeriments')->with('requeriments');
+                    $requirements = Requeriment::filterSearch($user->id, $filterUser->id, $request->status, $request->sentOrReceived, $request->date);
                 } else {
-                    $feedback->error = "Usuario " . $request->get("username") . " nao foi encontrado";
+                    $feedback->error = "Usuario " . $request->username . " nao foi encontrado";
                     return view('requirements')->with('feedback', $feedback);
                 }
             } else {
-                $requirements = Requeriment::filterSearch($user->id, null, $request->get("status"), $request->get("sentOrReceived"), $request->get("date"));
+                $requirements = Requeriment::filterSearch($user->id, null, $request->status, $request->sentOrReceived, $request->date);
             }
-            return view('requirements')->with('requeriments', $requirements);
+            return view('requirements')->with('requirements', $requirements);
         } else if ($user != null) {
             return view('requirements');
         }

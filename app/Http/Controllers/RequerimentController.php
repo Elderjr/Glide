@@ -12,7 +12,7 @@ use App\Feedback;
 class RequerimentController extends Controller {
 
     public function index() {
-        return view('requeriments');
+        return view('requirements');
     }
 
     public function create(Request $request) {

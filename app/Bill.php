@@ -52,6 +52,14 @@ class Bill extends Model {
         return 0;
     }
 
+    public function isInAlert() {
+        if($this->alert != null){
+            $currentDate = Carbon\Carbon::now();
+            return Carbon\Carbon::parse($this->alert) > $currentDate;
+        }
+        return false;
+    }
+
     public static function getCompleteBillById($id) {
         $bill = Bill::find($id);
         $bill->load('group');

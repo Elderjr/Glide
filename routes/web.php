@@ -42,6 +42,7 @@ Route::get('/usuario/despesas/{id}', 'BillController@show');
 
 
 //pagamentos
+Route::get('/usuario/pagamentos', 'PaymentController@index');
 Route::get('/usuario/pagamentos/cadastrar', 'PaymentController@create');
 Route::post('/usuario/pagamentos/cadastrar', 'PaymentController@store');
 Route::get('/usuario/pagamentos/rollback/{id}', 'PaymentController@rollback');
@@ -52,6 +53,10 @@ Route::get('/usuario/requerimentos/cadastrar', 'RequerimentController@create');
 Route::post('/usuario/requerimentos/cadastrar', 'RequerimentController@store');
 Route::get('/usuario/requerimentos/{id}/aceitar', 'RequerimentController@showAccept');
 Route::post('/usuario/requerimentos/{id}/aceitar', 'RequerimentController@accept');
+
+
+//historico
+Route::get('/usuario/historico', "HistoryController@index");
 
 //api
 Route::get('/api/usuario/{username}','ApiController@getUserByUsername');

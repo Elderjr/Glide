@@ -31,7 +31,7 @@
         <div class="col-md-6 col-sm-6 col-xs-12">
             <div class="x_panel">
                 <div class="x_title">
-                    <h2>Valor A Receber <small>(registrar pagamento)</small></h2>
+                    <h2>Valor A Receber <small><a href='{{action("PaymentController@create")}}'>(registrar pagamento)</a></small></h2>
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
@@ -54,7 +54,7 @@
         <div class="col-md-6 col-sm-6 col-xs-12">
             <div class="x_panel">
                 <div class="x_title">
-                    <h2>Valor A Pagar <small>(registrar requerimento)</small></h2>
+                    <h2>Valor A Pagar <small> <a href='{{action("RequerimentController@create")}}'>(registrar requerimento)</a></small></h2>
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">

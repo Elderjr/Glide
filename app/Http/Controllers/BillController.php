@@ -92,13 +92,15 @@ class BillController extends Controller {
     public function pendingBills(){
         $user = Auth::user();
         if($user != null){
-            $bills = Bill::getPendingBills($user->id);
-            $values = Bill::getPendingValues($user->id);
-            $pending = (object) array(
-                'bills' => $bills,
-                'values' => $values
+            $generalInformation = User::getGeneralInformation($user);
+            $billsInDebt = Bill::getPendingBills($user->id);            
+            $pageInfo = (object) array(
+                'billsInDebt' => $billsInDebt,
+                'pendingValues' => Bill::getPendingValues($billsInDebt, $user->id),
+                'user' => $user
             );
-            return view('despesasPendentes')->with('pending', $pending);
+            return view('despesasPendentes')->with('generalInformation', $generalInformation)
+                    ->with('pageInfo', $pageInfo);
         }
         return redirect('/');
     }

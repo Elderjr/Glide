@@ -1,55 +1,97 @@
-<?php
+@extends ('shared.layout')                
 
-use Illuminate\Support\Facades\Auth;
+@section('content')
+<div class="">
+    <div class="row">
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Valor A Receber <small><a href='{{action("PaymentController@create")}}'>(registrar pagamento)</a></small></h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    R$ {{$pageInfo->pendingValues->valueToReceiver}}
+                    <div class="divider"></div>
+                    <div>
+                        <a href="#" data-toggle="collapse" data-target="#sugestaoReceber">Ver sugestao</a>
+                        <div id='sugestaoReceber' class='collapse'>
+                            <ul>
+                                @foreach(App\Bill::makeSuggestionToReceiver($pageInfo->billsInDebt, $pageInfo->user->id) as $name => $suggestion)
+                                <li>Receber de {{$name}} R$ {{$suggestion}}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
-$userId = Auth::user()->id;
-?>
-<html>
-    <head>
-        <meta charset="UTF-8">
-        <title></title>
-    </head>
-    <body>
+        <div class="col-md-6 col-sm-6 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Valor A Pagar <small> <a href='{{action("RequerimentController@create")}}'>(registrar requerimento)</a></small></h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    R$ {{$pageInfo->pendingValues->valueToPay}}
+                    <div class="divider"></div>
+                    <div>
+                        <a href="#" data-toggle="collapse" data-target="#sugestaoPagar">Ver sugestao</a>
+                        <div id='sugestaoPagar' class='collapse'>
+                            <ul>
+                                @foreach(App\Bill::makeSuggestionToPay($pageInfo->billsInDebt, $pageInfo->user->id) as $name => $suggestion)
+                                <li>Pagar para {{$name}} R$ {{$suggestion}}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="clearfix"></div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Despesas Pendentes</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <table class='table table-striped'>
+                        <thead>
+                        <th>Nome</th>
+                        <th>Data de Registro</th>
+                        <th>Valor a Pagar / Receber</th>
+                        </thead>
+                        <tbody>
+                            @foreach($pageInfo->billsInDebt as $bill)
+                            <tr>
+                                <td>
+                                    {{$bill->name}}
+                                    @if($bill->isInAlert())
+                                        <span class="badge bg-red"> Em Alerta</span>
+                                    @endif
+                                </td>
+                                <td>
+                                    {{Carbon\Carbon::parse($bill->created_at)->format('d/m/Y')}}
+                                </td>
+                                <td>
+                                    <?php $member = $bill->getMemberById($pageInfo->user->id);?>
+                                    @if($member->needToReceiver())
+                                        Receber R$ {{$member->valueToReceiver()}}
+                                    @else
+                                        Pagar R$ {{$member->valueToPay()}}
+                                    @endif
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@stop
 
-        Valor a Receber: {{$pending->values->valueToReceive}} <br/>
-        Sugestao: <br/>
-        <ul>
-            @foreach(App\Bill::makeSuggestionToReceiver($pending->bills, $userId) as $name => $suggestion)
-            <li>
-                Receber de {{$name}}: R$ {{$suggestion}}
-            </li>
-            @endforeach
-
-        </ul>
-        Valor a Pagar: {{$pending->values->valueToPay}} <br/>
-        Sugestao: <br/>
-        <ul>
-
-            @foreach(App\Bill::makeSuggestionToPay($pending->bills, $userId) as $name => $suggestion)
-            <li>
-                Pagar para {{$name}}: R$ {{$suggestion}}
-            </li>
-            @endforeach
-
-        </ul>
-        <table border='1'>
-            <thead>
-            <th>Despesa</th>
-            <th>Data</th>
-            <th>Valor</th>
-            <th>Grupo</th>
-        </thead>
-        <tbody>
-            @foreach($pending->bills as $bill)
-            <tr>
-                <td><a href='{{action("BillController@show", $bill->id)}}'>{{$bill->name}}</a></td>
-                <td>{{Carbon\Carbon::parse($bill->date)->format('d/m/Y')}}</td>
-                <td>{{$bill->getPendingValue($userId)}}</td>
-                <td>{{$bill->group->name}}</td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
-
-</body>
-</html>

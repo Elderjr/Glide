@@ -12,6 +12,10 @@ use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller {
 
+    public function index(){
+        
+    }
+    
     public function create(Request $request) {
         $user = Auth::user();
         $generalInformation = User::getGeneralInformation($user);

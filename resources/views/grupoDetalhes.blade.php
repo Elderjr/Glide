@@ -89,8 +89,8 @@
                                             @{member.user.name} (@{member.user.username})
                                             <span ng-if="member.admin" class="badge bg-blue">Admin</span>
                                         </td>
-                                        <td><input ng-if="pageInfo.user.id != member.user.id" type="checkbox" ng-model="member.turnAdmin" class="flat" /></td>
-                                        <td><input type="checkbox" ng-if="pageInfo.user.id != member.user.id"  ng-model="member.remove" class="flat"/></td>
+                                        <td><input ng-if="pageInfo.user.id != member.user.id" type="checkbox" ng-model="member.turnAdmin" /></td>
+                                        <td><input type="checkbox" ng-if="pageInfo.user.id != member.user.id"  ng-model="member.remove"/></td>
                                     </tr>
                                 </tbody>
                             </table>

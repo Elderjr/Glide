@@ -23,31 +23,30 @@
             <div class="menu_section">
                 <h3>General</h3>
                 <ul class="nav side-menu">
-                    <li><a><i class="fa fa-home"></i> Inicio</a></li>
-                    <li><a><i class="fa fa-home"></i> Historico</a></li>
+                    <li><a href='{{action("GeneralController@index")}}'><i class="fa fa-home"></i> Inicio</a></li>
+                    <li><a href='{{action("HistoryController@index")}}'><i class="fa fa-home"></i> Historico</a></li>
                     <li><a><i class="fa fa-edit"></i> Despesas <span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
-                            <li><a href="form.html">Cadastrar Despesas</a></li>
-                            <li><a href="form_advanced.html">Minhas Despesas</a></li>
-                            <li><a href="form_validation.html">Despesas Pendentes</a></li>                                            
+                            <li><a href='{{action("BillController@create")}}'>Cadastrar Despesas</a></li>
+                            <li><a href='{{action("BillController@pendingBills")}}'>Despesas Pendentes</a></li>                                            
                         </ul>
                     </li>
                     <li><a><i class="fa fa-desktop"></i> Grupos <span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
-                            <li><a href="general_elements.html">Cadastrar Grupos</a></li>
-                            <li><a href="media_gallery.html">Gerenciador de Grupos</a></li>
+                            <li><a href='{{action("GroupController@create")}}'>Cadastrar Grupos</a></li>
+                            <li><a href='{{action("GroupController@index")}}'>Gerenciador de Grupos</a></li>
                         </ul>
                     </li>
                     <li><a><i class="fa fa-table"></i> Pagamentos <span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
-                            <li><a href="tables.html">Registrar Pagamento</a></li>
-                            <li><a href="tables_dynamic.html">Visualizar Pagamentos</a></li>
+                            <li><a href="{{action("PaymentController@create")}}">Registrar Pagamento</a></li>
+                            <li><a href="{{action("PaymentController@index")}}">Visualizar Pagamentos</a></li>
                         </ul>
                     </li>
                     <li><a><i class="fa fa-bar-chart-o"></i> Requerimentos<span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
-                            <li><a href="chartjs.html">Registrar Requerimento</a></li>
-                            <li><a href="chartjs2.html">Visualizar Requerimento</a></li>
+                            <li><a href="{{action("RequerimentController@create")}}">Registrar Requerimento</a></li>
+                            <li><a href="{{action("RequerimentController@index")}}">Visualizar Requerimento</a></li>
                         </ul>
                     </li>
                 </ul>

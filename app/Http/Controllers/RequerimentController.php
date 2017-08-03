@@ -14,6 +14,7 @@ class RequerimentController extends Controller {
     public function index(Request $request) {
         $user = Auth::user();
         $feedback = new Feedback();
+        $generalInformation = User::getGeneralInformation($user);
         if ($user != null && $request->exists("username")) {
             if ($request->username != null) {
                 $filterUser = User::getUserByUsername($request->username);
@@ -21,14 +22,16 @@ class RequerimentController extends Controller {
                     $requirements = Requeriment::filterSearch($user->id, $filterUser->id, $request->status, $request->sentOrReceived, $request->date);
                 } else {
                     $feedback->error = "Usuario " . $request->username . " nao foi encontrado";
-                    return view('requirements')->with('feedback', $feedback);
+                    return view('requirements')->with('generalInformation', $generalInformation)
+                            ->with('feedback', $feedback);
                 }
             } else {
                 $requirements = Requeriment::filterSearch($user->id, null, $request->status, $request->sentOrReceived, $request->date);
             }
-            return view('requirements')->with('requirements', $requirements);
+            return view('requirements')->with('generalInformation', $generalInformation)
+                    ->with('requirements', $requirements);
         } else if ($user != null) {
-            return view('requirements');
+            return view('requirements')->with('generalInformation', $generalInformation);
         }
         return redirect('/');
     }
@@ -67,7 +70,14 @@ class RequerimentController extends Controller {
     }
 
     public function show($id) {
-        
+        $user = Auth::user();
+        if($user != null){
+            $req = Requeriment::find($id);
+            $generalInformation = User::getGeneralInformation($user);
+            return view('requirement')->with('generalInformation', $generalInformation)
+                    ->with('requirement', $req);
+        }
+        return redirect('/');
     }
 
     public function showAccept($id) {

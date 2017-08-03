@@ -76,11 +76,10 @@
                             <th>Enviado/Recebido</th>
                             <th>Estado</th>
                             <th>Data</th>
-                            <th>Detalhes</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <?php $count = 1; ?>
+                        <?php $count = 1;?>
                         @foreach($requirements as $req)
                         <tr>
                             <td>{{$count}}</td>
@@ -88,25 +87,22 @@
                             <td>{{$req->destinationUser->toString()}}</td>
                             <td>
                                 @if($req->sourceUser->id == Illuminate\Support\Facades\Auth::user()->id)
-                                Enviado
+                                    Enviado
                                 @else
-                                Recebido
+                                    Recebido
                                 @endif
                             </td>
                             <td>
                                 @if($req->status == "accepted")
-                                <span class="badge bg-green">Aceito</span>
+                                    <span class="badge bg-green">Aceito</span>
                                 @elseif($req->status == "rejected")
-                                <span class="badge bg-red">Rejeitado</span>
+                                    <span class="badge bg-red">Rejeitado</span>
                                 @else
-                                <span class="badge bg-orange">Aguardando</span>
+                                    <span class="badge bg-orange">Aguardando</span>
                                 @endif
                             </td>
                             <td>
                                 {{Carbon\Carbon::parse($req->created_at)->format('d/m/Y')}}
-                            </td>
-                            <td>
-                                <a href="{{action("RequerimentController@show", $req->id)}}" class="btn btn-primary btn-xs">detalhes</a>
                             </td>
                         </tr>
                         <?php $count++ ?>

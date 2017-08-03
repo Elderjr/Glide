@@ -15,6 +15,9 @@ Route::get('/', function () {
     return view('home');
 });
 
+
+Route::get('/usuario/logout', "GeneralController@logout");
+
 //home
 Route::post('/autenticar','AuthenticationController@authenticate');
 Route::post('/registrar','UserController@store');
@@ -51,6 +54,7 @@ Route::get('/usuario/pagamentos/rollback/{id}', 'PaymentController@rollback');
 Route::get('/usuario/requerimentos', 'RequerimentController@index');
 Route::get('/usuario/requerimentos/cadastrar', 'RequerimentController@create');
 Route::post('/usuario/requerimentos/cadastrar', 'RequerimentController@store');
+Route::get('/usuario/requerimentos/{id}', 'RequerimentController@show');
 Route::get('/usuario/requerimentos/{id}/aceitar', 'RequerimentController@showAccept');
 Route::post('/usuario/requerimentos/{id}/aceitar', 'RequerimentController@accept');
 

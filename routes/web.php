@@ -49,6 +49,8 @@ Route::get('/usuario/pagamentos', 'PaymentController@index');
 Route::get('/usuario/pagamentos/cadastrar', 'PaymentController@create');
 Route::post('/usuario/pagamentos/cadastrar', 'PaymentController@store');
 Route::get('/usuario/pagamentos/rollback/{id}', 'PaymentController@rollback');
+Route::get('/usuario/pagamentos/{id}', 'PaymentController@show');
+
 
 //requerimentos
 Route::get('/usuario/requerimentos', 'RequerimentController@index');

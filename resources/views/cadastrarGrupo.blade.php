@@ -73,7 +73,6 @@ app.controller("myCtrl", function ($scope, $http) {
                         <div class="col-md-3">
                             <button type="button" class="btn btn-primary" ng-click="searchUser()">Adicionar</button>
                         </div>
-                        
                     </div>
                     <div style="text-align: center;">
                         @{ loadMsg }

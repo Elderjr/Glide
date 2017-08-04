@@ -13,7 +13,7 @@ class Payment extends Model {
     }
 
     public function payerUser() {
-        return $this->hasOne('App\Group', 'id', 'payerUserId');
+        return $this->hasOne('App\User', 'id', 'payerUserId');
     }
 
     public function receiverUser() {
@@ -41,6 +41,24 @@ class Payment extends Model {
                     ->decrement('paid', $payment->value);
         }
         $this->delete();
+    }
+
+    public static function filterSearch($myId, $userId, $date) {
+        $payments = Payment::select('payments.*');
+        $payments = $payments->where(function ($query) use ($myId) {
+            $query->where('receiverUserId', $myId)
+                    ->orWhere('payerUserId', $myId);
+        });
+        if ($userId != null) {
+            $payments = $payments->where(function ($query) use ($userId) {
+                $query->where('receiverUserId', $userId)
+                        ->orWhere('payerUserId', $userId);
+            });
+        }
+        if ($date != null) {
+            $payments = $payments->where('created_at', '>=', $date);
+        }
+        return $payments->get();
     }
 
 }

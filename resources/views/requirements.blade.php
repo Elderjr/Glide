@@ -1,8 +1,18 @@
 @extends('shared.layout')
 @section('content')
+<div class="page-title">
+    <div class="title_left">
+        <h3>Meus Requerimentos</h3>
+    </div>
+    <div class="title_right">
+        <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+            <a href="" class="btn btn-success btn-block">Registrar Novo Requerimento</a>
+        </div>
+    </div>
+</div>
 <div class="x_panel">
     <div class="x_title">
-        <h2>Requerimentos</h2>
+        <h2>Pesquisa</h2>
         <div class="clearfix"></div>
     </div>
     <div class="x_content">

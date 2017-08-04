@@ -103,8 +103,8 @@
                                     Descriçao: {{$requeriment->description}}
                                     <div class="divider"></div>
                                     <div style="text-align: right;">
-                                        <button class='btn btn-danger btn-sm'>Cancelar</button>
-                                        <button class="btn btn-success btn-sm">Confirmar</button>
+                                        <a href="#" class='btn btn-danger btn-sm'>Cancelar</a>
+                                        <a href="{{action("RequerimentController@showAccept", $requeriment->id)}}" class="btn btn-success btn-sm">Confirmar</a>
                                     </div>
                                 </div>
                             </div>

@@ -83,7 +83,7 @@ class Bill extends Model {
                 ->join('billsMembers as RU', 'RU.billId', '=', 'bills.id')
                 ->join('billsMembers as PU', 'PU.billId', '=', 'bills.id')
                 ->whereColumn('RU.paid' ,'>','RU.value')
-                ->whereColumn('PU.paid','>','PU.value')
+                ->whereColumn('PU.paid','<','PU.value')
                 ->where('RU.userId', '=', $receiverId)
                 ->where('PU.userId', '=', $paidId)
                 ->get();

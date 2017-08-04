@@ -38,33 +38,35 @@ class RequerimentController extends Controller {
 
     public function create(Request $request) {
         $user = Auth::user();
+        $generalInformation = User::getGeneralInformation($user);
         if ($request->get("username") == null) {
-            return view('registerRequeriment');
+            return view('registerRequirement')->with('generalInformation', $generalInformation);
         } else {
-            $requerimentUser = User::getUserByUsername($request->get("username"));
-            if ($requerimentUser != null) {
-                $billsInDebt = Bill::getBillsInDebtWithUser($requerimentUser->id, $user->id);
-                $simpleBills = [];
+            $destinationUser = User::where('username', $request->get("username"))->first();
+            if ($destinationUser != null) {
+                $bills = Bill::getBillsInDebtWithUser($destinationUser->id, $user->id);
+                $billsInDebt = [];
                 $total = 0.0;
-                foreach ($billsInDebt as $bill) {
-                    $debt = $bill->getDebt($requerimentUser->id, $user->id);
+                foreach ($bills as $bill) {
+                    $debt = $bill->getDebt($destinationUser->id, $user->id);
+                    $total += $debt;
                     $simpleBill = (object) array(
                                 'id' => $bill->id,
                                 'name' => $bill->name,
-                                'debt' => $debt,
-                                'payment' => 0.0
+                                'debt' => $debt
                     );
-                    $total += $debt;
-                    array_push($simpleBills, $simpleBill);
+                    array_push($billsInDebt, $simpleBill);
                 }
-                $requeriment = (object) array(
-                            'user' => $requerimentUser,
-                            'bills' => $simpleBills,
+                $pageInfo = (object) array(
+                            'billsInDebt' => $billsInDebt,
+                            'destinationUser' => $destinationUser,
                             'total' => $total
                 );
-                return view('registerRequeriment')->with('requerimentJson', json_encode($requeriment));
+                return view('registerRequirement')->with('generalInformation', $generalInformation)->with('pageInfo', $pageInfo);
             } else {
-                return view('registerRequeriment');
+                $feedback = new Feedback();
+                $feedback->alert = "Usuário não encontrado";
+                return view('registerRequirement')->with('generalInformation', $generalInformation)->with('feedback', $feedback);
             }
         }
     }
@@ -81,6 +83,7 @@ class RequerimentController extends Controller {
     }
 
     public function showAccept($id) {
+        $user = Auth::user();
         $requeriment = Requeriment::find($id);
         $billsInDebt = Bill::getBillsInDebtWithUser($requeriment->destinationUserId, $requeriment->sourceUserId);
         $simpleBills = [];
@@ -102,14 +105,12 @@ class RequerimentController extends Controller {
             );
             array_push($simpleBills, $simpleBill);
         }
-        $requerimentObject = (object) array(
-                    'id' => $requeriment->id,
-                    'destinationUser' => $requeriment->destinationUser,
-                    'sourceUser' => $requeriment->sourceUser,
-                    'value' => $requeriment->value,
+        $pageInfo = (object) array(
+                    'requirement' => $requeriment,
                     'bills' => $simpleBills
         );
-        return view('acceptRequeriment')->with('requeriment', json_encode($requerimentObject));
+        return view('acceptRequeriment')->with('generalInformation', User::getGeneralInformation($user))
+                ->with('pageInfo', $pageInfo);
     }
 
     public function accept(Request $request) {
@@ -142,13 +143,13 @@ class RequerimentController extends Controller {
     public function store(Request $request) {
         $user = Auth::user();
         $feedback = new Feedback();
-        $requerimentUser = User::find($request->get("requerimentUserId"));
-        $requeriment = new Requirement();
+        $requerimentUser = User::find($request->get("destinationUserId"));
+        $requeriment = new Requeriment();
         $requeriment->status = "waiting";
         $requeriment->sourceUserId = $user->id;
         $requeriment->destinationUserId = $requerimentUser->id;
-        $requeriment->value = $request->get("requerimentValue");
-        $requeriment->description = $request->get("requerimentDescription");
+        $requeriment->value = $request->get("requirementValue");
+        $requeriment->description = $request->get("requirementDescription");
         $requeriment->save();
         $feedback->success = "Requerimento foi enviado com sucesso para " . $requerimentUser->toString();
         return redirect(action('RequerimentController@index'))->with('feedback', $feedback);

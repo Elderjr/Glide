@@ -12,10 +12,31 @@ use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller {
 
-    public function index(){
-        
+    public function index(Request $request) {
+        $user = Auth::user();
+        $feedback = new Feedback();
+        $generalInformation = User::getGeneralInformation($user);
+        if ($user != null && $request->exists("username")) {
+            if ($request->username != null) {
+                $filterUser = User::getUserByUsername($request->username);
+                if ($filterUser != null) {
+                    $payments = Payment::filterSearch($user->id, $filterUser->id, $request->date);
+                } else {
+                    $feedback->error = "Usuario " . $request->username . " nao foi encontrado";
+                    return view('payments')->with('generalInformation', $generalInformation)
+                                    ->with('feedback', $feedback);
+                }
+            } else {
+                $payments = Payment::filterSearch($user->id, null, $request->date);
+            }
+            return view('payments')->with('generalInformation', $generalInformation)
+                            ->with('payments', $payments);
+        } else if ($user != null) {
+            return view('payments')->with('generalInformation', $generalInformation);
+        }
+        return redirect('/');
     }
-    
+
     public function create(Request $request) {
         $user = Auth::user();
         $generalInformation = User::getGeneralInformation($user);
@@ -71,6 +92,8 @@ class PaymentController extends Controller {
         return back()->with('feedback', $feedback);
     }
 
+    public function show($id){
+    }
     public function rollback($id) {
         $generalPayment = Payment::Find($id);
         if ($generalPayment != null) {

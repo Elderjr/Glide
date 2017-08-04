@@ -10,7 +10,7 @@ class PaymentBill extends Model{
     public $timestamps = false;
     
     public function bill(){
-        return $this->belongsTo('App\Bill', 'billId', 'id');
+        return $this->hasOne('App\Bill', 'id', 'billId');
     }
     
 }

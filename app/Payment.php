@@ -31,12 +31,12 @@ class Payment extends Model {
         }
     }
 
-    public function rollback($id) {
-        foreach ($this->paymentBills() as $payment) {
-            BillMember::where('billId', $payment->billId)
+    public function rollback() {
+        foreach ($this->paymentBills as $payment) {
+            echo BillMember::where('billId', $payment->billId)
                     ->where('userId', $this->receiverUserId)
                     ->increment('paid', $payment->value);
-            BillMember::where('billId', $payment->billId)
+            echo BillMember::where('billId', $payment->billId)
                     ->where('userId', $this->payerUserId)
                     ->decrement('paid', $payment->value);
         }

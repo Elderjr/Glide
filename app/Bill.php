@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
+use Carbon;
 
 class Bill extends Model {
 
@@ -81,8 +82,8 @@ class Bill extends Model {
         $bills = Bill::select('bills.*')
                 ->join('billsMembers as RU', 'RU.billId', '=', 'bills.id')
                 ->join('billsMembers as PU', 'PU.billId', '=', 'bills.id')
-                ->whereRaw('RU.paid > RU.value')
-                ->whereRaw('PU.paid < RU.value')
+                ->whereColumn('RU.paid' ,'>','RU.value')
+                ->whereColumn('PU.paid','>','PU.value')
                 ->where('RU.userId', '=', $receiverId)
                 ->where('PU.userId', '=', $paidId)
                 ->get();
@@ -95,7 +96,7 @@ class Bill extends Model {
     public static function getPendingBills($userId) {
         return Bill::select('bills.*')
                         ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
-                        ->whereRaw('BM.paid != BM.value')
+                        ->whereColumn('BM.paid','!=','BM.value')
                         ->where('BM.userId', '=', $userId)
                         ->get();
     }
@@ -121,9 +122,9 @@ class Bill extends Model {
     public static function getAlertBills($userId) {
         return Bill::select('bills.*')
                         ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
-                        ->whereRaw('BM.paid != BM.value')
+                        ->whereColumn("BM.paid",'!=','BM.value')
                         ->where('BM.userId', '=', $userId)
-                        ->where('bills.alertDate', '<', date('yyyy-MM-dddd'))
+                        ->where('bills.alertDate', '<', Carbon\Carbon::now())
                         ->get();
     }
 

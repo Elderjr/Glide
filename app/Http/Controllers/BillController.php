@@ -15,6 +15,24 @@ use Illuminate\Http\Request;
 
 class BillController extends Controller {
 
+    public function index(Request $request) {
+        $user = Auth::user();
+        if ($user != null) {
+            $generalInformation = User::getGeneralInformation($user);
+            if ($request->exists("billName")) {
+                $billId = null;
+                $bills = Bill::filterSearch($user->id, $request->billName, $request->billDate, $billId, $request->billStatus);
+                return view('bills')->with('generalInformation', $generalInformation)
+                                ->with('myGroups', Group::getGroupsByUserId($user->id))
+                                ->with('bills', $bills);
+            } else {
+                return view('bills')->with('generalInformation', $generalInformation)
+                                ->with('myGroups', Group::getGroupsByUserId($user->id));
+            }
+        }
+        return redirect('/');
+    }
+
     public function create() {
         $myGroupsJson = Group::getGroupsByUserId(Auth::user()->id)->toJson();
         return view('cadastroDespesa')->with('myGroupsJson', $myGroupsJson);
@@ -36,7 +54,7 @@ class BillController extends Controller {
         if (isset($object->alertDate) && $object->alertDate != "") {
             $bill->alertDate = new DateTime($object->alertDate);
         }
-        if(isset($object->description)){
+        if (isset($object->description)) {
             $bill->description = $object->description;
         }
         $bill->groupId = $object->group->id;
@@ -77,31 +95,31 @@ class BillController extends Controller {
         $bill->save();
         $bill->members()->saveMany($billMembers);
         $bill->items()->saveMany($items);
-        for($i = 0; $i < count($items); $i++){
+        for ($i = 0; $i < count($items); $i++) {
             $items[$i]->members()->saveMany($itemMembers[$i]);
         }
         return "deu bom";
     }
-    
-    public function show($id){
+
+    public function show($id) {
         $bill = Bill::getCompleteBillById($id);
         return view('billDetails')->with('billJson', $bill->toJson());
     }
-    
-    
-    public function pendingBills(){
+
+    public function pendingBills() {
         $user = Auth::user();
-        if($user != null){
+        if ($user != null) {
             $generalInformation = User::getGeneralInformation($user);
-            $billsInDebt = Bill::getPendingBills($user->id);            
+            $billsInDebt = Bill::getPendingBills($user->id);
             $pageInfo = (object) array(
-                'billsInDebt' => $billsInDebt,
-                'pendingValues' => Bill::getPendingValues($billsInDebt, $user->id),
-                'user' => $user
+                        'billsInDebt' => $billsInDebt,
+                        'pendingValues' => Bill::getPendingValues($billsInDebt, $user->id),
+                        'user' => $user
             );
             return view('despesasPendentes')->with('generalInformation', $generalInformation)
-                    ->with('pageInfo', $pageInfo);
+                            ->with('pageInfo', $pageInfo);
         }
         return redirect('/');
     }
+
 }

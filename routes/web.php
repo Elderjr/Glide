@@ -63,7 +63,7 @@ Route::get('/usuario/requerimentos/{id}/rejeitar', 'RequerimentController@reject
 
 
 //historico
-Route::get('/usuario/historico', "HistoryController@index");
+Route::get('/usuario/despesas', "BillController@index");
 
 //api
 Route::get('/api/usuario/{username}','ApiController@getUserByUsername');

@@ -54,10 +54,11 @@ class Bill extends Model {
     }
 
     public function isInAlert() {
-        if($this->alert != null){
+        if($this->alertDate != null){
             $currentDate = Carbon\Carbon::now();
-            return Carbon\Carbon::parse($this->alert) > $currentDate;
+            return Carbon\Carbon::parse($this->alertDate) < $currentDate;
         }
+        
         return false;
     }
 
@@ -170,5 +171,28 @@ class Bill extends Model {
     public static function makeSuggestionToReceiver($bills, $userId) {
         return Bill::makeSuggestion($bills, $userId, true);
     }
-
+    
+    public static function filterSearch($myId, $billName, $billDate, $billGroupId, $billStatus) {
+        $bills = Bill::select('bills.*')->join('billsMembers as BM', 'BM.billId','=','bills.id')
+                ->where('BM.userId','=',$myId);
+        if ($billName != null) {
+            $bills = $bills->where('name', $billName);
+        }
+        if ($billDate != null) {
+            $bills = $bills->where('created_at', '>=', $billDate);
+        }
+        if ($billGroupId != null){
+            $bills = $bills->where('groupId', '=', $billGroupId);
+        }
+        if ($billStatus != null && in_array($billStatus, ["inAlert", "finished", "pending"])) {
+            if($billStatus == "inAlert"){
+                $bills = $bills->where('alertDate', '<', Carbon\Carbon::now());
+            } else if($billStatus == "finished"){
+                $bills = $bills->whereColumn("BM.paid", "=", "BM.value");
+            } else if($billStatus == "pending"){
+                $bills = $bills->whereColumn("BM.paid", "!=", "BM.value");
+            }
+        }
+        return $bills->get();
+    }
 }

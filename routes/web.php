@@ -62,7 +62,7 @@ Route::post('/usuario/requerimentos/{id}/aceitar', 'RequerimentController@accept
 
 
 //historico
-Route::get('/usuario/historico', "HistoryController@index");
+Route::get('/usuario/despesas', "BillController@index");
 
 //api
 Route::get('/api/usuario/{username}','ApiController@getUserByUsername');

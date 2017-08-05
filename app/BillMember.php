@@ -35,6 +35,11 @@ class BillMember extends Model
         return 0;
     }
     
+    public function isSettled(){
+        return $this->value == $this->paid;
+    }
+
+
     public function getPendingValue(){
         if($this->needToPay()){
             return $this->valueToPay();

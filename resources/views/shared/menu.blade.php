@@ -23,10 +23,10 @@
             <div class="menu_section">
                 <h3>General</h3>
                 <ul class="nav side-menu">
-                    <li><a href='{{action("GeneralController@index")}}'><i class="fa fa-home"></i> Inicio</a></li>
-                    <li><a href='{{action("HistoryController@index")}}'><i class="fa fa-home"></i> Historico</a></li>
+                    <li><a href='{{action("GeneralController@index")}}'><i class="fa fa-home"></i> Inicio</a></li>                    
                     <li><a><i class="fa fa-edit"></i> Despesas <span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
+                            <li><a href='{{action("BillController@index")}}'>Minhas Despesas</a></li>
                             <li><a href='{{action("BillController@create")}}'>Cadastrar Despesas</a></li>
                             <li><a href='{{action("BillController@pendingBills")}}'>Despesas Pendentes</a></li>                                            
                         </ul>

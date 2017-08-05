@@ -30,6 +30,12 @@ class Requeriment extends Model {
         return Requeriment::where('destinationUserId', $destinationUserId)
                 ->where('status','waiting')->get();
     }
+    
+    public static function getTotalWaitingRequirements($destinationUserId){
+        return Requeriment::where('destinationUserId', $destinationUserId)
+                ->where('status','waiting')->count();
+    }
+    
     public static function filterSearch($myId, $userId, $status, $sentOrReceived, $date) {
         $requirements = Requeriment::select('requirements.*');
         if ($sentOrReceived != null && $sentOrReceived == 'sent') {

@@ -120,13 +120,13 @@ class Bill extends Model {
         return $pendingValues;
     }
 
-    public static function getAlertBills($userId) {
+    public static function getTotalAlertBills($userId) {
         return Bill::select('bills.*')
                         ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
                         ->whereColumn("BM.paid",'!=','BM.value')
                         ->where('BM.userId', '=', $userId)
                         ->where('bills.alertDate', '<', Carbon\Carbon::now())
-                        ->get();
+                        ->count();
     }
 
     private static function makeSuggestion($bills, $userId, $receiverSugestion) {

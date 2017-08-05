@@ -23,11 +23,10 @@ class User extends Model implements Authenticatable{
     }
     
     public static function getGeneralInformation(User $user){
-        //$user->myGroups = User::getGroups($user->id);
-        $alertBills = Bill::getAlertBills($user->id);
         return (object) array(
             'user' => $user,
-            'alertBills' => $alertBills
+            'totalAlertBills' => Bill::getTotalAlertBills($user->id),
+            'totalWaitingRequirements' => Requeriment::getTotalWaitingRequirements($user->id)
         );
     }
     

@@ -96,23 +96,34 @@
 
                 <li role="presentation" class="dropdown">
                     <a href="javascript:;" class="dropdown-toggle info-number" data-toggle="dropdown" aria-expanded="false">
-                        &nbsp;<i class="fa fa-envelope-o"></i>
-                        <span class="badge bg-green">6</span>
+                        &nbsp;<i class="fa fa-warning"></i>
+                        @if($generalInformation->totalWaitingRequirements > 0
+                        && $generalInformation->totalAlertBills > 0)
+                        <span class="badge bg-orange">2</span>
+                        @elseif($generalInformation->totalWaitingRequirements > 0
+                        || $generalInformation->totalAlertBills > 0)
+                        <span class="badge bg-orange">1</span>
+                        @endif
                     </a>
+                    @if($generalInformation->totalWaitingRequirements > 0
+                    || $generalInformation->totalAlertBills > 0)
                     <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
+                        @if($generalInformation->totalAlertBills > 0)
                         <li>
                             <a>
-                                <span class="image"><img src="images/img.jpg" alt="Profile Image" /></span>
-                                <span>
-                                    <span>John Smith</span>
-                                    <span class="time">3 mins ago</span>
-                                </span>
-                                <span class="message">
-                                    Film festivals used to be do-or-die moments for movie makers. They were where...
-                                </span>
+                                Existem {{$generalInformation->totalAlertBills}} despesas em alerta. 
                             </a>
                         </li>
+                        @endif
+                        @if($generalInformation->totalWaitingRequirements > 0)
+                        <li>
+                            <a>
+                                Existem {{$generalInformation->totalWaitingRequirements}} requerimentos em estado de . 
+                            </a>
+                        </li>
+                        @endif
                     </ul>
+                    @endif
                 </li>
             </ul>
         </nav>

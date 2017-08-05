@@ -1,6 +1,5 @@
 @extends('shared.layout')
 @section('content')
-{{dump($payments)}}
 <div class="page-title">
     <div class="title_left">
         <h3>Pagamentos</h3>

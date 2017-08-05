@@ -92,13 +92,24 @@ class PaymentController extends Controller {
         return back()->with('feedback', $feedback);
     }
 
-    public function show($id){
+    public function show($id) {
+        $user = Auth::user();
+        $payment = Payment::find($id);
+        return view('paymentDetail')->with('generalInformation', User::getGeneralInformation($user))
+                        ->with('payment', $payment);
     }
+
     public function rollback($id) {
+        $user = Auth::user();
         $generalPayment = Payment::Find($id);
+        $feedback = new Feedback();
         if ($generalPayment != null) {
             $generalPayment->rollback();
+            $feedback->success = "Pagamento revertido com sucesso";
+            return redirect(action("PaymentController@index"))->with('generalInformation', User::getGeneralInformation($user))
+                            ->with('feedback', $feedback);
         }
+        return redirect(action("PaymentController@index"));
     }
 
 }

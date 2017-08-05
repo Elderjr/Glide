@@ -22,6 +22,7 @@ class CreatePaymentsTable extends Migration
             $table->foreign('receiverUserId')->references('id')->on('users')
                     ->onDelete('cascade')->onUpdate('cascade');
             $table->float('value', 8, 2);
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }

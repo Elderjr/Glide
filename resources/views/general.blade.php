@@ -76,7 +76,7 @@
         </div>
         <div class="clearfix"></div>
     </div>
-    @if(count($pageInfo->user->receiveRequeriments) > 0)
+    @if(count($pageInfo->waitingRequirements) > 0)
     <div class="row">
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
@@ -86,7 +86,7 @@
                 </div>
                 <div class="x_content">
                     <?php $count = 0; ?>
-                    @foreach($pageInfo->user->receiveRequeriments as $requeriment)
+                    @foreach($pageInfo->waitingRequirements as $requeriment)
                     @if($count % 3 == 0)
                     <div class="row">
                         @endif
@@ -103,7 +103,7 @@
                                     Descriçao: {{$requeriment->description}}
                                     <div class="divider"></div>
                                     <div style="text-align: right;">
-                                        <a href="#" class='btn btn-danger btn-sm'>Cancelar</a>
+                                        <a href="{{action("RequerimentController@reject", $requeriment->id)}}" class='btn btn-danger btn-sm'>Cancelar</a>
                                         <a href="{{action("RequerimentController@showAccept", $requeriment->id)}}" class="btn btn-success btn-sm">Confirmar</a>
                                     </div>
                                 </div>

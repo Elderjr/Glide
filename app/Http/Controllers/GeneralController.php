@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Bill;
+use App\Requeriment;
 class GeneralController extends Controller
 {
     
@@ -18,7 +19,8 @@ class GeneralController extends Controller
             $pageInfo = (object) array(
                 'billsInDebt' => $billsInDebt,
                 'pendingValues' => Bill::getPendingValues($billsInDebt, $user->id),
-                'user' => $user
+                'user' => $user,
+                'waitingRequirements' => Requeriment::getWaitingRequirements($user->id)
             );
             return view('general')->with('generalInformation', $generalInformation)
                     ->with('pageInfo', $pageInfo);

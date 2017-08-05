@@ -23,13 +23,13 @@ class RequerimentController extends Controller {
                 } else {
                     $feedback->error = "Usuario " . $request->username . " nao foi encontrado";
                     return view('requirements')->with('generalInformation', $generalInformation)
-                            ->with('feedback', $feedback);
+                                    ->with('feedback', $feedback);
                 }
             } else {
                 $requirements = Requeriment::filterSearch($user->id, null, $request->status, $request->sentOrReceived, $request->date);
             }
             return view('requirements')->with('generalInformation', $generalInformation)
-                    ->with('requirements', $requirements);
+                            ->with('requirements', $requirements);
         } else if ($user != null) {
             return view('requirements')->with('generalInformation', $generalInformation);
         }
@@ -73,11 +73,11 @@ class RequerimentController extends Controller {
 
     public function show($id) {
         $user = Auth::user();
-        if($user != null){
+        if ($user != null) {
             $req = Requeriment::find($id);
             $generalInformation = User::getGeneralInformation($user);
             return view('requirement')->with('generalInformation', $generalInformation)
-                    ->with('requirement', $req);
+                            ->with('requirement', $req);
         }
         return redirect('/');
     }
@@ -110,7 +110,7 @@ class RequerimentController extends Controller {
                     'bills' => $simpleBills
         );
         return view('acceptRequeriment')->with('generalInformation', User::getGeneralInformation($user))
-                ->with('pageInfo', $pageInfo);
+                        ->with('pageInfo', $pageInfo);
     }
 
     public function accept(Request $request) {
@@ -137,7 +137,18 @@ class RequerimentController extends Controller {
     }
 
     public function reject($id) {
-        Requeriment::Find($id)->updateToReject();
+        $user = Auth::user();
+        $feedback = new Feedback();
+        if ($user != null) {
+            $requirement = Requeriment::Find($id);
+            if ($requirement != null) {
+                $requirement->updateToReject();
+                $feedback->success = "Requerimento de ".$requirement->sourceUser->toString()." rejeitado com sucesso";
+            }else{
+                $feedback->error = "Requerimento nao encontrado";
+            }
+            return back()->with('feedback', $feedback);
+        }
     }
 
     public function store(Request $request) {

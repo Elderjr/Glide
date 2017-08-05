@@ -16,6 +16,20 @@ class Requeriment extends Model {
         return $this->hasOne('App\User', 'id', 'destinationUserId');
     }
 
+    public function updateToReject(){
+        $this->status = "rejected";
+        $this->save();
+    }
+    
+    public function updateToAccept(){
+        $this->status = "accepted";
+        $this->save();
+    }
+    
+    public static function getWaitingRequirements($destinationUserId){
+        return Requeriment::where('destinationUserId', $destinationUserId)
+                ->where('status','waiting')->get();
+    }
     public static function filterSearch($myId, $userId, $status, $sentOrReceived, $date) {
         $requirements = Requeriment::select('requirements.*');
         if ($sentOrReceived != null && $sentOrReceived == 'sent') {

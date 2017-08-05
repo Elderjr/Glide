@@ -59,6 +59,7 @@ Route::post('/usuario/requerimentos/cadastrar', 'RequerimentController@store');
 Route::get('/usuario/requerimentos/{id}', 'RequerimentController@show');
 Route::get('/usuario/requerimentos/{id}/aceitar', 'RequerimentController@showAccept');
 Route::post('/usuario/requerimentos/{id}/aceitar', 'RequerimentController@accept');
+Route::get('/usuario/requerimentos/{id}/rejeitar', 'RequerimentController@reject');
 
 
 //historico

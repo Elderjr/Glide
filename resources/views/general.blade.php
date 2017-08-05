@@ -5,24 +5,24 @@
     <div class="row">
         <div class="x_content">
             <div class='col-md-3 col-sm-2'>
-                <a class="btn btn-app" style="display: block;">
+                <a href="{{action("BillController@pendingBills")}}" class="btn btn-app" style="display: block;">
                     <span class="badge bg-orange">{{count($pageInfo->billsInDebt)}}</span>
                     <i class="fa fa-edit"></i> Despesas Pendentes
                 </a>
             </div>
             <div class='col-md-3 col-sm-2'>
-                <a class="btn btn-app" style="display: block;">
+                <a href="{{action("BillController@create")}}" class="btn btn-app" style="display: block;">
                     <i class="fa fa-edit"></i> Cadastrar Despesa
                 </a>
             </div>
             <div class='col-md-3 col-sm-2'>
-                <a class="btn btn-app" style="display: block;">
+                <a href="{{action("BillController@index")}}" class="btn btn-app" style="display: block;">
                     <i class="fa fa-edit"></i> Minhas Despesas
                 </a>
             </div>
             <div class='col-md-3 col-sm-2'>
-                <a class="btn btn-app" style="display: block;">
-                    <i class="fa fa-edit"></i> Historico
+                <a href="{{action("GroupController@create")}}" class="btn btn-app" style="display: block;">
+                    <i class="fa fa-edit"></i> Cadastrar Grupo
                 </a>
             </div>
         </div>

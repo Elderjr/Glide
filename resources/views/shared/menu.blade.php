@@ -118,7 +118,7 @@
                         @if($generalInformation->totalWaitingRequirements > 0)
                         <li>
                             <a>
-                                Existem {{$generalInformation->totalWaitingRequirements}} requerimentos em estado de . 
+                                Existem {{$generalInformation->totalWaitingRequirements}} requerimentos em estado de espera
                             </a>
                         </li>
                         @endif

@@ -1,87 +1,176 @@
-<!DOCTYPE html>
-<!--
-To change this license header, choose License Headers in Project Properties.
-To change this template file, choose Tools | Templates
-and open the template in the editor.
--->
-<html>
-    <head>
-        <title>Glide HTML</title>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <script src="{{URL::asset('js/angular.min.js')}}"></script>
-        <script src="{{URL::asset('js/decimal.min.js')}}"></script>
-        <script>
+@extends('shared.layout')
+
+@section('jsImport')
+<script src="{{URL::asset('js/angular.min.js')}}"></script>
+<script src="{{URL::asset('js/decimal.min.js')}}"></script>
+<script>
 var app = angular.module('myApp', [], function ($interpolateProvider) {
-    $interpolateProvider.startSymbol('<%');
-    $interpolateProvider.endSymbol('%>');
+    $interpolateProvider.startSymbol('@{');
+    $interpolateProvider.endSymbol('}');
 });
-app.controller('myCtrl', ['$scope', function ($scope, $http) {
-        $scope.bill = JSON.parse('{!!$billJson!!}');
-    }]);
-        </script>
-    </head>
-    <body>
-        <div ng-app="myApp" ng-controller="myCtrl">
-            <h3>Despesa</h3>
-            Nome: <input type="text" ng-model="bill.name" />
-            Data: <input type="date" value="<%bill.date%>" />
-            Alerta: <input type="date" value="<%bill.alertDate%>"/>
-            Grupo:<% bill.group.name%>
-            <h4>Usuarios da Despesa</h4>
-            <ul>
-                <li ng-repeat="member in bill.members">
-                    <div ng-if="member.paid > member.value">
-                        <% member.user.name %> (<% member.user.username %>) precisa receber: <% member.paid - member.value %>
-                    </div>
-                    <div ng-if="member.paid < member.value">
-                        <% member.user.name %> (<% member.user.username %>) precisa pagar: <% member.value - member.paid %>
-                    </div>
-                    <div ng-if="member.paid == member.value">
-                        <% member.user.name %> (<% member.user.username %>) esta quite
-                    </div>
-                </li>
-            </ul>
-            Descriçao:<br/>
-            <textarea rows="5" cols="100" ng-model="bill.description">
-                    
-            </textarea>
-            <hr>
-            <h3>Contribuintes</h3>
-            <table border="1">
-                <thead>
-                <th>Contribuidor</th>
-                <th>Valor</th>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="member in bill.members" ng-if="member.contribution > 0">
-                        <td> <%member.user.name%> (<%member.user.username%>) </td>
-                        <td> R$ <%member.contribution%> </td>
-                    </tr>
-                </tbody>
-            </table>
-            <hr>
-            <h3>Items</h3>
-            <table border="1">
-                <thead>
-                <th>Item</th>
-                <th>Valor</th>
-                <th>Distribuiçao</th>
-                </thead>
-                <tbody>
-                    <tr ng-repeat="item in bill.items">
-                        <td> <% item.name %></td>
-                        <td> <% item.price %> x <% item.qt %> (<%item.price * item.qt%>)</td>
-                        <td>
-                            <ul>
-                                <li ng-repeat="member in item.members">
-                                    <%member.user.name%> (<%member.user.username%>): <% member.distribution %>
-                                </li>
-                            </ul>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+app.controller('myCtrl', ['$scope', function ($scope) {
+        $scope.bill = JSON.parse('{!!json_encode($bill)!!}');
+    }]);</script>
+@stop
+
+@section('content')
+<div class="" ng-app="myApp" ng-controller="myCtrl">
+    <div class="page-title">
+        <div class="title_left">
+            <h3>Detalhes da Despesa</h3>
         </div>
-    </body>
-</html>
+    </div>
+    <div class="clearfix"></div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Informaçoes de Pagamento</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="form-vertical form-label-left">
+                        <ul>
+                            <li ng-repeat="member in bill.members">
+                                <div ng-if="member.paid > member.value">
+                                    @{member.user.name} (@{member.user.username}) precisa receber R$ @{member.paid - member.value}
+                                </div>
+                                <div ng-if="member.paid < member.value">
+                                    @{member.user.name} (@{member.user.username}) precisa pagar R$ @{member.value - member.paid}
+                                </div>
+                                <div ng-if="member.paid == member.value">
+                                    @{member.user.name} (@{member.user.username}) esta quite
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Informaçoes Gerais</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="form-vertical form-label-left">
+                        <div class="row">
+                            <div class="col-md-5 col-sm-4 col-xs-4 form-group has-feedback">
+                                <div class="form-group">
+                                    <label>Nome da despesa</label>
+                                    <span class="form-control">@{bill.name}</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2 col-sm-3 col-xs-3">
+                                <div class="form-group">
+                                    <label>Data</label>
+                                    <span class="form-control">@{bill.date}</span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2 col-sm-3 col-xs-3">
+                                <div class="form-group">
+                                    <label>Data de Alerta</label>
+                                    <span class="form-control">@{bill.alertDate}</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-3 col-xs-3">
+                                <div class="form-group">
+                                    <label>Grupo</label>
+                                    <span class="form-control">@{bill.group.name}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <h5>Informaçao adicional</h5>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
+                                @{bill.description}
+                            </p>    
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Itens</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="form-vertical form-label-left">
+                        <table class='table table-striped'>
+                            <thead>
+                            <th>Item</th>
+                            <th>Valor</th>
+                            <th>Distribuiçao</th>
+                            </thead>
+                            <tbody>
+                                <tr ng-repeat="item in bill.items">
+                                    <td>
+                                        @{item.name}
+                                    </td>
+                                    <td>
+                                        @{item.price} x @{item.qt} (@{item.price * item.qt})
+                                    </td>
+                                    <td>
+                                        <ul>
+                                            <li ng-repeat="member in item.members">
+                                                @{member.user.name} (@{member.user.username}): @{member.distribution}
+                                            </li>
+                                        </ul>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12 col-xs-12">
+            <div class="x_panel">
+                <div class="x_title">
+                    <h2>Contribuintes</h2>
+                    <div class="clearfix"></div>
+                </div>
+                <div class="x_content">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <table class='table table-striped'>
+                                <thead>
+                                <th>Contribuidor</th>
+                                <th>Valor</th>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="member in bill.members" ng-if="member.contribution > 0">
+                                        <td>
+                                            @{member.user.name} (@{member.user.username}) 
+                                        </td>
+                                        <td> 
+                                            @{member.contribution}
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@stop

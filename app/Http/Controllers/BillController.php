@@ -34,76 +34,39 @@ class BillController extends Controller {
     }
 
     public function create() {
+        $user = Auth::user();
         $myGroupsJson = Group::getGroupsByUserId(Auth::user()->id)->toJson();
-        return view('cadastroDespesa')->with('myGroupsJson', $myGroupsJson);
+        return view('cadastroDespesa')->with('myGroupsJson', $myGroupsJson)
+                        ->with('generalInformation', User::getGeneralInformation($user));
     }
 
     public function store(Request $request) {
         $object = json_decode($request->get("billJson"));
-        $bill = new Bill();
-        $billMembers = [];
-        $items = [];
-        $itemMembers = [];
-
-        echo dump($object);
-
-        $bill->name = $object->name;
-        if (isset($object->date) && $object->date != "") {
-            $bill->date = new DateTime($object->date);
-        }
-        if (isset($object->alertDate) && $object->alertDate != "") {
-            $bill->alertDate = new DateTime($object->alertDate);
-        }
-        if (isset($object->description)) {
-            $bill->description = $object->description;
-        }
-        $bill->groupId = $object->group->id;
-        for ($i = 0; $i < count($object->items); $i++) {
-            $item = $object->items[$i];
-            $items[$i] = new Item();
-            $items[$i]->name = $item->name;
-            $items[$i]->qt = $item->qt;
-            $items[$i]->price = $item->price;
-            $bill->total += ($item->qt * $item->price);
-            $itemMembers[$i] = [];
-            for ($j = 0; $j < count($item->members); $j++) {
-                $member = $item->members[$j];
-                if (!isset($billMembers[$member->user->id])) {
-                    $billMembers[$member->user->id] = new BillMember();
-                    $billMembers[$member->user->id]->userId = $member->user->id;
-                    $billMembers[$member->user->id]->value = 0.0;
-                    $billMembers[$member->user->id]->paid = 0.0;
-                    $billMembers[$member->user->id]->contribution = 0.0;
-                }
-                $billMembers[$member->user->id]->value += $member->distribution;
-                $itemMembers[$i][$j] = new ItemMember();
-                $itemMembers[$i][$j]->userId = $member->user->id;
-                $itemMembers[$i][$j]->distribution = $member->distribution;
-            }
-        }
-        foreach ($object->members as $contributor) {
-            if (!isset($billMembers[$contributor->user->id])) {
-                $billMembers[$contributor->user->id] = new BillMember();
-                $billMembers[$contributor->user->id]->userId = $contributor->user->id;
-                $billMembers[$contributor->user->id]->value = 0.0;
-                $billMembers[$contributor->user->id]->paid = $contributor->contribution;
-                $billMembers[$contributor->user->id]->contribution = $contributor->contribution;
-            }
-            $billMembers[$contributor->user->id]->contribution += $contributor->contribution;
-            $billMembers[$contributor->user->id]->paid += $contributor->contribution;
-        }
-        $bill->save();
-        $bill->members()->saveMany($billMembers);
-        $bill->items()->saveMany($items);
-        for ($i = 0; $i < count($items); $i++) {
-            $items[$i]->members()->saveMany($itemMembers[$i]);
-        }
-        return "deu bom";
+        $object->id = -1;
+        $bill = Bill::registerBillFromObjectJson($object);
+        return redirect(action("BillController@show", $bill->id));
     }
 
     public function show($id) {
+        $user = Auth::user();
         $bill = Bill::getCompleteBillById($id);
-        return view('billDetails')->with('billJson', $bill->toJson());
+        return view('billDetails')->with('bill', $bill)
+                        ->with('generalInformation', User::getGeneralInformation($user));
+    }
+
+    public function edit($id) {
+        $user = Auth::user();
+        $bill = Bill::getCompleteBillById($id);
+        $myGroupsJson = Group::getGroupsByUserId(Auth::user()->id)->toJson();
+        return view('editBill')->with('myGroupsJson', $myGroupsJson)
+                        ->with('generalInformation', User::getGeneralInformation($user))
+                        ->with('bill', $bill);
+    }
+
+    public function update(Request $request) {
+        $object = json_decode($request->get("billJson"));
+        $bill = Bill::registerBillFromObjectJson($object);
+        return redirect(action("BillController@show", $bill->id));
     }
 
     public function pendingBills() {

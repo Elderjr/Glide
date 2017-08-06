@@ -3,7 +3,7 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\DB;
+use DateTime;
 use Carbon;
 
 class Bill extends Model {
@@ -54,11 +54,11 @@ class Bill extends Model {
     }
 
     public function isInAlert() {
-        if($this->alertDate != null){
+        if ($this->alertDate != null) {
             $currentDate = Carbon\Carbon::now();
             return Carbon\Carbon::parse($this->alertDate) < $currentDate;
         }
-        
+
         return false;
     }
 
@@ -83,8 +83,8 @@ class Bill extends Model {
         $bills = Bill::select('bills.*')
                 ->join('billsMembers as RU', 'RU.billId', '=', 'bills.id')
                 ->join('billsMembers as PU', 'PU.billId', '=', 'bills.id')
-                ->whereColumn('RU.paid' ,'>','RU.value')
-                ->whereColumn('PU.paid','<','PU.value')
+                ->whereColumn('RU.paid', '>', 'RU.value')
+                ->whereColumn('PU.paid', '<', 'PU.value')
                 ->where('RU.userId', '=', $receiverId)
                 ->where('PU.userId', '=', $paidId)
                 ->get();
@@ -97,7 +97,7 @@ class Bill extends Model {
     public static function getPendingBills($userId) {
         return Bill::select('bills.*')
                         ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
-                        ->whereColumn('BM.paid','!=','BM.value')
+                        ->whereColumn('BM.paid', '!=', 'BM.value')
                         ->where('BM.userId', '=', $userId)
                         ->get();
     }
@@ -123,7 +123,7 @@ class Bill extends Model {
     public static function getTotalAlertBills($userId) {
         return Bill::select('bills.*')
                         ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
-                        ->whereColumn("BM.paid",'!=','BM.value')
+                        ->whereColumn("BM.paid", '!=', 'BM.value')
                         ->where('BM.userId', '=', $userId)
                         ->where('bills.alertDate', '<', Carbon\Carbon::now())
                         ->count();
@@ -171,28 +171,90 @@ class Bill extends Model {
     public static function makeSuggestionToReceiver($bills, $userId) {
         return Bill::makeSuggestion($bills, $userId, true);
     }
-    
+
     public static function filterSearch($myId, $billName, $billDate, $billGroupId, $billStatus) {
-        $bills = Bill::select('bills.*')->join('billsMembers as BM', 'BM.billId','=','bills.id')
-                ->where('BM.userId','=',$myId);
+        $bills = Bill::select('bills.*')->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
+                ->where('BM.userId', '=', $myId);
         if ($billName != null) {
             $bills = $bills->where('name', $billName);
         }
         if ($billDate != null) {
             $bills = $bills->where('created_at', '>=', $billDate);
         }
-        if ($billGroupId != null){
+        if ($billGroupId != null) {
             $bills = $bills->where('groupId', '=', $billGroupId);
         }
         if ($billStatus != null && in_array($billStatus, ["inAlert", "finished", "pending"])) {
-            if($billStatus == "inAlert"){
+            if ($billStatus == "inAlert") {
                 $bills = $bills->where('alertDate', '<', Carbon\Carbon::now());
-            } else if($billStatus == "finished"){
+            } else if ($billStatus == "finished") {
                 $bills = $bills->whereColumn("BM.paid", "=", "BM.value");
-            } else if($billStatus == "pending"){
+            } else if ($billStatus == "pending") {
                 $bills = $bills->whereColumn("BM.paid", "!=", "BM.value");
             }
         }
         return $bills->get();
     }
+
+    private static function register($input) {
+        if ($input->id != -1) {
+            $bill = Bill::find($input->id);
+        } else {
+            $bill = new Bill();
+        }
+        $bill->name = $input->name;
+        if (isset($input->date) && $input->date != "") {
+            $bill->date = new DateTime($input->date);
+        }
+        if (isset($input->alertDate) && $input->alertDate != "") {
+            $bill->alertDate = new DateTime($input->alertDate);
+        }
+        if (isset($input->description)) {
+            $bill->description = $input->description;
+        }
+        $bill->groupId = $input->group->id;
+        $bill->total = 0.0;
+        $bill->save();
+        return $bill;
+    }
+
+    private static function deleteRelationships($billMembersToNotDelete, $itemsToNotDelete, $bill) {
+        foreach ($bill->members as $member) {
+            if (!in_array($member->id, $billMembersToNotDelete)) {
+                $member->delete();
+            }
+        }
+        foreach ($bill->items as $item) {
+            if (!in_array($item->id, $itemsToNotDelete)) {
+                $item->delete();
+            }
+        }
+    }
+
+    public static function registerBillFromObjectJson($input) {        
+        $itemsToNotDelete = [];
+        $billMembersToNotDelete = [];
+        $bill = Bill::register($input);
+        foreach ($input->members as $member) {
+            BillMember::registerBillMemberFromObjectJson($member, $bill);
+            if ($member->id != -1) {
+                array_push($billMembersToNotDelete, $member->id);
+            }
+        }
+        foreach ($input->items as $item) {
+            Item::registerItemFromObjectJson($item, $bill);
+            echo $item->name." registered";
+            $bill->total += $item->price * $item->qt;
+            if ($item->id != -1) {
+                array_push($itemsToNotDelete, $item->id);
+            }
+        }
+        $bill->save();
+        if($input->id != -1){
+            echo "chamando deletar";
+            Bill::deleteRelationships($billMembersToNotDelete, $itemsToNotDelete, $bill);
+        }
+        return $bill;
+    }
+
 }

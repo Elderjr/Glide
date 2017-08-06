@@ -41,7 +41,9 @@ Route::post('/usuario/grupos/{groupId}/edit', 'GroupController@edit');
 Route::get('/usuario/despesas/cadastrar', 'BillController@create');
 Route::post('/usuario/despesas/cadastrar', 'BillController@store');
 Route::get('/usuario/despesas/pendentes', 'BillController@pendingBills');
-Route::get('/usuario/despesas/{id}', 'BillController@show');
+Route::get('/usuario/despesas/detalhe/{id}', 'BillController@show');
+Route::get('/usuario/despesas/editar/{id}', 'BillController@edit');
+Route::post('/usuario/despesas/editar', 'BillController@update');
 
 
 //pagamentos

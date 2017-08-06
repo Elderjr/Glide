@@ -22,16 +22,16 @@ class RequerimentController extends Controller {
                     $requirements = Requeriment::filterSearch($user->id, $filterUser->id, $request->status, $request->sentOrReceived, $request->date);
                 } else {
                     $feedback->error = "Usuario " . $request->username . " nao foi encontrado";
-                    return view('requirements')->with('generalInformation', $generalInformation)
+                    return view('requirement.requirements')->with('generalInformation', $generalInformation)
                                     ->with('feedback', $feedback);
                 }
             } else {
                 $requirements = Requeriment::filterSearch($user->id, null, $request->status, $request->sentOrReceived, $request->date);
             }
-            return view('requirements')->with('generalInformation', $generalInformation)
+            return view('requirement.requirements')->with('generalInformation', $generalInformation)
                             ->with('requirements', $requirements);
         } else if ($user != null) {
-            return view('requirements')->with('generalInformation', $generalInformation);
+            return view('requirement.requirements')->with('generalInformation', $generalInformation);
         }
         return redirect('/');
     }
@@ -40,7 +40,7 @@ class RequerimentController extends Controller {
         $user = Auth::user();
         $generalInformation = User::getGeneralInformation($user);
         if ($request->get("username") == null) {
-            return view('registerRequirement')->with('generalInformation', $generalInformation);
+            return view('requirement.registerRequirement')->with('generalInformation', $generalInformation);
         } else {
             $destinationUser = User::where('username', $request->get("username"))->first();
             if ($destinationUser != null) {
@@ -62,11 +62,11 @@ class RequerimentController extends Controller {
                             'destinationUser' => $destinationUser,
                             'total' => $total
                 );
-                return view('registerRequirement')->with('generalInformation', $generalInformation)->with('pageInfo', $pageInfo);
+                return view('requirement.registerRequirement')->with('generalInformation', $generalInformation)->with('pageInfo', $pageInfo);
             } else {
                 $feedback = new Feedback();
                 $feedback->alert = "Usuário não encontrado";
-                return view('registerRequirement')->with('generalInformation', $generalInformation)->with('feedback', $feedback);
+                return view('requirement.registerRequirement')->with('generalInformation', $generalInformation)->with('feedback', $feedback);
             }
         }
     }
@@ -76,7 +76,7 @@ class RequerimentController extends Controller {
         if ($user != null) {
             $req = Requeriment::find($id);
             $generalInformation = User::getGeneralInformation($user);
-            return view('requirement')->with('generalInformation', $generalInformation)
+            return view('requirement.requirementDetail')->with('generalInformation', $generalInformation)
                             ->with('requirement', $req);
         }
         return redirect('/');
@@ -109,7 +109,7 @@ class RequerimentController extends Controller {
                     'requirement' => $requeriment,
                     'bills' => $simpleBills
         );
-        return view('acceptRequeriment')->with('generalInformation', User::getGeneralInformation($user))
+        return view('requirement.acceptRequeriment')->with('generalInformation', User::getGeneralInformation($user))
                         ->with('pageInfo', $pageInfo);
     }
 

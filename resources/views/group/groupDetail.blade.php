@@ -15,23 +15,39 @@
             $scope.pageInfo.group.members[i].turnAdmin = false;
             $scope.pageInfo.group.members[i].add = false;
         }
+        
         $scope.searchUser = function () {
             if ($scope.username != ""){
                 $scope.loadMsg = "Procurando usuario...";
-                $http.get("http://localhost:8000/api/usuario/" + $scope.username).then(addIntegrant);
+                $http.get("{{URL::asset("api/usuario")}}/" + $scope.username).then(addIntegrant);
             }
         }
+        
+        function existMember(userId){
+            for(var i = 0; i < $scope.pageInfo.group.members.length; i++){
+                if($scope.pageInfo.group.members[i].user.id == userId){
+                    return true;
+                }
+            }
+            return false;
+        }
+    
+    
         function addIntegrant(response) {
             if (response.data != "null") {
-                var member = {
-                    user: response.data,
-                    turnAdmin: false,
-                    remove: false,
-                    add: true
-                };
-                $scope.pageInfo.group.members.push(member);
-                $scope.loadMsg = "";
-                $scope.username = "";
+                if(!existMember(response.data.id)){
+                    var member = {
+                        user: response.data,
+                        turnAdmin: false,
+                        remove: false,
+                        add: true
+                    };
+                    $scope.pageInfo.group.members.push(member);
+                    $scope.username = "";
+                    $scope.loadMsg = "";
+                }else{
+                    $scope.loadMsg = "Usuario ja registrado";
+                }
             }else {
                 $scope.loadMsg = "Usuario nao encontrado";
             }
@@ -40,41 +56,48 @@
 </script>
 @stop
 @section('content')
+<div class="page-title">
+    <div class="title_left">
+        <h3>Detalhes do Grupo</h3>
+    </div>
+</div>
 <div class="row" ng-app="myApp" ng-controller="myCtrl">
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2>Detalhes do grupo @{pageInfo.group.name}</h2>
+                <h2>@{pageInfo.group.name}</h2>
                 <div class="clearfix"></div>
             </div>
             <div class="x_content" ng-app="myApp" ng-controller="myCtrl">
                 <br />
-                <form class="form-horizontal form-label-left" action="{{action("GroupController@edit", $pageInfo->group->id)}}" method="post">
+                <form class="form-vertical form-label-left" action="{{action("GroupController@edit", $pageInfo->group->id)}}" method="post">
                     {{csrf_field()}}
                     <input type="hidden" name="groupJson" value="@{pageInfo.group}" />
-                    <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12" for="groupName"> Nome do Grupo <span class="required">*</span>
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input type="text" id="groupName" required="required" class="form-control col-md-7 col-xs-12" ng-model="pageInfo.group.name" required>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <label class="control-label"> Nome do Grupo <span class="required">*</span></label>
+                            <input type="text" required="required" class="form-control" ng-model="pageInfo.group.name" required>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label class="control-label col-md-3 col-sm-3 col-xs-12">Membro
-                        </label>
-                        <div class="col-md-6 col-sm-6 col-xs-12">
-                            <input class="form-control col-md-7 col-xs-12" type="text" ng-model="username">
+                    <br/>
+                    <div class="row">
+                        <div class="col-md-12">
+                            <label class="control-label">Membro</label>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <input class="form-control col-md-7 col-xs-12" type="text" ng-model="username">
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-primary btn-block" ng-click="searchUser()">Adicionar</button>
+                                </div>
+                                <div class="col-md-2">
+                                    @{ loadMsg }
+                                </div>
+                            </div>
                         </div>
-                        <div class="col-md-3">
-                            <button type="button" class="btn btn-primary" ng-click="searchUser()">Adicionar</button>
-                        </div>
-
-                    </div>
-                    <div style="text-align: center;">
-                        @{ loadMsg }
                     </div>
                     <div class='row'>
-                        <div class="col-md-6 col-md-offset-3">
+                        <div class="col-md-6">
                             <table class="table">
                                 <thead>
                                     <th>#</th>
@@ -98,7 +121,7 @@
                     </div>
                     <div class='divider'></div>
                     <div class="form-group">
-                        <div class="col-md-2 col-md-offset-5">
+                        <div class="col-md-3 col-md-offset-9">
                             <button type="submit" class="btn btn-block btn-success">Salvar</button>
                         </div>
                     </div>

@@ -22,7 +22,7 @@ class GeneralController extends Controller {
                         'user' => $user,
                         'waitingRequirements' => Requeriment::getWaitingRequirements($user->id)
             );
-            return view('general')->with('generalInformation', $generalInformation)
+            return view('general.general')->with('generalInformation', $generalInformation)
                             ->with('pageInfo', $pageInfo);
         }
         return redirect('/');
@@ -54,7 +54,7 @@ class GeneralController extends Controller {
                 }
             }
             $generalInformation = User::getGeneralInformation($user);
-            return view('profile')->with('generalInformation', $generalInformation)
+            return view('general.profile')->with('generalInformation', $generalInformation)
                             ->with('feedback', $feedback);
         }
         return redirect('/');

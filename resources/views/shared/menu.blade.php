@@ -88,8 +88,8 @@
                         <span class=" fa fa-angle-down"></span>
                     </a>
                     <ul class="dropdown-menu dropdown-usermenu pull-right">
-                        <li><a href="javascript:;"> Editar Perfil</a></li>
-                        <li><a href="javascript:;">Alterar Senha</a></li>
+                        <li><a href="{{action("GeneralController@profile")}}"> Editar Perfil</a></li>
+                        <li><a href="{{action("GeneralController@profile")}}">Alterar Senha</a></li>
                         <li><a href="{{action("GeneralController@logout")}}"><i class="fa fa-sign-out pull-right"></i> Encerrar sessao</a></li>
                     </ul>
                 </li>

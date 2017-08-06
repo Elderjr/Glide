@@ -6,7 +6,7 @@
     </div>
     <div class="title_right">
         <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-            <a href="" class="btn btn-success btn-block">Registrar Novo Requerimento</a>
+            <a href="{{action("RequerimentController@create")}}" class="btn btn-success btn-block">Registrar Novo Requerimento</a>
         </div>
     </div>
 </div>

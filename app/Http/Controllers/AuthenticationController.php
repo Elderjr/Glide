@@ -16,7 +16,7 @@ class AuthenticationController extends Controller {
             $user->username = $username;
             $user->password = $password;
             Auth::login($user);
-            return redirect('/usuario');
+            return redirect(action("GeneralController@index"));
         }
         return back()->with('login_fail', true);
     }

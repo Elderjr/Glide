@@ -26,7 +26,7 @@ class GroupController extends Controller {
                         'user' => $user,
                         'myGroups' => $myGroups
             );
-            return view('gerenciadorGrupos')->with('generalInformation', $generalInformation)
+            return view('group.groups')->with('generalInformation', $generalInformation)
                             ->with('pageInfo', $pageInfo);
         }
         return redirect('/');
@@ -39,7 +39,7 @@ class GroupController extends Controller {
      */
     public function create() {
         $generalInformation = User::getGeneralInformation(Auth::user());
-        return view('cadastrarGrupo')->with('generalInformation', $generalInformation);
+        return view('group.registerGroup')->with('generalInformation', $generalInformation);
     }
 
     /**
@@ -161,7 +161,7 @@ class GroupController extends Controller {
                             'group' => $group,
                             'isAdmin' => $group->getMemberById($user->id)->admin
                 );
-                return view('grupoDetalhes')->with('generalInformation', $generalInformation)
+                return view('group.groupDetail')->with('generalInformation', $generalInformation)
                                 ->with('pageInfo', $pageInfo);
             }
             $feedback->error = "Você não está cadastrado neste grupo";

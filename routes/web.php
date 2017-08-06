@@ -24,6 +24,7 @@ Route::post('/registrar','UserController@store');
 
 //user
 Route::get('/usuario', 'GeneralController@index');
+Route::get('/usuario/perfil', 'GeneralController@profile');
 
 //grupos
 Route::get('/usuario/grupos', 'GroupController@index');

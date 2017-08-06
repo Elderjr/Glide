@@ -76,4 +76,14 @@ class User extends Model implements Authenticatable{
     public function setRememberToken($value) {
         
     }
+    
+    public static function updateName($userId, $newName) {
+        User::where('id', $userId)
+                ->update(['name' => $newName]);
+    }
+    
+    public static function updateEmail($userId, $newEmail) {
+        User::where('id', $userId)
+                ->update(['email' => $newEmail]);
+    }
 }

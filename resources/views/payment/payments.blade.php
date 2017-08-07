@@ -6,7 +6,7 @@
     </div>
     <div class="title_right">
         <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-            <a href="{{action("PaymentController@create")}}" class="btn btn-success btn-block">Registrar Novo Pagamento</a>
+            <a href="{{action("PaymentController@create")}}" class="btn btn-success btn-block">Registrar Pagamento</a>
         </div>
     </div>
 </div>
@@ -18,25 +18,21 @@
     <div class="x_content">
         <form class="form-vertical form-label-left" action="{{action("PaymentController@index")}}"m ethod="get">
             <div class="row">
-                <div class="col-md-4 col-sm-4 col-xs-4 form-group has-feedback">
+                <div class="col-md-4 col-sm-6 col-xs-12 form-group has-feedback">
                     <div class="form-group">
                         <label>Nome do Usuário</label>
                         <input type="text" class="form-control has-feedback-left" id="username" name="username" placeholder="Nome do usuário">
                         <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
                     </div>
                 </div>
-                <div class="col-md-8">
+                
+                <div class="col-md-8 col-sm-6 col-xs-12">
                     <label>A partir de</label>
                     <div class="row">
-                        <div class="col-md-3 col-sm-3 col-xs-3">
-                            <div class="form-group">
-                                <input type="date" class="form-control" name="date">
-                            </div>
+                        <div class="col-md-5 col-sm-6 col-xs-12">
+                            <input type="date" class="form-control" name="date">
                         </div>
-                        <div class="col-md-2">
-                            <button type="button" class="btn btn-default btn-block">Limpar</button>
-                        </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3 col-md-offset-0 col-sm-6 col-sm-offset-0 col-xs-6 col-xs-offset-6">
                             <button type="submit" class="btn btn-success btn-block">Buscar</button>
                         </div>
                     </div>

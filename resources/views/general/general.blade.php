@@ -22,8 +22,8 @@
         </a>
     </div>
     <div class='col-md-3 col-sm-3 col-xs-6'>
-        <a href="{{action("GroupController@create")}}" class="btn btn-app" style="display: block; margin-left: 0px;">
-            <i class="fa fa-edit"></i> Cadastrar Grupo
+        <a href="{{action("GroupController@index")}}" class="btn btn-app" style="display: block; margin-left: 0px;">
+            <i class="fa fa-edit"></i> Gerenciador de Grupos
         </a>
     </div>
 </div>

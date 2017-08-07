@@ -92,7 +92,7 @@ app.controller("myCtrl", function ($scope) {
                     <br/>
                     <div class="row">
                         <div class="col-md-3 col-md-offset-9">
-                            <input type="submit" value="Registrar Pagamento" class="btn btn-success btn-block" />
+                            <input type="submit" value="Registrar Requerimento" class="btn btn-success btn-block" />
                         </div>
                     </div>
                 </form>

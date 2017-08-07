@@ -74,13 +74,13 @@ app.controller("myCtrl", function ($scope) {
             <div ng-app="myApp" ng-controller="myCtrl">
                 <hr/>
                 @if(count($paymentsJson->bills) == 0)
-                <h4>Não existem dívidas com @{pageInfo.payerUser.name}</h4>
+                <h4>Não existem valores para receber de @{pageInfo.payerUser.name}</h4>
                 @else
                 <h4>Dívidas com @{pageInfo.payerUser.name}</h4>
                 <form action="{{action('PaymentController@store')}}" method="post">
                     <div class="row">
                         <div class="col-md-8">
-                            <label>Distribuir pagamento automaticamente:</label>
+                            <label>Distribuir recebimento automaticamente:</label>
                             <div class="row">
                                 <div class="col-md-3">
                                     <div class="form-group">
@@ -103,7 +103,7 @@ app.controller("myCtrl", function ($scope) {
                             <th>#</th>
                             <th>Despesa</th>
                             <th>Dívida</th>
-                            <th>Pagamento</th>
+                            <th>Recebimento</th>
                             </thead>
                             <tbody>
                                 <tr ng-repeat="bill in pageInfo.bills">
@@ -112,7 +112,7 @@ app.controller("myCtrl", function ($scope) {
                                     <td>@{bill.debt}</td>
                                     <td>
                                         <div ng-if="bill.payment > bill.debt">
-                                            Atenção, o pagamento está maior que a dívida
+                                            Atenção, o recebimento está maior que a dívida
                                         </div>
                                         <div ng-if="!isNumber(bill.payment)">
 
@@ -135,7 +135,7 @@ app.controller("myCtrl", function ($scope) {
                     <br/>
                     <div class="row">
                         <div class="col-md-3 col-md-offset-9">
-                            <input type="submit" value="Registrar Pagamento" class="btn btn-success btn-block" />
+                            <input type="submit" value="Registrar Recebimento" class="btn btn-success btn-block" />
                         </div>
                     </div>
                 </form>

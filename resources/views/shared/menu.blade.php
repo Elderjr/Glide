@@ -1,7 +1,7 @@
 <div class="col-md-3 left_col">
     <div class="left_col scroll-view">
         <div class="navbar nav_title" style="border: 0;">
-            <a href="{{action("GeneralController@index")}}" class="site_title"><i class="fa fa-paw"></i> <span>Glide</span></a>
+            <a href="{{action("GeneralController@index")}}" class="site_title"><i class="glyphicon glyphicon-send"></i> <span>Glide</span></a>
         </div>
 
         <div class="clearfix"></div>
@@ -24,26 +24,26 @@
                 <h3>General</h3>
                 <ul class="nav side-menu">
                     <li><a href='{{action("GeneralController@index")}}'><i class="fa fa-home"></i> Inicio</a></li>                    
-                    <li><a><i class="fa fa-edit"></i> Despesas <span class="fa fa-chevron-down"></span></a>
+                    <li><a><i class="fa fa-bar-chart-o"></i> Despesas <span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             <li><a href='{{action("BillController@index")}}'>Minhas Despesas</a></li>
                             <li><a href='{{action("BillController@create")}}'>Cadastrar Despesas</a></li>
                             <li><a href='{{action("BillController@pendingBills")}}'>Despesas Pendentes</a></li>                                            
                         </ul>
                     </li>
-                    <li><a><i class="fa fa-desktop"></i> Grupos <span class="fa fa-chevron-down"></span></a>
+                    <li><a><i class="fa fa-group"></i> Grupos <span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             <li><a href='{{action("GroupController@create")}}'>Cadastrar Grupos</a></li>
                             <li><a href='{{action("GroupController@index")}}'>Gerenciador de Grupos</a></li>
                         </ul>
                     </li>
-                    <li><a><i class="fa fa-table"></i> Pagamentos <span class="fa fa-chevron-down"></span></a>
+                    <li><a><i class="fa fa-mail-reply"></i> Recebimentos <span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
-                            <li><a href="{{action("PaymentController@create")}}">Registrar Pagamento</a></li>
-                            <li><a href="{{action("PaymentController@index")}}">Visualizar Pagamentos</a></li>
+                            <li><a href="{{action("PaymentController@create")}}">Registrar Recebimento</a></li>
+                            <li><a href="{{action("PaymentController@index")}}">Visualizar Recebimento</a></li>
                         </ul>
                     </li>
-                    <li><a><i class="fa fa-bar-chart-o"></i> Requerimentos<span class="fa fa-chevron-down"></span></a>
+                    <li><a><i class="fa fa-mail-forward"></i> Requerimentos <span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
                             <li><a href="{{action("RequerimentController@create")}}">Registrar Requerimento</a></li>
                             <li><a href="{{action("RequerimentController@index")}}">Visualizar Requerimento</a></li>

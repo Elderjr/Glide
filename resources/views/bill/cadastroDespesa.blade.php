@@ -465,12 +465,7 @@ function validateBillForm() {
                                             </div>
                                             <div clas='col-md-12' ng-repeat="member in item.members">
                                                 <label ><%member.user.name%> (<%member.user.username%>): </label>
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        <input type="number" ng-model="member.distribution" step="0.01" class="form-control" />
-                                                    </div>
-                                                </div>
-
+                                                <input type="number" ng-model="member.distribution" step="0.01" class="form-control" />
                                             </div>
                                         </td>
                                         <td class='col-md-1'>

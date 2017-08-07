@@ -39,7 +39,7 @@ class GeneralController extends Controller {
     public function updateProfile(Request $request){
         $user = Auth::user();
         $feedback = new Feedback();
-        if($request->name != null){
+        if($request->name != null && $user->name != $request->name){
             $user->name = $request->name;
             $feedback->success = "Nome alterado com sucesso";
         }

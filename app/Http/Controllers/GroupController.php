@@ -66,7 +66,9 @@ class GroupController extends Controller {
         
         $group->save();
         $group->members()->saveMany($members);
-        return redirect(action("GroupController@index"));
+        $feedback = new Feedback();
+        $feedback->success = "Grupo ".$group->name. " cadastrado com sucesso";
+        return redirect(action("GroupController@index"))->with('feedback', $feedback);
     }
 
     public function setAdminAsTrue(Request $request, $groupId) {

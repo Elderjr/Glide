@@ -6,18 +6,15 @@
 @section('jsImport')
 <script src="{{URL::asset('js/angular.min.js')}}"></script>
 <script src="{{URL::asset('js/decimal.min.js')}}"></script>
-<script src="{{URL::asset('js/pnotify.custom.min.js')}}"></script>
 <script>
-PNotify.prototype.options.styling = "bootstrap3";
+
 var app = angular.module('myApp', [], function ($interpolateProvider) {
     $interpolateProvider.startSymbol('<%');
     $interpolateProvider.endSymbol('%>');
 });
 
 
-$(document).ready(function () {
-    $('.ui-pnotify').remove();
-});
+
 
 
 app.filter('itemParticipants', function () {

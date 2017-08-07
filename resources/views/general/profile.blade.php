@@ -1,8 +1,11 @@
 @extends('shared.layout')
 @section('content')
-<div class="page-title">
-    <div class="title_left">
-        <h3>Meu Perfil</h3>
+
+<div class="row">
+    <div class="col-xs-12">
+        <div class="page-title">
+            <h3>Meu Perfil</h3>
+        </div>  
     </div>
 </div>
 <div class="row">
@@ -34,7 +37,7 @@
                             <button type="submit" class="btn btn-success btn-block">Confirmar</button>
                         </div>
                     </div>
-                </form>
+                </form>   
             </div>
         </div>
     </div>
@@ -44,7 +47,7 @@
                 <h2>Alterar Senha</h2>
                 <div class="clearfix"></div>
             </div>
-            <div class="x_content">
+            <div class="x_content">                
                 <form class="form-vertical form-label-left" action="{{action("GeneralController@updatePassword")}}" method="post">
                     {{csrf_field()}}
                     <div class="row">

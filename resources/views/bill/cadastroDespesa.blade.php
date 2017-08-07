@@ -1,13 +1,26 @@
 @extends('shared.layout')
 
+@section('cssImport')
+<link href="{{URL::asset('css/pnotify.custom.min.css')}}" rel="stylesheet">
+
+@stop
 @section('jsImport')
 <script src="{{URL::asset('js/angular.min.js')}}"></script>
 <script src="{{URL::asset('js/decimal.min.js')}}"></script>
+<script src="{{URL::asset('js/pnotify.custom.min.js')}}"></script>
 <script>
+    PNotify.prototype.options.styling = "bootstrap3";
 var app = angular.module('myApp', [], function ($interpolateProvider) {
     $interpolateProvider.startSymbol('<%');
     $interpolateProvider.endSymbol('%>');
 });
+
+
+$(document).ready(function (){
+    $('.ui-pnotify').remove(); 
+});
+   
+            
 app.filter('itemParticipants', function () {
     return function (allUsers) {
         var integrantsChecked = [];
@@ -24,15 +37,107 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
         $scope.bill = {};
         $scope.bill.members = [];
         $scope.bill.items = [];
+        $scope.bill.group = null;
+        $scope.totalItems = 0.0;
         $scope.step = 1;
 
         $scope.searchUser = function () {
             if ($scope.username != "") {
                 $scope.loadMsg = "Procurando usuario...";
-                $http.get("http://localhost:8000/api/usuario/" + $scope.username).then(addIntegrant);
+                $http.get("{{URL::asset('api/usuario')}}/" + $scope.username).then(addIntegrant);
             }
         }
 
+        
+        function existsAtLeastOneBillMember(){
+            for(var i = 0; i < $scope.bill.members.length; i++){
+                if($scope.bill.members[i].billParticipant){
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        function showMsgError(msgError){
+            new PNotify({
+                title: 'Erro Passo 1',
+                text: msgError,
+                type: 'error'
+            });
+        }
+        $scope.validateFirstStep = function (){
+            var msgError = null;
+            if($scope.bill.name == null){
+                msgError = "Nome da despesa deve ser preenchido";
+            }else if($scope.bill.group == null){
+                msgError = "Selecione um grupo para a despesa";
+            }else if(!existsAtLeastOneBillMember()){
+                msgError = "Selecione pelo menos um integrante da despesa";
+            }
+            if(msgError != null){
+                showMsgError(msgError)
+                return false;
+            }
+            $scope.step = 2;
+            return true;
+        }
+        
+        $scope.validateSecondStep = function(){
+            var msgError = null;
+            if($scope.bill.items.length == 0){
+                msgError = 'registre pelo menos um item';
+            }else{
+                $scope.totalItems = 0.0;
+                for(var i = 0; i < $scope.bill.items.length && msgError == null; i++){
+                    if($scope.bill.items[i].name == ""){
+                        msgError = 'O item '+ (i + 1) + 'esta sem nome';
+                    }else if(!isNumber($scope.bill.items[i].price)){
+                        msgError = 'O preço do item '+$scope.bill.items[i].name+" esta com formato errado";
+                    }else if(!isNumber($scope.bill.items[i].qt)){
+                        msgError = 'A quantidade do item '+$scope.bill.items[i].name+" esta com formato errado";
+                    }else if(!$scope.checkDistribution($scope.bill.items[i])){
+                        msgError = 'O item '+$scope.bill.items[i].name+" esta com distribuiçao errada";
+                    }
+                    var total = Decimal.mul($scope.bill.items[i].price, $scope.bill.items[i].qt).toNumber();
+                    $scope.totalItems = Decimal.add($scope.totalItems, total).toNumber();
+                }
+            }
+            if(msgError != null){
+                showMsgError(msgError);
+                return false;
+            }
+            calculeValuePerMember();
+            $scope.step = 3;
+            return true;
+        }
+        
+        $scope.validateThirdStep = function(){            
+            var msgError = null;
+            var total = 0.0;
+            var existAtLeastOneContributor;
+            for(var i = 0; i < $scope.bill.members.length && msgError == null; i++){
+                if($scope.bill.members[i].contributor){
+                    existAtLeastOneContributor = true;
+                }
+                if(!isNumber($scope.bill.members[i].contribution)){
+                    msgError = 'Contribuiçao do usuario '+$scope.bill.members[i].user.name+ " esta no formato errado";
+                }
+                total = Decimal.add(total, $scope.bill.members[i].contribution).toNumber();
+            }
+            if(msgError != null){
+                showMsgError(msgError);
+                return false;
+            }else if(!existAtLeastOneContributor){
+                showMsgError('Registre pelo menos um contribuidor');
+                return false;
+            }else if(total != $scope.totalItems){
+                showMsgError('Total de contribuiçao diferente do total da despesa');
+                return false;
+            }else{
+                return true;
+            }
+        }
+        
         function addIntegrant(response) {
             if (response.data != "null") {
                 var user = response.data;
@@ -171,10 +276,6 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
             return false;
         }
         
-        $scope.finish = function (){
-            calculeValuePerMember();
-            return false;
-        }
         
         function calculeValuePerMember(){
             for(var i = 0; i < $scope.bill.items.length; i++){
@@ -190,9 +291,12 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
         function isNumber(n) {
             return !isNaN(parseFloat(n)) && isFinite(n);
         }
-        
-        
-    }]);</script>
+    }]);
+
+    function validateBillForm(){
+        return angular.element($("#billForm")).scope().validateThirdStep();
+    }
+</script>
 @stop
 
 @section('content')
@@ -216,7 +320,7 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                         <div class="row">
                             <div class="col-md-5 col-sm-4 col-xs-4 form-group has-feedback">
                                 <div class="form-group">
-                                    <label>Nome da despesa</label>
+                                    <label>Nome da despesa*:</label>
                                     <input type="text" ng-model="bill.name" class="form-control has-feedback-left" placeholder="Nome da despesa">
                                     <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
                                 </div>
@@ -237,7 +341,7 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                             </div>
                             <div class="col-md-3 col-sm-3 col-xs-3">
                                 <div class="form-group">
-                                    <label class="control-label col-md-3 col-sm-3 col-xs-3">Grupo</label>
+                                    <label class="control-label col-md-3 col-sm-3 col-xs-3">Grupo*:</label>
                                     <select ng-model="groupSelected" ng-change="onGroupSelected()" ng-options="group.name for group in myGroups" class="form-control">
 
                                     </select>
@@ -280,7 +384,7 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                     <div class='ln_solid'></div>
                     <div class='row'>
                         <div class="col-md-3 col-md-offset-9">
-                            <button class='btn btn-success btn-block' ng-click="setStep(2)">Proximo Passo</button>
+                            <button class='btn btn-success btn-block' ng-click="validateFirstStep()">Proximo Passo</button>
                         </div>
                     </div>
                 </div>
@@ -386,7 +490,7 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                                 <button class='btn btn-default btn-block' ng-click="setStep(1)">Voltar</button>
                             </div>
                             <div class="col-md-3">
-                                <button class='btn btn-success btn-block' ng-click="setStep(3)">Proximo Passo</button>
+                                <button class='btn btn-success btn-block' ng-click="validateSecondStep()">Proximo Passo</button>
                             </div>
                         </div>
                     </div>
@@ -405,7 +509,7 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                 </div>
                 <div class="x_content">
                     <div class="form-vertical form-label-left">
-                        <b>Valor total: </b> R$ 32,00
+                        <b>Valor total: </b> R$ <% totalItems %>
                         <div class="row">
                             <div class="col-md-3">
                                 <label>Integrante</label>
@@ -458,10 +562,10 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                             <button class='btn btn-default btn-block' ng-click="setStep(2)">Voltar</button>
                         </div>
                         <div class="col-md-3">
-                            <form action="{{action("BillController@create")}}" method="post">
+                            <form action="{{action("BillController@create")}}" id="billForm" method="post" onsubmit="return validateBillForm();" >
                                 {{csrf_field()}}
                                 <input type="hidden" value="<%bill%>" name="billJson" />
-                                <button ng-click="finish()" class='btn btn-success btn-block'>Cadastrar Despesa</button>
+                                <button type="submit" class='btn btn-success btn-block'>Cadastrar Despesa</button>
                             </form>
                         </div>
                     </div>

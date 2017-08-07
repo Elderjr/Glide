@@ -1,10 +1,20 @@
 @extends('shared.layout')
 
+@section('cssImport')
+<link href="{{URL::asset('css/pnotify.custom.min.css')}}" rel="stylesheet">
+@stop
+
 @section('jsImport')
 <script src="{{URL::asset('js/angular.min.js')}}"></script>
 <script src="{{URL::asset('js/decimal.min.js')}}"></script>
+<script src="{{URL::asset('js/pnotify.custom.min.js')}}"></script>
 <script>
-@if (isset($paymentsJson))
+PNotify.prototype.options.styling = "bootstrap3";
+$(document).ready(function () {
+    $('.ui-pnotify').remove();
+});
+
+
         var app = angular.module('myApp', [], function ($interpolateProvider) {
             $interpolateProvider.startSymbol('@{');
             $interpolateProvider.endSymbol('}');
@@ -13,34 +23,49 @@ app.controller("myCtrl", function ($scope) {
     $scope.pageInfo = JSON.parse('{!!json_encode($pageInfo)!!}');
     $scope.total = function () {
         var sum = 0.0;
-        for (var i = 0; i < $scope.pageInfo.bills.length; i++) {
-            if ($scope.isNumber($scope.pageInfo.bills[i].payment)) {
-                sum = Decimal.add(sum, $scope.pageInfo.bills[i].payment).toNumber();
+        for (var i = 0; i < $scope.pageInfo.payments.length; i++) {
+            if ($scope.isNumber($scope.pageInfo.payments[i].payment)) {
+                sum = Decimal.add(sum, $scope.pageInfo.payments[i].payment).toNumber();
             }
         }
         return sum;
     }
     
     $scope.makeDistribution = function(){
-        var value = $scope.automaticPayment;
-        for (var i = 0; i < $scope.pageInfo.bills.length; i++) {
-            if(value > $scope.pageInfo.bills[i].debt){
-                $scope.pageInfo.bills[i].payment = $scope.pageInfo.bills[i].debt;
-                value = Decimal.sub(value, $scope.pageInfo.bills[i].debt).toNumber();
+        var value = $scope.pageInfo.requirement.value;
+        for (var i = 0; i < $scope.pageInfo.payments.length; i++) {
+            if(value > $scope.pageInfo.payments[i].debt){
+                $scope.pageInfo.payments[i].payment = $scope.pageInfo.payments[i].debt;
+                value = Decimal.sub(value, $scope.pageInfo.payments[i].debt).toNumber();
             }else if(value > 0){
-                $scope.pageInfo.bills[i].payment = value;
+                $scope.pageInfo.payments[i].payment = value;
                 value = 0;
             }else{
-                $scope.pageInfo.bills[i].payment = 0;
+                $scope.pageInfo.payments[i].payment = 0;
             }
         }
+    }
+    
+    $scope.validateRequirement = function(){
+        if($scope.total() != $scope.pageInfo.requirement.value){
+            new PNotify({
+                title: 'Notificaçao de erro',
+                text: "O total do pagamento deve ser igual ao valor do requerimento",
+                type: 'error'
+            });
+            return false;
+        }
+        return true;
     }
     
     $scope.isNumber = function isNumber(n) {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
 });
-        @endif
+        
+function validateRequirementForm() {    
+    return angular.element($("#requirementForm")).scope().validateRequirement();
+}
 </script>
 @stop
 
@@ -48,19 +73,20 @@ app.controller("myCtrl", function ($scope) {
 <div class='row'>
     <div class="col-md-12 col-sm-12 col-xs-12" ng-app="myApp" ng-controller="myCtrl">
         <div class="x_panel">
-            {!!json_encode($pageInfo)!!}
-            @if(count($pageInfo->bills) == 0)
+            @if(count($pageInfo->payments) == 0)
             <h4>Não existem dívidas com @{pageInfo.requirement.sourceUser.name}</h4>
             @else
-            <h4>Dívidas com @{pageInfo.payerUser.name}</h4>
-            <form action="{{action('PaymentController@store')}}" method="post">
+            <h4>Dívidas com @{pageInfo.requirement.source_user.name}</h4>
+            <form action="{{action('RequerimentController@accept', $pageInfo->requirement->id)}}" method="post" id="requirementForm" onsubmit="return validateRequirementForm();">
+                {{ csrf_field()}}
+                <input type="hidden" name="requirementJson" value="@{pageInfo}" />
                 <div class="row">
                     <div class="col-md-8">
                         <label>Distribuir pagamento automaticamente:</label>
                         <div class="row">
                             <div class="col-md-3">
                                 <div class="form-group">
-                                    <input type="number" class="form-control" step="0.01" ng-model="automaticPayment">
+                                    <input type="number" class="form-control" step="0.01" ng-model="pageInfo.requirement.value"ng-disabled="true">
                                 </div>
                             </div>
                             <div class="col-md-2">
@@ -71,8 +97,6 @@ app.controller("myCtrl", function ($scope) {
                         </div>
                     </div>
                 </div>
-                {{ csrf_field()}}
-                <input type="hidden" name="paymentsJson" value="@{pageInfo}" />
                 <div class="x_content">
                     <table class="table table-striped" width='30%'>
                         <thead>
@@ -82,19 +106,19 @@ app.controller("myCtrl", function ($scope) {
                         <th>Pagamento</th>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="bill in pageInfo.bills">
-                                <td>@{payments.bills.indexOf(bill) + 1}</td>
-                                <td>@{bill.name}</td>
-                                <td>@{bill.debt}</td>
+                            <tr ng-repeat="payment in pageInfo.payments">
+                                <td>@{pageInfo.payments.indexOf(payment) + 1}</td>
+                                <td>@{payment.name}</td>
+                                <td>@{payment.debt}</td>
                                 <td>
-                                    <div ng-if="bill.payment > bill.debt">
+                                    <div ng-if="payment.payment > payment.debt">
                                         Atenção, o pagamento está maior que a dívida
                                     </div>
-                                    <div ng-if="!isNumber(bill.payment)">
+                                    <div ng-if="!isNumber(payment.payment)">
 
                                     </div>
                                     <div class="col-md-3 col-sm-3 col-xs-6">
-                                        <input type="number" step="0.01" ng-model="bill.payment" min="0" class="form-control">
+                                        <input type="number" step="0.01" ng-model="payment.payment" min="0" class="form-control">
                                     </div>
                                 </td>
                             </tr>
@@ -111,7 +135,7 @@ app.controller("myCtrl", function ($scope) {
                 <br/>
                 <div class="row">
                     <div class="col-md-3 col-md-offset-9">
-                        <input type="submit" value="Registrar Pagamento" class="btn btn-success btn-block" />
+                        <input type="submit" value="Aceitar Requerimento" class="btn btn-success btn-block" />
                     </div>
                 </div>
             </form>

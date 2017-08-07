@@ -13,7 +13,8 @@
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
-                <form class="form-vertical form-label-left" action="{{action("GeneralController@profile")}}" method="get">
+                <form class="form-vertical form-label-left" action="{{action("GeneralController@updateProfile")}}" method="post">
+                    {{csrf_field()}}
                     <div class="row">
                         <div class="col-md-12 col-sm-12 col-xs-12">
                             <label>Nome:</label>
@@ -44,7 +45,8 @@
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
-                <form class="form-vertical form-label-left">
+                <form class="form-vertical form-label-left" action="{{action("GeneralController@updatePassword")}}" method="post">
+                    {{csrf_field()}}
                     <div class="row">
                         <div class="col-md-12 col-sm-12 col-xs-12">
                             <label class="control-label">Senha Atual:</label>
@@ -55,11 +57,11 @@
                     <div class="row">
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <label class="control-label">Nova Senha</label>
-                            <input type="password" id="newPassword1" name="newPassword1" class="form-control" />
+                            <input type="password" id="newPassword1" name="newPassword" class="form-control" />
                         </div>
                         <div class="col-md-6 col-sm-6 col-xs-12">
                             <label class="control-label">Confirmação</label>
-                            <input type="password" id="newPassword2" name="newPassword2" name="email" class="form-control " />
+                            <input type="password" id="newPassword2" name="confirmPassword" name="email" class="form-control " />
                         </div>
                     </div>
                     <div class="ln_solid"></div>

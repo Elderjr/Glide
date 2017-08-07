@@ -16,7 +16,7 @@
         <div class="clearfix"></div>
     </div>
     <div class="x_content">
-        <form class="form-vertical form-label-left" action="{{action("RequerimentController@index")}}"m ethod="get">
+        <form class="form-vertical form-label-left" action="{{action("RequerimentController@index")}}" method="get">
             <div class="row">
                 <div class="col-md-4 col-sm-4 col-xs-12 form-group has-feedback">
                     <div class="form-group">

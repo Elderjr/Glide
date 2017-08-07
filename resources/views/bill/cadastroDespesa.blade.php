@@ -2,7 +2,6 @@
 
 @section('cssImport')
 <link href="{{URL::asset('css/pnotify.custom.min.css')}}" rel="stylesheet">
-
 @stop
 @section('jsImport')
 <script src="{{URL::asset('js/angular.min.js')}}"></script>

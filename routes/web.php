@@ -25,6 +25,8 @@ Route::post('/registrar','UserController@store');
 //user
 Route::get('/usuario', 'GeneralController@index');
 Route::get('/usuario/perfil', 'GeneralController@profile');
+Route::post('/usuario/perfil/atualizarPerfil', 'GeneralController@updateProfile');
+Route::post('/usuario/perfil/alterarSenha', 'GeneralController@updatePassword');
 
 //grupos
 Route::get('/usuario/grupos', 'GroupController@index');

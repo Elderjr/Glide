@@ -10,6 +10,10 @@ var app = angular.module('myApp', [], function ($interpolateProvider) {
 });
 app.controller('myCtrl', ['$scope', function ($scope) {
         $scope.bill = JSON.parse('{!!json_encode($bill)!!}');
+        
+        $scope.sub = function(a,b){
+            return Decimal.sub(a,b).toNumber();
+        }
     }]);</script>
 @stop
 
@@ -33,10 +37,10 @@ app.controller('myCtrl', ['$scope', function ($scope) {
                         <ul>
                             <li ng-repeat="member in bill.members">
                                 <div ng-if="member.paid > member.value">
-                                    @{member.user.name} (@{member.user.username}) precisa receber R$ @{member.paid - member.value}
+                                    @{member.user.name} (@{member.user.username}) precisa receber R$ @{sub(member.paid,member.value)}
                                 </div>
                                 <div ng-if="member.paid < member.value">
-                                    @{member.user.name} (@{member.user.username}) precisa pagar R$ @{member.value - member.paid}
+                                    @{member.user.name} (@{member.user.username}) precisa pagar R$ @{sub(member.value, member.paid)}
                                 </div>
                                 <div ng-if="member.paid == member.value">
                                     @{member.user.name} (@{member.user.username}) esta quite

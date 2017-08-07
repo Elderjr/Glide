@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Payment;
+use App\PaymentBill;
 use App\Requeriment;
 use App\User;
 use App\Bill;
@@ -86,12 +88,14 @@ class RequerimentController extends Controller {
 
     public function showAccept($id) {
         $user = Auth::user();
-        $requeriment = Requeriment::find($id);
-        $billsInDebt = Bill::getBillsInDebtWithUser($requeriment->destinationUserId, $requeriment->sourceUserId);
+        $requirement = Requeriment::find($id);
+        $requirement->load('destinationUser');
+        $requirement->load('sourceUser');
+        $billsInDebt = Bill::getBillsInDebtWithUser($requirement->destinationUserId, $requirement->sourceUserId);
         $simpleBills = [];
-        $value = $requeriment->value;
+        $value = $requirement->value;
         foreach ($billsInDebt as $bill) {
-            $debt = $bill->getDebt($requeriment->destinationUserId, $requeriment->sourceUserId);
+            $debt = $bill->getDebt($requirement->destinationUserId, $requirement->sourceUserId);
             if ($value > $debt) {
                 $payment = $debt;
                 $value -= $debt;
@@ -108,8 +112,8 @@ class RequerimentController extends Controller {
             array_push($simpleBills, $simpleBill);
         }
         $pageInfo = (object) array(
-                    'requirement' => $requeriment,
-                    'bills' => $simpleBills
+                    'requirement' => $requirement,
+                    'payments' => $simpleBills
         );
         return view('requirement.acceptRequeriment')->with('generalInformation', User::getGeneralInformation($user))
                         ->with('pageInfo', $pageInfo);
@@ -117,25 +121,26 @@ class RequerimentController extends Controller {
 
     public function accept(Request $request) {
         $object = json_decode($request->get("requirementJson"));
-        $requirement = Requeriment::Find($object->$requirement->id);
+        $requirement = Requeriment::Find($object->requirement->id);
         $payment = new Payment();
         $payment->value = 0.0;
-        $payment->payerUserId = $object->destinationUser->id;
-        $payment->receiverUserId = $object->receiverUser->id;
+        $payment->payerUserId = $object->requirement->source_user->id;
+        $payment->receiverUserId = $object->requirement->destination_user->id;
         $paymentsBills = [];
-        foreach ($object->bills as $bill) {
+        foreach ($object->payments as $inputPayment) {
             $paymentBill = new PaymentBill();
-            $paymentBill->billId = $bill->id;
-            $paymentBill->value = $bill->payment;
-            $payment->value += $paymentBill->value;
+            $paymentBill->billId = $inputPayment->id;
+            $paymentBill->value = $inputPayment->payment;
+            $payment->value += $inputPayment->payment;
             array_push($paymentsBills, $paymentBill);
         }
-        if ($payment->value == $object->$requirement->value) {
-            $payment->save();
-            $payment->paymentBills()->saveMany($paymentsBills);
-            $payment->doPayment();
-            $requirement->updateToAccept();
-        }
+        $payment->save();
+        $payment->paymentBills()->saveMany($paymentsBills);
+        $payment->doPayment();
+        $requirement->updateToAccept();
+        $feedback = new Feedback();
+        $feedback->success = "Requerimento aceito com sucesso";
+        return redirect(action("RequerimentController@index"))->with('feedback', $feedback);
     }
 
     public function reject($id) {

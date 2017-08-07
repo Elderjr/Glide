@@ -34,10 +34,11 @@ app.controller("myCtrl", function ($scope, $http) {
             if (!existMember(response.data.id)) {
                 var member = {
                     user: response.data,
-                    turnAdmin: false
+                    admin: false
                 };
                 $scope.group.members.push(member);
                 $scope.username = "";
+                $scope.loadMsg = "";
             } else {
                 $scope.loadMsg = "Usuario ja registrado";
             }

@@ -32,7 +32,7 @@ Route::get('/usuario/grupos/cadastrar', 'GroupController@create');
 Route::post('/usuario/grupos/cadastrar', 'GroupController@store');
 Route::post('/usuario/grupos/{groupId}/setAdminAsTrue', 'GroupController@setAdminAsTrue');
 Route::post('/usuario/grupos/{groupId}/setAdminAsFalse', 'GroupController@setAdminAsFalse');
-Route::post('/usuario/grupos/{groupId}/sair', 'GroupController@leaveGroup');
+Route::get('/usuario/grupos/{groupId}/sair', 'GroupController@leaveGroup');
 Route::post('/usuario/grupos/{groupId}/removeMember', 'GroupController@removeMember');
 Route::post('/usuario/grupos/{groupId}/storeMember', 'GroupController@storeMember');
 Route::get('/usuario/grupos/{groupId}', 'GroupController@show');

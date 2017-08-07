@@ -66,7 +66,7 @@ class GroupController extends Controller {
         
         $group->save();
         $group->members()->saveMany($members);
-        return redirect(action("GroupController@show", $group->id));
+        return redirect(action("GroupController@index"));
     }
 
     public function setAdminAsTrue(Request $request, $groupId) {

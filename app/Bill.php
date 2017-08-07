@@ -176,17 +176,17 @@ class Bill extends Model {
         $bills = Bill::select('bills.*')->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
                 ->where('BM.userId', '=', $myId);
         if ($billName != null) {
-            $bills = $bills->where('name', $billName);
+            $bills = $bills->where('bills.name', $billName);
         }
         if ($billDate != null) {
-            $bills = $bills->where('created_at', '>=', $billDate);
+            $bills = $bills->where('bills.created_at', '>=', $billDate);
         }
         if ($billGroupId != null) {
-            $bills = $bills->where('groupId', '=', $billGroupId);
+            $bills = $bills->where('bills.groupId', '=', $billGroupId);
         }
         if ($billStatus != null && in_array($billStatus, ["inAlert", "finished", "pending"])) {
             if ($billStatus == "inAlert") {
-                $bills = $bills->where('alertDate', '<', Carbon\Carbon::now());
+                $bills = $bills->where('bills.alertDate', '<', Carbon\Carbon::now());
             } else if ($billStatus == "finished") {
                 $bills = $bills->whereColumn("BM.paid", "=", "BM.value");
             } else if ($billStatus == "pending") {

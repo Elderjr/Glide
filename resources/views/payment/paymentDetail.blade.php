@@ -5,7 +5,7 @@
 <div class="">
     <div class="page-title">
         <div class="title_left">
-            <h3>Detalhes de Pagamento</h3>
+            <h3>Detalhes de Recebimento</h3>
         </div>
     </div>
 
@@ -39,7 +39,7 @@
                         <thead>
                         <th>#</th>
                         <th>Despesa</th>
-                        <th>Pagamento</th>
+                        <th>Recebimento</th>
                         </thead>
                         <tbody>
                             <?php $count = 1; ?>
@@ -67,7 +67,7 @@
                     <br/>
                     <div class="row">
                         <div class="col-md-3 col-md-offset-9">
-                            <a href="{{action("PaymentController@rollback", $payment->id)}}" class='btn btn-danger btn-block'>Reverter Pagamento</a>
+                            <a href="{{action("PaymentController@rollback", $payment->id)}}" class='btn btn-danger btn-block'>Reverter Recebimento</a>
                         </div>
                     </div>
                 </div>

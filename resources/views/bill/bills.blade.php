@@ -7,7 +7,7 @@
     </div>
     <div class="title_right">
         <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-            <a href="" class="btn btn-success btn-block">Registrar Nova Despesa</a>
+            <a href="{{action("BillController@create")}}" class="btn btn-success btn-block">Registrar Nova Despesa</a>
         </div>
     </div>
 </div>
@@ -60,10 +60,7 @@
                 </div>
             </div>
             <div class="row">            
-                <div class="col-md-2 col-md-offset-8">
-                    <button type="button" class="btn btn-default btn-block">Limpar</button>
-                </div>
-                <div class="col-md-2">
+                <div class="col-md-2 col-md-offset-10">
                     <button type="submit" class="btn btn-success btn-block">Buscar</button>
                 </div>
             </div>
@@ -71,51 +68,64 @@
     </div>
 </div>
 @if(isset($bills))
-<div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-        <div class="x_panel">
-            <div class="x_title">
-                <h2>Resultado da busca</h2>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
+    @if(count($bills) > 0)
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Resultado da busca</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Nome</th>
-                            <th>Valor</th>
-                            <th>Data</th>
-                            <th>Detalhes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php $count = 1; ?>
-                        @foreach($bills as $bill)
-                        <tr>
-                            <td>{{$count}}</td>
-                            <td>
-                                {{$bill->name}}      
-                                @if($bill->isInAlert() && !$bill->getMemberById($userId)->isSettled())
-                                    <span class="badge bg-red">Em Alerta</span>
-                                @endif
-                            </td>
-                            <td>{{$bill->total}}</td>
-                            <td>
-                                {{Carbon\Carbon::parse($bill->created_at)->format('d/m/Y')}}
-                            </td>
-                            <td>
-                                <a href="{{action("BillController@show", $bill->id)}}" class="btn btn-primary btn-xs">detalhes</a>
-                            </td>
-                        </tr>
-                        <?php $count++ ?>
-                        @endforeach
-                    </tbody>
-                </table>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nome</th>
+                                    <th>Valor</th>
+                                    <th>Data</th>
+                                    <th>Detalhes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $count = 1; ?>
+                                @foreach($bills as $bill)
+                                <tr>
+                                    <td>{{$count}}</td>
+                                    <td>
+                                        {{$bill->name}}      
+                                        @if($bill->isInAlert() && !$bill->getMemberById($userId)->isSettled())
+                                        <span class="badge bg-red">Em Alerta</span>
+                                        @endif
+                                    </td>
+                                    <td>{{$bill->total}}</td>
+                                    <td>
+                                        {{Carbon\Carbon::parse($bill->created_at)->format('d/m/Y')}}
+                                    </td>
+                                    <td>
+                                        <a href="{{action("BillController@show", $bill->id)}}" class="btn btn-primary btn-xs">detalhes</a>
+                                    </td>
+                                </tr>
+                                <?php $count++ ?>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+    @else
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Nenhuma Despesa encontrada</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 @endif
 @stop

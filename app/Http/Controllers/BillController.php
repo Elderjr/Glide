@@ -2,15 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use DateTime;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use App\User;
 use App\Group;
 use App\Bill;
-use App\BillMember;
-use App\Item;
-use App\ItemMember;
 use Illuminate\Http\Request;
 
 class BillController extends Controller {
@@ -20,14 +15,15 @@ class BillController extends Controller {
         if ($user != null) {
             $generalInformation = User::getGeneralInformation($user);
             if ($request->exists("billName")) {
-                $billId = null;
-                $bills = Bill::filterSearch($user->id, $request->billName, $request->billDate, $billId, $request->billStatus);
-                return view('bills')->with('generalInformation', $generalInformation)
+                $bills = Bill::filterSearch($user->id, $request->billName, $request->billDate, null, $request->billStatus, 1);
+                return view('bill.bills')->with('generalInformation', $generalInformation)
                                 ->with('myGroups', Group::getGroupsByUserId($user->id))
                                 ->with('bills', $bills);
             } else {
-                return view('bills')->with('generalInformation', $generalInformation)
-                                ->with('myGroups', Group::getGroupsByUserId($user->id));
+                $bills = Bill::filterSearch($user->id, null, null, null, null, 1);
+                return view('bill.bills')->with('generalInformation', $generalInformation)
+                                ->with('myGroups', Group::getGroupsByUserId($user->id))
+                                ->with('bills', $bills);
             }
         }
         return redirect('/');
@@ -36,7 +32,7 @@ class BillController extends Controller {
     public function create() {
         $user = Auth::user();
         $myGroupsJson = Group::getGroupsByUserId(Auth::user()->id)->toJson();
-        return view('cadastroDespesa')->with('myGroupsJson', $myGroupsJson)
+        return view('bill.cadastroDespesa')->with('myGroupsJson', $myGroupsJson)
                         ->with('generalInformation', User::getGeneralInformation($user));
     }
 
@@ -50,7 +46,7 @@ class BillController extends Controller {
     public function show($id) {
         $user = Auth::user();
         $bill = Bill::getCompleteBillById($id);
-        return view('billDetails')->with('bill', $bill)
+        return view('bill.billDetails')->with('bill', $bill)
                         ->with('generalInformation', User::getGeneralInformation($user));
     }
 
@@ -58,7 +54,7 @@ class BillController extends Controller {
         $user = Auth::user();
         $bill = Bill::getCompleteBillById($id);
         $myGroupsJson = Group::getGroupsByUserId(Auth::user()->id)->toJson();
-        return view('editBill')->with('myGroupsJson', $myGroupsJson)
+        return view('bill.editBill')->with('myGroupsJson', $myGroupsJson)
                         ->with('generalInformation', User::getGeneralInformation($user))
                         ->with('bill', $bill);
     }
@@ -79,7 +75,7 @@ class BillController extends Controller {
                         'pendingValues' => Bill::getPendingValues($billsInDebt, $user->id),
                         'user' => $user
             );
-            return view('despesasPendentes')->with('generalInformation', $generalInformation)
+            return view('bill.despesasPendentes')->with('generalInformation', $generalInformation)
                             ->with('pageInfo', $pageInfo);
         }
         return redirect('/');

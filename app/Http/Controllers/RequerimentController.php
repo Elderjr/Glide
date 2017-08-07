@@ -19,19 +19,21 @@ class RequerimentController extends Controller {
             if ($request->username != null) {
                 $filterUser = User::getUserByUsername($request->username);
                 if ($filterUser != null) {
-                    $requirements = Requeriment::filterSearch($user->id, $filterUser->id, $request->status, $request->sentOrReceived, $request->date);
+                    $requirements = Requeriment::filterSearch($user->id, $filterUser->id, $request->status, $request->sentOrReceived, $request->date, 1);
                 } else {
                     $feedback->error = "Usuario " . $request->username . " nao foi encontrado";
                     return view('requirement.requirements')->with('generalInformation', $generalInformation)
                                     ->with('feedback', $feedback);
                 }
             } else {
-                $requirements = Requeriment::filterSearch($user->id, null, $request->status, $request->sentOrReceived, $request->date);
+                $requirements = Requeriment::filterSearch($user->id, null, $request->status, $request->sentOrReceived, $request->date, 1);
             }
             return view('requirement.requirements')->with('generalInformation', $generalInformation)
                             ->with('requirements', $requirements);
         } else if ($user != null) {
-            return view('requirement.requirements')->with('generalInformation', $generalInformation);
+            $requirements = Requeriment::filterSearch(null, null, null, null, null, 1);
+            return view('requirement.requirements')->with('generalInformation', $generalInformation)
+                    ->with('requirements', $requirements);
         }
         return redirect('/');
     }

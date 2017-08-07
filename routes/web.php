@@ -73,6 +73,7 @@ Route::get('/api/usuario/{username}','ApiController@getUserByUsername');
 Route::get('/api/grupo/{groupId}', 'ApiController@getGroupById');
 
 //test
+use App\User;
 Route::get('/test', function(){
-    return view('test');
+    return dump(User::paginate(2, ['*'], 'page', 1));
 });

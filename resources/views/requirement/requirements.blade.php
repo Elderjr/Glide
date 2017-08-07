@@ -68,64 +68,78 @@
     </div>
 </div>
 @if(isset($requirements))
-<div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-        <div class="x_panel">
-            <div class="x_title">
-                <h2>Resultado da busca</h2>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Remetente</th>
-                            <th>Destinatário</th>
-                            <th>Enviado/Recebido</th>
-                            <th>Estado</th>
-                            <th>Data</th>
-                            <th>Detalhes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php $count = 1; ?>
-                        @foreach($requirements as $req)
-                        <tr>
-                            <td>{{$count}}</td>
-                            <td>{{$req->sourceUser->toString()}}</td>
-                            <td>{{$req->destinationUser->toString()}}</td>
-                            <td>
-                                @if($req->sourceUser->id == Illuminate\Support\Facades\Auth::user()->id)
-                                Enviado
-                                @else
-                                Recebido
-                                @endif
-                            </td>
-                            <td>
-                                @if($req->status == "accepted")
-                                <span class="badge bg-green">Aceito</span>
-                                @elseif($req->status == "rejected")
-                                <span class="badge bg-red">Rejeitado</span>
-                                @else
-                                <span class="badge bg-orange">Aguardando</span>
-                                @endif
-                            </td>
-                            <td>
-                                {{Carbon\Carbon::parse($req->created_at)->format('d/m/Y')}}
-                            </td>
-                            <td>
-                                <a href="{{action("RequerimentController@show", $req->id)}}" class="btn btn-primary btn-xs">detalhes</a>
-                            </td>
-                        </tr>
-                        <?php $count++ ?>
-                        @endforeach
-                    </tbody>
-                </table>
+    @if(count($requirements) > 0)
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Resultado da busca</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
+
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Remetente</th>
+                                    <th>Destinatário</th>
+                                    <th>Enviado/Recebido</th>
+                                    <th>Estado</th>
+                                    <th>Data</th>
+                                    <th>Detalhes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $count = 1; ?>
+                                @foreach($requirements as $req)
+                                <tr>
+                                    <td>{{$count}}</td>
+                                    <td>{{$req->sourceUser->toString()}}</td>
+                                    <td>{{$req->destinationUser->toString()}}</td>
+                                    <td>
+                                        @if($req->sourceUser->id == Illuminate\Support\Facades\Auth::user()->id)
+                                        Enviado
+                                        @else
+                                        Recebido
+                                        @endif
+                                    </td>
+                                    <td>
+                                        @if($req->status == "accepted")
+                                        <span class="badge bg-green">Aceito</span>
+                                        @elseif($req->status == "rejected")
+                                        <span class="badge bg-red">Rejeitado</span>
+                                        @else
+                                        <span class="badge bg-orange">Aguardando</span>
+                                        @endif
+                                    </td>
+                                    <td>
+                                        {{Carbon\Carbon::parse($req->created_at)->format('d/m/Y')}}
+                                    </td>
+                                    <td>
+                                        <a href="{{action("RequerimentController@show", $req->id)}}" class="btn btn-primary btn-xs">detalhes</a>
+                                    </td>
+                                </tr>
+                                <?php $count++ ?>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+    @else
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Nenhum requerimento encontrado</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 @endif
 @stop

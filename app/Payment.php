@@ -43,7 +43,7 @@ class Payment extends Model {
         $this->delete();
     }
 
-    public static function filterSearch($myId, $userId, $date) {
+    public static function filterSearch($myId, $userId, $date, $pag) {
         $payments = Payment::select('payments.*');
         $payments = $payments->where(function ($query) use ($myId) {
             $query->where('receiverUserId', $myId)
@@ -58,7 +58,7 @@ class Payment extends Model {
         if ($date != null) {
             $payments = $payments->where('created_at', '>=', $date);
         }
-        return $payments->get();
+        return $payments->paginate(20, ['*'], 'page', $pag);;
     }
 
 }

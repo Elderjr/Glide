@@ -36,7 +36,7 @@ class Requeriment extends Model {
                 ->where('status','waiting')->count();
     }
     
-    public static function filterSearch($myId, $userId, $status, $sentOrReceived, $date) {
+    public static function filterSearch($myId, $userId, $status, $sentOrReceived, $date, $pag) {
         $requirements = Requeriment::select('requirements.*');
         if ($sentOrReceived != null && $sentOrReceived == 'sent') {
             $requirements = $requirements->where('sourceUserId', $myId);
@@ -64,7 +64,7 @@ class Requeriment extends Model {
         if ($date != null) {
             $requirements = $requirements->where('created_at', '>=', $date);
         }
-        return $requirements->get();
+        return $requirements->paginate(20, ['*'], 'page', $pag);;
     }
 
 }

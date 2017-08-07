@@ -63,6 +63,7 @@
                         <th>Nome</th>
                         <th>Data de Registro</th>
                         <th>Valor a Pagar / Receber</th>
+                        <th>Detalhes</th>
                         </thead>
                         <tbody>
                             @foreach($pageInfo->billsInDebt as $bill)
@@ -83,6 +84,9 @@
                                     @else
                                         Pagar R$ {{$member->valueToPay()}}
                                     @endif
+                                </td>
+                                <td>
+                                    <a href="{{action("BillController@show", $bill->id)}}" class="btn btn-primary btn-xs">detalhes</a>
                                 </td>
                             </tr>
                             @endforeach

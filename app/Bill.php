@@ -172,7 +172,7 @@ class Bill extends Model {
         return Bill::makeSuggestion($bills, $userId, true);
     }
 
-    public static function filterSearch($myId, $billName, $billDate, $billGroupId, $billStatus) {
+    public static function filterSearch($myId, $billName, $billDate, $billGroupId, $billStatus, $pag = 1) {
         $bills = Bill::select('bills.*')->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
                 ->where('BM.userId', '=', $myId);
         if ($billName != null) {
@@ -193,7 +193,7 @@ class Bill extends Model {
                 $bills = $bills->whereColumn("BM.paid", "!=", "BM.value");
             }
         }
-        return $bills->get();
+        return $bills->paginate(20, ['*'], 'page', $pag);
     }
 
     private static function register($input) {
@@ -243,7 +243,6 @@ class Bill extends Model {
         }
         foreach ($input->items as $item) {
             Item::registerItemFromObjectJson($item, $bill);
-            echo $item->name." registered";
             $bill->total += $item->price * $item->qt;
             if ($item->id != -1) {
                 array_push($itemsToNotDelete, $item->id);
@@ -251,7 +250,6 @@ class Bill extends Model {
         }
         $bill->save();
         if($input->id != -1){
-            echo "chamando deletar";
             Bill::deleteRelationships($billMembersToNotDelete, $itemsToNotDelete, $bill);
         }
         return $bill;

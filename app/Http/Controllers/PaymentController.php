@@ -20,19 +20,21 @@ class PaymentController extends Controller {
             if ($request->username != null) {
                 $filterUser = User::getUserByUsername($request->username);
                 if ($filterUser != null) {
-                    $payments = Payment::filterSearch($user->id, $filterUser->id, $request->date);
+                    $payments = Payment::filterSearch($user->id, $filterUser->id, $request->date, 1);
                 } else {
                     $feedback->error = "Usuario " . $request->username . " nao foi encontrado";
-                    return view('payments')->with('generalInformation', $generalInformation)
+                    return view('payment.payments')->with('generalInformation', $generalInformation)
                                     ->with('feedback', $feedback);
                 }
             } else {
-                $payments = Payment::filterSearch($user->id, null, $request->date);
+                $payments = Payment::filterSearch($user->id, null, $request->date, 1);
             }
-            return view('payments')->with('generalInformation', $generalInformation)
+            return view('payment.payments')->with('generalInformation', $generalInformation)
                             ->with('payments', $payments);
         } else if ($user != null) {
-            return view('payments')->with('generalInformation', $generalInformation);
+            $payments = Payment::filterSearch($user->id, null, null, 1);
+            return view('payment.payments')->with('generalInformation', $generalInformation)
+                    ->with('payments', $payments);
         }
         return redirect('/');
     }
@@ -41,7 +43,7 @@ class PaymentController extends Controller {
         $user = Auth::user();
         $generalInformation = User::getGeneralInformation($user);
         if ($request->get("username") == null) {
-            return view('payment')->with('generalInformation', $generalInformation);
+            return view('payment.payment')->with('generalInformation', $generalInformation);
         } else {
             $payerUser = User::where('username', $request->get("username"))->first();
             if ($payerUser != null) {
@@ -60,11 +62,11 @@ class PaymentController extends Controller {
                             'payerUser' => $payerUser,
                             'bills' => $billsInDebt
                 );
-                return view('payment')->with('generalInformation', $generalInformation)->with('paymentsJson', $payement);
+                return view('payment.payment')->with('generalInformation', $generalInformation)->with('paymentsJson', $payement);
             } else {
                 $feedback = new Feedback();
                 $feedback->alert = "Usuário não encontrado";
-                return view('payment')->with('generalInformation', $generalInformation)->with('feedback', $feedback);
+                return view('payment.payment')->with('generalInformation', $generalInformation)->with('feedback', $feedback);
             }
         }
     }
@@ -95,7 +97,7 @@ class PaymentController extends Controller {
     public function show($id) {
         $user = Auth::user();
         $payment = Payment::find($id);
-        return view('paymentDetail')->with('generalInformation', User::getGeneralInformation($user))
+        return view('payment.paymentDetail')->with('generalInformation', User::getGeneralInformation($user))
                         ->with('payment', $payment);
     }
 

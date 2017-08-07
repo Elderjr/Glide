@@ -197,7 +197,6 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
 
 @section('content')
 <div class="" ng-app="myApp" ng-controller="myCtrl">
-    <% bill %>
     <div class="page-title">
         <div class="title_left">
             <h3>Cadastro de despesa</h3>

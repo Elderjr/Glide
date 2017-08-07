@@ -6,7 +6,7 @@
     </div>
     <div class="title_right">
         <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
-            <a href="" class="btn btn-success btn-block">Registrar Novo Pagamento</a>
+            <a href="{{action("PaymentController@create")}}" class="btn btn-success btn-block">Registrar Novo Pagamento</a>
         </div>
     </div>
 </div>
@@ -47,46 +47,59 @@
     </div>
 </div>
 @if(isset($payments))
-<div class="row">
-    <div class="col-md-12 col-sm-12 col-xs-12">
-        <div class="x_panel">
-            <div class="x_title">
-                <h2>Resultado da busca</h2>
-                <div class="clearfix"></div>
-            </div>
-            <div class="x_content">
+    @if(count($payments) > 0)
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Resultado da busca</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                    <div class="x_content">
 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Credor</th>
-                            <th>Devedor</th>
-                            <th>Data</th>
-                            <th>Detalhes</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php $count = 1; ?>
-                        @foreach($payments as $payment)
-                        <tr>
-                            <td>{{$count}}</td>
-                            <td>{{$payment->receiverUser->toString()}}</td>
-                            <td>{{$payment->payerUser->toString()}}</td>
-                            <td>
-                                {{Carbon\Carbon::parse($payment->created_at)->format('d/m/Y')}}
-                            </td>
-                            <td>
-                                <a href="{{action("PaymentController@show", $payment->id)}}" class="btn btn-primary btn-xs">detalhes</a>
-                            </td>
-                        </tr>
-                        <?php $count++ ?>
-                        @endforeach
-                    </tbody>
-                </table>
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Credor</th>
+                                    <th>Devedor</th>
+                                    <th>Data</th>
+                                    <th>Detalhes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <?php $count = 1; ?>
+                                @foreach($payments as $payment)
+                                <tr>
+                                    <td>{{$count}}</td>
+                                    <td>{{$payment->receiverUser->toString()}}</td>
+                                    <td>{{$payment->payerUser->toString()}}</td>
+                                    <td>
+                                        {{Carbon\Carbon::parse($payment->created_at)->format('d/m/Y')}}
+                                    </td>
+                                    <td>
+                                        <a href="{{action("PaymentController@show", $payment->id)}}" class="btn btn-primary btn-xs">detalhes</a>
+                                    </td>
+                                </tr>
+                                <?php $count++ ?>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-</div>
+    @else
+        <div class="row">
+            <div class="col-md-12 col-sm-12 col-xs-12">
+                <div class="x_panel">
+                    <div class="x_title">
+                        <h2>Nenhum pagamento encontrado</h2>
+                        <div class="clearfix"></div>
+                    </div>
+                </div> 
+            </div>
+        </div>    
+    @endif
 @endif
 @stop

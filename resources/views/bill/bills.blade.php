@@ -6,7 +6,7 @@
         <h3>Minhas Despesas</h3>
     </div>
     <div class="title_right">
-        <div class="col-md-5 col-sm-5 col-xs-12 form-group pull-right top_search">
+        <div class="col-md-6 col-sm-5 col-xs-12 form-group pull-right top_search">
             <a href="{{action("BillController@create")}}" class="btn btn-success btn-block">Registrar Nova Despesa</a>
         </div>
     </div>
@@ -19,7 +19,7 @@
     <div class="x_content">
         <form class="form-vertical form-label-left" method="{{action("BillController@index")}}">
             <div class="row">
-                <div class="col-md-4 col-sm-4 col-xs-4 form-group has-feedback">
+                <div class="col-md-4 col-sm-8 col-xs-12 form-group has-feedback">
                     <div class="form-group">
                         <label>Nome da Despesa</label>
                         <input type="text" class="form-control has-feedback-left" id="billName" name="billName" placeholder="Nome da despesa">
@@ -27,7 +27,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-2 col-sm-2 col-xs-2">
+                <div class="col-md-2 col-sm-4 col-xs-6">
                     <div class="form-group">
                         <label>Estado</label>
                         <select class="form-control" name="billStatus">
@@ -39,7 +39,7 @@
                     </div>
                 </div>
                 
-                <div class="col-md-3 col-sm-3 col-xs-3">
+                <div class="col-md-3 col-sm-8 col-xs-6">
                     <div class="form-group">
                         <label>Grupo</label>
                         <select class="form-control" name="billGroupId">
@@ -51,7 +51,7 @@
                     </div>
                 </div>
                 
-                <div class="col-md-3 col-sm-3 col-xs-3">
+                <div class="col-md-3 col-sm-4 col-xs-12">
                     <div class="form-group">
                         <label class="control-label">A partir de</label>
                         <input type="date" class="form-control" name="billDate">
@@ -60,7 +60,7 @@
                 </div>
             </div>
             <div class="row">            
-                <div class="col-md-2 col-md-offset-10">
+                <div class="col-md-2 col-md-offset-10 col-sm-3 col-sm-offset-9 col-xs-6 col-xs-offset-6">
                     <button type="submit" class="btn btn-success btn-block">Buscar</button>
                 </div>
             </div>

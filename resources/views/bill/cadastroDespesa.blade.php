@@ -80,7 +80,7 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
         
         $scope.onGroupSelected = function () {
             if ($scope.groupSelected != null) {
-                $scope.members = [];
+                $scope.bill.members = [];
                 for (var i = 0; i < $scope.groupSelected.members.length; i++) {
                     addMember($scope.groupSelected.members[i].user);
                     $scope.bill.group = {id: $scope.groupSelected.id,

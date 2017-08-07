@@ -1,5 +1,7 @@
 @extends('shared.layout')
 
+@section('title') Cadastro de Recebimento @stop
+
 @section('jsImport')
 @if (isset($paymentsJson))
 <script src="{{URL::asset('js/angular.min.js')}}"></script>

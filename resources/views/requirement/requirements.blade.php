@@ -1,4 +1,7 @@
 @extends('shared.layout')
+
+@section('title') Requerimentos @stop
+
 @section('content')
 <div class="page-title">
     <div class="title_left">
@@ -18,17 +21,9 @@
     <div class="x_content">
         <form class="form-vertical form-label-left" action="{{action("RequerimentController@index")}}" method="get">
             <div class="row">
-                <div class="col-md-4 col-sm-4 col-xs-12 form-group has-feedback">
-                    <div class="form-group">
-                        <label>Nome do Usuário</label>
-                        <input type="text" class="form-control has-feedback-left" id="username" name="username" placeholder="Nome do usuário">
-                        <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
-                    </div>
-                </div>
-
                 <div class="col-md-3 col-sm-3 col-xs-6">
                     <div class="form-group">
-                        <label>Enviado/Recebido</label>
+                        <label>Enviado / Recebido</label>
                         <select class="form-control" name="sentOrReceived">
                             <option>Enviados e Recebidos</option>
                             <option value="sent">Enviados</option>
@@ -37,6 +32,14 @@
                     </div>
                 </div>
 
+                <div class="col-md-4 col-sm-4 col-xs-12 form-group has-feedback">
+                    <div class="form-group">
+                        <label>Enviado para / Recebido de</label>
+                        <input type="text" class="form-control has-feedback-left" id="username" name="username" placeholder="Nome do usuário">
+                        <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
+                    </div>
+                </div>
+                
                 <div class="col-md-2 col-sm-2 col-xs-6">
                     <div class="form-group">
                         <label>Estado</label>

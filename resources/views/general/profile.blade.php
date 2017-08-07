@@ -1,4 +1,7 @@
 @extends('shared.layout')
+
+@section('title') Perfil @stop
+
 @section('content')
 
 <div class="row">

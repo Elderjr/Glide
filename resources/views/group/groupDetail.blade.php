@@ -1,5 +1,7 @@
 @extends('shared.layout')
 
+@section('title') Detalhes de Grupo @stop
+
 @section('jsImport')
 <script src='{{URL::asset('js/angular.min.js')}}'></script>
 <script>

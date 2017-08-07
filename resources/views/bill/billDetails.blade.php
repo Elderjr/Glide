@@ -1,5 +1,7 @@
 @extends('shared.layout')
 
+@section('title') Detalhes da Despesa @stop
+
 @section('jsImport')
 <script src="{{URL::asset('js/angular.min.js')}}"></script>
 <script src="{{URL::asset('js/decimal.min.js')}}"></script>

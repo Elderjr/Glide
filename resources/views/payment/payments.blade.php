@@ -1,4 +1,7 @@
 @extends('shared.layout')
+
+@section('title') Recebimentos @stop
+
 @section('content')
 <div class="page-title">
     <div class="title_left">

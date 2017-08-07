@@ -53,10 +53,12 @@ class Requeriment extends Model {
                 $query->where('sourceUserId', $myId)
                         ->orWhere('destinationUserId', $myId);
             });
-            $requirements = $requirements->where(function ($query) use ($userId){
-                $query->where('sourceUserId', $userId)
-                        ->orWhere('destinationUserId', $userId);
-            });
+            if($userId != null){
+                $requirements = $requirements->where(function ($query) use ($userId) {
+                    $query->where('sourceUserId', $userId)
+                            ->orWhere('destinationUserId', $userId);
+                });
+            }
         }
         if ($status != null && in_array($status, ["waiting", "accepted", "rejected"])) {
             $requirements = $requirements->where('status', $status);
@@ -64,7 +66,7 @@ class Requeriment extends Model {
         if ($date != null) {
             $requirements = $requirements->where('created_at', '>=', $date);
         }
-        return $requirements->paginate(20, ['*'], 'page', $pag);;
+        return $requirements->paginate(20, ['*'], 'page', $pag);
     }
 
 }

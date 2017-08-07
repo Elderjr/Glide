@@ -1,4 +1,7 @@
 @extends('shared.layout')
+
+@section('title') Meus Grupos @stop
+
 <?php $userId = $pageInfo->user->id; ?>
 @section('content')
 <div class="page-title">

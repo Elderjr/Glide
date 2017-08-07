@@ -1,5 +1,7 @@
 @extends ('shared.layout')                
 
+@section('title') Despesas Pendentes @stop
+
 @section('content')
 <div class="">
     <div class="row">

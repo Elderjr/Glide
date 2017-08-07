@@ -1,5 +1,7 @@
 @extends('shared.layout')
 
+@section('title') Cadastro de Requerimento @stop
+
 @section('jsImport')
 @if (isset($pageInfo))
 <script src="{{URL::asset('js/angular.min.js')}}"></script>

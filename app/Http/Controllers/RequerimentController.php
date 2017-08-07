@@ -33,7 +33,7 @@ class RequerimentController extends Controller {
             return view('requirement.requirements')->with('generalInformation', $generalInformation)
                             ->with('requirements', $requirements);
         } else if ($user != null) {
-            $requirements = Requeriment::filterSearch(null, null, null, null, null, 1);
+            $requirements = Requeriment::filterSearch($user->id, null, null, null, null, 1);
             return view('requirement.requirements')->with('generalInformation', $generalInformation)
                     ->with('requirements', $requirements);
         }

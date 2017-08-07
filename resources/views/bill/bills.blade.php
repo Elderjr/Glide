@@ -1,5 +1,8 @@
 <?php $userId = Illuminate\Support\Facades\Auth::user()->id; ?>
 @extends('shared.layout')
+
+@section('title') Minhas Despesas @stop
+
 @section('content')
 <div class="page-title">
     <div class="title_left">

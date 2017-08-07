@@ -1,5 +1,7 @@
 @extends('shared.layout')
 
+@section('title') Cadastro de Grupo @stop
+
 @section('jsImport')
 <script src='{{URL::asset('js/angular.min.js')}}'></script>
 <script>
@@ -8,6 +10,7 @@
             $interpolateProvider.endSymbol('}');
         });
 app.controller("myCtrl", function ($scope, $http) {
+    $scope.user = JSON.parse('{!!Illuminate\Support\Facades\Auth::user()->toJson()!!}');
     $scope.group = {
         name: "",
         members: []
@@ -22,6 +25,9 @@ app.controller("myCtrl", function ($scope, $http) {
     }
 
     function existMember(userId) {
+        if(userId == $scope.user.id){
+            return true;
+        }
         for (var i = 0; i < $scope.group.members.length; i++) {
             if ($scope.group.members[i].user.id == userId) {
                 return true;
@@ -29,6 +35,7 @@ app.controller("myCtrl", function ($scope, $http) {
         }
         return false;
     }
+    
     function addIntegrant(response) {
         if (response.data != "null") {
             if (!existMember(response.data.id)) {
@@ -112,9 +119,10 @@ app.controller("myCtrl", function ($scope, $http) {
                                             <input type="hidden" name="memberId[]" value="{{Auth::user()->id}}" />
                                         </td>
                                         <td>
+                                            <input type="checkbox" ng-disabled="true" checked=""/>
                                         </td>
                                         <td>
-
+                                            <input type="checkbox" ng-disabled="true" />
                                         </td>
                                     </tr>
                                     <tr ng-repeat="member in group.members">

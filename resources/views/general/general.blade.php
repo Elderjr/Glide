@@ -1,5 +1,6 @@
 @extends ('shared.layout')                
 
+@section('title') Inicio @stop
 @section('content')
 
 <div class="row">

@@ -1,5 +1,7 @@
 @extends('shared.layout')
 
+@section('title') Detalhes do Recebimento @stop
+
 @section('content')
 
 <div class="">

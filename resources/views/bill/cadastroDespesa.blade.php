@@ -1,5 +1,7 @@
 @extends('shared.layout')
 
+@section('title') Cadastro de Despesa @stop
+
 @section('cssImport')
 <link href="{{URL::asset('css/pnotify.custom.min.css')}}" rel="stylesheet">
 @stop

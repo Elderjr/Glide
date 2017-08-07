@@ -38,6 +38,10 @@ class Requeriment extends Model {
     
     public static function filterSearch($myId, $userId, $status, $sentOrReceived, $date, $pag) {
         $requirements = Requeriment::select('requirements.*');
+        $requirements = $requirements->where(function ($query) use ($myId) {
+            $query->where('sourceUserId', $myId)
+                    ->orWhere('destinationUserId', $myId);
+        });
         if ($sentOrReceived != null && $sentOrReceived == 'sent') {
             $requirements = $requirements->where('sourceUserId', $myId);
             if ($userId != null) {
@@ -49,10 +53,6 @@ class Requeriment extends Model {
                 $requirements = $requirements->where('sourceUserId', $userId);
             }
         } else if ($sentOrReceived == null) {
-            $requirements = $requirements->where(function ($query) use ($myId){
-                $query->where('sourceUserId', $myId)
-                        ->orWhere('destinationUserId', $myId);
-            });
             if($userId != null){
                 $requirements = $requirements->where(function ($query) use ($userId) {
                     $query->where('sourceUserId', $userId)

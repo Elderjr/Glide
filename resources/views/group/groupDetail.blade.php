@@ -19,7 +19,8 @@
         $scope.searchUser = function () {
             if ($scope.username != ""){
                 $scope.loadMsg = "Procurando usuario...";
-                $http.get("{{URL::asset("api/usuario")}}/" + $scope.username).then(addIntegrant);
+                alert($scope.username);
+                $http.get("{{URL::asset('api/usuario')}}/" + $scope.username).then(addIntegrant);
             }
         }
         
@@ -75,12 +76,12 @@
                     <input type="hidden" name="groupJson" value="@{pageInfo.group}" />
                     <div class="row">
                         <div class="col-md-6">
-                            <label class="control-label"> Nome do Grupo <span class="required">*</span></label>
-                            <input type="text" required="required" class="form-control" ng-model="pageInfo.group.name" required>
+                            <label class="control-label"> Nome do Grupo: <span class="required"></span></label>
+                            <input type="text" required="required" class="form-control" ng-model="pageInfo.group.name" ng-disabled="!pageInfo.isAdmin"required>
                         </div>
                     </div>
                     <br/>
-                    <div class="row">
+                    <div class="row" ng-show="pageInfo.isAdmin">
                         <div class="col-md-12">
                             <label class="control-label">Membro</label>
                             <div class="row">
@@ -102,8 +103,8 @@
                                 <thead>
                                     <th>#</th>
                                     <th>Member</th>
-                                    <th>Tornar Admin</th>
-                                    <th>Remover</th>
+                                    <th ng-if="pageInfo.isAdmin">Tornar Admin</th>
+                                    <th ng-if="pageInfo.isAdmin"> Remover</th>
                                 </thead>
                                 <tbody>
                                     <tr ng-repeat="member in pageInfo.group.members">
@@ -112,15 +113,19 @@
                                             @{member.user.name} (@{member.user.username})
                                             <span ng-if="member.admin" class="badge bg-blue">Admin</span>
                                         </td>
-                                        <td><input ng-if="pageInfo.user.id != member.user.id" type="checkbox" ng-model="member.turnAdmin" /></td>
-                                        <td><input type="checkbox" ng-if="pageInfo.user.id != member.user.id"  ng-model="member.remove"/></td>
+                                        <td ng-if="pageInfo.isAdmin">
+                                            <input ng-if="pageInfo.user.id != member.user.id && !member.admin" type="checkbox" ng-model="member.turnAdmin" />
+                                        </td>
+                                        <td ng-if="pageInfo.isAdmin">
+                                            <input type="checkbox" ng-if="pageInfo.user.id != member.user.id"  ng-model="member.remove"/>
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
                         </div>    
                     </div>
                     <div class='divider'></div>
-                    <div class="form-group">
+                    <div class="form-group" ng-if="pageInfo.isAdmin">
                         <div class="col-md-3 col-md-offset-9">
                             <button type="submit" class="btn btn-block btn-success">Salvar</button>
                         </div>

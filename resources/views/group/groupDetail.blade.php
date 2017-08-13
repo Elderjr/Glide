@@ -21,7 +21,6 @@
         $scope.searchUser = function () {
             if ($scope.username != ""){
                 $scope.loadMsg = "Procurando usuario...";
-                alert($scope.username);
                 $http.get("{{URL::asset('api/usuario')}}/" + $scope.username).then(addIntegrant);
             }
         }

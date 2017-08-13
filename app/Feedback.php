@@ -24,4 +24,13 @@ class Feedback {
        $this->alert = null;
        $this->error = null;
    }
+   
+   public static function feedbackWithErrors($errors){
+       $feedback = new Feedback();
+       $feedback->error = "";
+       foreach($errors as $msg){
+            $feedback->error = $feedback->error. $msg . "\n";
+       }
+       return $feedback;
+   }
 }

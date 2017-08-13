@@ -1,13 +1,20 @@
 @extends('shared.layout')
 
+@section('title') Cadastro de Despesa @stop
+
+@section('cssImport')
+<link href="{{URL::asset('css/pnotify.custom.min.css')}}" rel="stylesheet">
+@stop
 @section('jsImport')
 <script src="{{URL::asset('js/angular.min.js')}}"></script>
 <script src="{{URL::asset('js/decimal.min.js')}}"></script>
 <script>
+
 var app = angular.module('myApp', [], function ($interpolateProvider) {
     $interpolateProvider.startSymbol('<%');
     $interpolateProvider.endSymbol('%>');
 });
+
 app.filter('itemParticipants', function () {
     return function (allUsers) {
         var integrantsChecked = [];
@@ -20,17 +27,112 @@ app.filter('itemParticipants', function () {
     };
 });
 app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function ($scope, itemParticipantsFilter, $http) {
-        $scope.bill = JSON.parse('{!!$bill!!}');
-        for (var i = 0; i < $scope.bill.members.length; i++) {
-            $scope.bill.members[i].itemParticipant = true;
-            $scope.bill.members[i].billParticipant = true;
-            $scope.bill.members[i].contributor = $scope.bill.members[i].contribution > 0;
+        $scope.output = {
+            bill: JSON.parse('{!!$bill!!}')
+        };
+        for(var i = 0; i < $scope.output.bill.members.length; i++){
+            var member = $scope.output.bill.members[i];
+            member.itemParticipant = true;
+            member.billParticipant = true;
+            member.contributor = member.contribution > 0;
         }
+        $scope.bill = $scope.output.bill;
+        $scope.totalItems = 0.0;
         $scope.step = 1;
+        
         $scope.searchUser = function () {
             if ($scope.username != "") {
                 $scope.loadMsg = "Procurando usuario...";
-                $http.get("http://localhost:8000/api/usuario/" + $scope.username).then(addIntegrant);
+                $http.get("{{URL::asset('api/usuario')}}/" + $scope.username).then(addIntegrant);
+            }
+        }
+
+        function existsAtLeastOneBillMember() {
+            for (var i = 0; i < $scope.bill.members.length; i++) {
+                if ($scope.bill.members[i].billParticipant) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        function showMsgError(msgError) {
+            new PNotify({
+                title: 'Notificaçao de erro',
+                text: msgError,
+                type: 'error'
+            });
+        }
+        $scope.validateFirstStep = function () {
+            var msgError = null;
+            if($scope.bill.name == null){
+                msgError = "Nome da despesa deve ser preenchido";
+            }else if($scope.bill.group == null){
+                msgError = "Selecione um grupo para a despesa";
+            }else if(!existsAtLeastOneBillMember()){
+                msgError = "Selecione pelo menos um integrante da despesa";
+            }
+            if(msgError != null){
+                showMsgError(msgError)
+                return false;
+            }
+            $scope.step = 2;
+            return true;
+        }
+
+        $scope.validateSecondStep = function () {
+            var msgError = null;
+            if ($scope.bill.items.length == 0) {
+                msgError = 'registre pelo menos um item';
+            } else {
+                $scope.totalItems = 0.0;
+                for (var i = 0; i < $scope.bill.items.length && msgError == null; i++) {
+                    if ($scope.bill.items[i].name == "") {
+                        msgError = 'O item ' + (i + 1) + 'esta sem nome';
+                    } else if (!isNumber($scope.bill.items[i].price)) {
+                        msgError = 'O preço do item ' + $scope.bill.items[i].name + " esta com formato errado";
+                    } else if (!isNumber($scope.bill.items[i].qt)) {
+                        msgError = 'A quantidade do item ' + $scope.bill.items[i].name + " esta com formato errado";
+                    } else if (!$scope.checkDistribution($scope.bill.items[i])) {
+                        msgError = 'O item ' + $scope.bill.items[i].name + " esta com distribuiçao errada";
+                    }
+                    var total = Decimal.mul($scope.bill.items[i].price, $scope.bill.items[i].qt).toNumber();
+                    $scope.totalItems = Decimal.add($scope.totalItems, total).toNumber();
+                }
+            }
+            if (msgError != null) {
+                showMsgError(msgError);
+                return false;
+            } 
+            calculeValuePerMember();
+            $scope.step = 3;
+            return true;
+        }
+
+        $scope.validateThirdStep = function () {
+            var msgError = null;
+            var total = 0.0;
+            var existAtLeastOneContributor;
+            for (var i = 0; i < $scope.bill.members.length && msgError == null; i++) {
+                if ($scope.bill.members[i].contributor) {
+                    existAtLeastOneContributor = true;
+                }
+                if (!isNumber($scope.bill.members[i].contribution)) {
+                    msgError = 'Contribuiçao do usuario ' + $scope.bill.members[i].user.name + " esta no formato errado";
+                }
+                total = Decimal.add(total, $scope.bill.members[i].contribution).toNumber();
+            }
+            if (msgError != null) {
+                showMsgError(msgError);
+                return false;
+            } else if (!existAtLeastOneContributor) {
+                showMsgError('Registre pelo menos um contribuidor');
+                return false;
+            } else if (total != $scope.totalItems) {
+                showMsgError('Total de contribuiçao diferente do total da despesa');
+                return false;
+            } else {
+                return true;
             }
         }
 
@@ -79,19 +181,7 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
             member.contribution = 0.0;
         }
 
-        $scope.onGroupSelected = function () {
-            if ($scope.groupSelected != null) {
-                $scope.bill.members = [];
-                for (var i = 0; i < $scope.groupSelected.members.length; i++) {
-                    addMember($scope.groupSelected.members[i].user);
-                    $scope.bill.group = {id: $scope.groupSelected.id,
-                        name: $scope.groupSelected.name
-                    };
-                }
-            }
-        }
-
-
+        
         function getMemberById(userId) {
             for (var i = 0; i < $scope.bill.members.length; i++) {
                 if ($scope.bill.members[i].user.id == userId) {
@@ -121,13 +211,11 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                     var member = {
                         id: -1,
                         user: itemMembers[i].user,
-                        distribution: dist[i]
-                    };
+                        distribution: dist[i]};
                     item.members.push(member);
                 }
             }
             $scope.bill.items.push(item);
-
         }
 
         function addElement(element, array) {
@@ -174,15 +262,8 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
             return false;
         }
 
-        $scope.finish = function () {
-            calculeValuePerMember();
-            return false;
-        }
 
         function calculeValuePerMember() {
-            for(var i = 0; i < $scope.bill.members.length; i++){
-                $scope.bill.members[i].value = 0.0;
-            }
             for (var i = 0; i < $scope.bill.items.length; i++) {
                 for (var j = 0; j < $scope.bill.items[i].members.length; j++) {
                     var member = getMemberById($scope.bill.items[i].members[j].user.id);
@@ -196,16 +277,18 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
         function isNumber(n) {
             return !isNaN(parseFloat(n)) && isFinite(n);
         }
+    }]);
 
-
-    }]);</script>
+function validateBillForm() {
+    return angular.element($("#billForm")).scope().validateThirdStep();
+}
+</script>
 @stop
 
 @section('content')
-<div class="" ng-app="myApp" ng-controller="myCtrl">
-    <% bill.members %>
+<div class="" ng-app="myApp" ng-controller="myCtrl">    
     <div class="page-title">
-        <div class="title_left">
+        <div class="col-xs-12">
             <h3>Cadastro de despesa</h3>
         </div>
     </div>
@@ -214,40 +297,42 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_title">
-                    <h2>Passo 1 </h2>
+                    <h2>Passo 1 - Informaçoes Gerais</h2>
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
                     <h4>Informaçoes Gerais</h4>
                     <div class="form-vertical form-label-left">
                         <div class="row">
-                            <div class="col-md-5 col-sm-4 col-xs-4 form-group has-feedback">
+                            <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
                                 <div class="form-group">
-                                    <label>Nome da despesa</label>
+                                    <label>Nome da despesa*:</label>
                                     <input type="text" ng-model="bill.name" class="form-control has-feedback-left" placeholder="Nome da despesa">
                                     <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
                                 </div>
                             </div>
-
-                            <div class="col-md-2 col-sm-3 col-xs-3">
+                            
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <label class="control-label">Grupo*:</label>
+                                <input type="text" value="<% bill.group.name %>" class="form-control" ng-disabled="true" >
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 col-sm-6 col-xs-12">
                                 <div class="form-group">
-                                    <label>Data</label>
-                                    <input type="date" value="<%bill.date%>" ng-model="bill.date"  class='form-control' />
+                                    <label>Data:</label>
+                                    <input type="date" ng-model="bill.date" class='form-control' />
                                 </div>
                             </div>
 
-                            <div class="col-md-2 col-sm-3 col-xs-3">
+                            <div class="col-md-6 col-sm-6 col-xs-12">
                                 <div class="form-group">
-                                    <label>Data de Alerta</label>
-                                    <input type="date" value="<% bill.alertDate %>" ng-model="bill.alertDate"  class='form-control' />
+                                    <label>Data de Alerta:</label>
+                                    <input type="date" ng-model="bill.alertDate" class='form-control' />
                                 </div>
                             </div>
-                            <div class="col-md-3 col-sm-3 col-xs-3">
-                                <div class="form-group">
-                                    <label class="control-labe">Grupo</label>
-                                    <span class="form-control"><% bill.group.name%></span>
-                                </div>
-                            </div>
+                            
                         </div>
                     </div>
                     <h4>Integrantes da Despesa</h4>
@@ -256,10 +341,10 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                             <div class="col-md-12">
                                 <label>Usuario</label>
                                 <div class="row">
-                                    <div class="col-md-3">
+                                    <div class="col-md-3 col-sm-6 col-xs-12">
                                         <input type="text" class="form-control" ng-model="username"/>
                                     </div>
-                                    <div class="col-md-2">
+                                    <div class="col-md-2 col-sm-6 col-xs-12">
                                         <button type="button" class="btn btn-primary btn-block" ng-click="searchUser()">Adicionar</button>
                                     </div>
                                     <% loadMsg %>
@@ -267,8 +352,9 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                             </div>
                         </div>
                     </div>
+
                     <div class="row">
-                        <div class="col-md-2" ng-repeat="member in bill.members">
+                        <div class="col-md-2 col-xs-4" ng-repeat="member in bill.members">
                             <div class="checkbox">
                                 <label><input type="checkbox"  ng-model="member.billParticipant"/> <%member.user.name%> (<%member.user.username%>)</label>
                             </div>
@@ -284,8 +370,8 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                     </div>
                     <div class='ln_solid'></div>
                     <div class='row'>
-                        <div class="col-md-3 col-md-offset-9">
-                            <button class='btn btn-success btn-block' ng-click="setStep(2)">Proximo Passo</button>
+                        <div class="col-md-3 col-md-offset-9 col-xs-6 col-xs-offset-6">
+                            <button class='btn btn-success btn-block' ng-click="validateFirstStep()">Proximo Passo</button>
                         </div>
                     </div>
                 </div>
@@ -304,29 +390,29 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                 <div class="x_content">
                     <div class="form-vertical form-label-left">
                         <div class="row">
-                            <div class="col-md-5 col-sm-4 col-xs-4 form-group has-feedback">
+                            <div class="col-md-6 col-sm-4 col-xs-8 form-group has-feedback">
                                 <div class="form-group">
-                                    <label>Nome</label>
+                                    <label>Nome:</label>
                                     <input type="text" ng-model="rItem.name" class="form-control has-feedback-left" placeholder="Nome da despesa">
                                     <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
                                 </div>
                             </div>
 
-                            <div class="col-md-2 col-sm-3 col-xs-3">
+                            <div class="col-md-2 col-sm-3 col-xs-4">
                                 <div class="form-group">
-                                    <label>Quantidade</label>
+                                    <label>Quantidade:</label>
                                     <input type="number" ng-model="rItem.qt" class='form-control' step='1' />
                                 </div>
                             </div>
 
-                            <div class="col-md-4 col-sm-3 col-xs-3">
+                            <div class="col-md-4 col-sm-3 col-xs-12">
                                 <div class="form-group">
-                                    <label>Preço unitario</label>
+                                    <label>Preço unitario:</label>
                                     <div class='row'>
-                                        <div class='col-md-6'>
+                                        <div class='col-md-6 col-xs-8'>
                                             <input type="number" ng-model="rItem.price" class='form-control' step='0.01' />
                                         </div>
-                                        <div class='col-md-6'>
+                                        <div class='col-md-6 col-xs-4'>
                                             <button class='btn btn-primary btn-block' ng-click="addItem()">Adicionar</button>
                                         </div>
                                     </div>
@@ -335,63 +421,59 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                         </div>
                         <h4>Integrantes do Item</h4>
                         <div class="row">
-                            <div class="col-md-2" ng-repeat="member in bill.members| filter: {billParticipant:true}">
+                            <div class="col-md-2 col-xs-4" ng-repeat="member in bill.members| filter: {billParticipant:true}">
                                 <div class="checkbox">
                                     <label><input type="checkbox"  ng-model="member.itemParticipant"/> <%member.user.name%> (<%member.user.username%>)</label>
                                 </div>
                             </div>    
                         </div>
-                        <table class='table table-striped'>
-                            <thead>
-                            <th>Item</th>
-                            <th>Valor</th>
-                            <th>Distribuiçao</th>
-                            <th>Remover</th>
-                            </thead>
-                            <tbody>
-                                <tr ng-repeat="item in bill.items">
-                                    <td>
-                                        <div class='col-md-12'>
+                        <div class="row">
+                            <table class='table table-striped col-md-12 col-xs-12 col-sm-12'>
+                                <thead>
+                                <th>Item</th>
+                                <th>Preço Unitario x Quantidade</th>
+                                <th>Distribuiçao</th>
+                                <th>Remover</th>
+                                </thead>
+                                <tbody>
+                                    <tr ng-repeat="item in bill.items">
+                                        <td class='col-md-5'>
                                             <input type="text" ng-model='item.name' class="form-control" />
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div class="row">
-                                            <div class='col-md-3'>
-                                                <input type="number" ng-model="item.price" value="<%item.price%>" step = 0.01  class="form-control"/>X
+                                        </td>
+                                        <td class='col-md-3'>
+                                            <div class='col-md-5'>
+                                                <input type="number" ng-model="item.price" step = 0.01  class="form-control"/>
                                             </div>
-                                            <div class='col-md-3'>
-                                                <input type="number" ng-model="item.qt" value="<%item.qt%>" class="form-control"/>
+                                            <div class='col-md-2' style="text-align: center;">
+                                                X
                                             </div>
-                                            <div class='col-md-4'>
-                                                (<%item.price * item.qt%>)
+                                            <div class='col-md-5'>
+                                                <input type="number" ng-model="item.qt" class="form-control"/>
+                                            </div>    
+                                        </td>
+                                        <td class='col-md-2'>
+                                            <div ng-if="!checkDistribution(item)">
+                                                A distribuiçao esta incorreta
                                             </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <div ng-if="!checkDistribution(item)">
-                                            A distribuiçao esta incorreta
-                                        </div>
-                                        <ul>
-                                            <li ng-repeat="member in item.members">
-                                                <%member.user.name%> (<%member.user.username%>): 
-                                                <input type="number" ng-model="member.distribution" value="<% member.distribution %>" step="0.01" class="form-control" />
-                                            </li>
-                                        </ul>
-                                    </td>
-                                    <td>
-                                        <button type="button" class="btn btn-danger btn-sm" ng-click="removeElement(item, bill.items)">Remove</button>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
+                                            <div clas='col-md-12' ng-repeat="member in item.members">
+                                                <label ><%member.user.name%> (<%member.user.username%>): </label>
+                                                <input type="number" ng-model="member.distribution" step="0.01" class="form-control" />
+                                            </div>
+                                        </td>
+                                        <td class='col-md-1'>
+                                            <button type="button" class="btn btn-danger btn-sm btn-block" ng-click="removeElement(item, bill.items)">remover</button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <div class='ln_solid'></div>
                         <div class='row'>
-                            <div class="col-md-3 col-md-offset-6">
+                            <div class="col-md-3 col-md-offset-6 col-xs-6">
                                 <button class='btn btn-default btn-block' ng-click="setStep(1)">Voltar</button>
                             </div>
-                            <div class="col-md-3">
-                                <button class='btn btn-success btn-block' ng-click="setStep(3)">Proximo Passo</button>
+                            <div class="col-md-3 col-xs-6">
+                                <button class='btn btn-success btn-block' ng-click="validateSecondStep()">Proximo Passo</button>
                             </div>
                         </div>
                     </div>
@@ -410,22 +492,22 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                 </div>
                 <div class="x_content">
                     <div class="form-vertical form-label-left">
-                        <b>Valor total: </b> R$ 32,00
+                        <b>Valor total: </b> R$ <% totalItems %>
                         <div class="row">
-                            <div class="col-md-3">
+                            <div class="col-md-3 col-xs-12">
                                 <label>Integrante</label>
                                 <select ng-model="rContributor.member" class="form-control">
                                     <option ng-repeat="member in bill.members| filter: {billParticipant: true}" ng-value="member"><%member.user.name%> (<%member.user.username%>)</option>
                                 </select>
                             </div>
-                            <div class="col-md-8">
+                            <div class="col-md-8 col-xs-12">
                                 <label>Valor</label>
                                 <div class="row">
-                                    <div class="col-md-2">
+                                    <div class="col-md-3 col-xs-6">
                                         <input type="number" ng-model="rContributor.value" min="0" step="0.01" class="form-control" />
                                     </div>
-                                    <div class="col-md-2">
-                                        <button type="button" class="btn btn-primary btn-block"ng-click="addContributor()">Add</button>
+                                    <div class="col-md-3 col-xs-6">
+                                        <button type="button" class="btn btn-primary btn-block"ng-click="addContributor()">Adicionar</button>
                                     </div>
                                 </div>
                             </div>
@@ -446,7 +528,7 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                                             <%member.user.name%> (<%member.user.username%>) 
                                         </td>
                                         <td> 
-                                            <input type="number" class="form-control" ng-model="member.contribution" value="<%member.contribution %>" />
+                                            <input type="number" class="form-control" ng-model="member.contribution" />                                            
                                         </td>
                                         <td>
                                             <button type="button" ng-click="removeContributor(member)" class="btn btn-danger btn-sm">Remove</button>
@@ -463,10 +545,10 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                             <button class='btn btn-default btn-block' ng-click="setStep(2)">Voltar</button>
                         </div>
                         <div class="col-md-3">
-                            <form action="{{action("BillController@update")}}" method="post">
+                            <form action="{{action("BillController@update")}}" id="billForm" method="post" onsubmit="return validateBillForm();" >
                                 {{csrf_field()}}
-                                <input type="hidden" value="<%bill%>" name="billJson" />
-                                <button type="submit" ng-click="finish()" class='btn btn-success btn-block'>Cadastrar Despesa</button>
+                                <input type="hidden" value="<% output %>" name="billJson" />
+                                <button type="submit" class='btn btn-success btn-block'>Cadastrar Despesa</button>
                             </form>
                         </div>
                     </div>

@@ -15,10 +15,6 @@ var app = angular.module('myApp', [], function ($interpolateProvider) {
     $interpolateProvider.endSymbol('%>');
 });
 
-
-
-
-
 app.filter('itemParticipants', function () {
     return function (allUsers) {
         var integrantsChecked = [];
@@ -32,13 +28,15 @@ app.filter('itemParticipants', function () {
 });
 app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function ($scope, itemParticipantsFilter, $http) {
         $scope.myGroups = JSON.parse('{!!$myGroupsJson!!}');
-        $scope.bill = {};
+        $scope.bill = {id: -1};
         $scope.bill.members = [];
         $scope.bill.items = [];
         $scope.bill.group = null;
         $scope.totalItems = 0.0;
         $scope.step = 1;
-
+        $scope.output = {
+            bill: $scope.bill
+        };
         $scope.searchUser = function () {
             if ($scope.username != "") {
                 $scope.loadMsg = "Procurando usuario...";
@@ -316,33 +314,36 @@ function validateBillForm() {
                     <h4>Informaçoes Gerais</h4>
                     <div class="form-vertical form-label-left">
                         <div class="row">
-                            <div class="col-md-5 col-sm-12 col-xs-12 form-group has-feedback">
+                            <div class="col-md-6 col-sm-6 col-xs-12 form-group has-feedback">
                                 <div class="form-group">
                                     <label>Nome da despesa*:</label>
                                     <input type="text" ng-model="bill.name" class="form-control has-feedback-left" placeholder="Nome da despesa">
                                     <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
                                 </div>
                             </div>
-
-                            <div class="col-md-2 col-sm-3 col-xs-12">
+                            
+                            <div class="col-md-6 col-sm-6 col-xs-12">
+                                <label class="control-label">Grupo*:</label>
+                                <select ng-model="groupSelected" ng-change="onGroupSelected()" ng-options="group.name for group in myGroups" class="form-control">
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 col-sm-6 col-xs-12">
                                 <div class="form-group">
-                                    <label>Data</label>
+                                    <label>Data:</label>
                                     <input type="date" ng-model="bill.date" class='form-control' />
                                 </div>
                             </div>
 
-                            <div class="col-md-2 col-sm-3 col-xs-12">
+                            <div class="col-md-6 col-sm-6 col-xs-12">
                                 <div class="form-group">
-                                    <label>Data de Alerta</label>
+                                    <label>Data de Alerta:</label>
                                     <input type="date" ng-model="bill.alertDate" class='form-control' />
                                 </div>
                             </div>
-                            <div class="col-md-3 col-sm-6 col-xs-12">
-                                <label class="control-label">Grupo*:</label>
-                                <select ng-model="groupSelected" ng-change="onGroupSelected()" ng-options="group.name for group in myGroups" class="form-control">
-
-                                </select>
-                            </div>
+                            
                         </div>
                     </div>
                     <h4>Integrantes da Despesa</h4>
@@ -557,7 +558,7 @@ function validateBillForm() {
                         <div class="col-md-3">
                             <form action="{{action("BillController@create")}}" id="billForm" method="post" onsubmit="return validateBillForm();" >
                                 {{csrf_field()}}
-                                <input type="hidden" value="<%bill%>" name="billJson" />
+                                <input type="hidden" value="<% output %>" name="billJson" />
                                 <button type="submit" class='btn btn-success btn-block'>Cadastrar Despesa</button>
                             </form>
                         </div>

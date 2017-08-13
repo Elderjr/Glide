@@ -1,6 +1,7 @@
 <?php
 
 if (getenv("DATABASE_URL") != null) {
+    echo 'sda';
     $url = parse_url(getenv("DATABASE_URL"));
     $host = $url["host"];
     $username = $url["user"];

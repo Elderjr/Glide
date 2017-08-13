@@ -143,13 +143,13 @@ class Bill extends Model {
                         } else {
                             $debt = $bill->getDebt($member->userId, $userId);
                         }
-                        if ($value > $debt) {
+                        if ($value > $debt && $debt > 0) {
                             if (!isset($sugestions[$member->user->toString()])) {
                                 $sugestions[$member->user->toString()] = 0.0;
                             }
                             $sugestions[$member->user->toString()] += $debt;
                             $value -= $debt;
-                        } else {
+                        } else if($debt > 0){
                             if (!isset($sugestions[$member->user->toString()])) {
                                 $sugestions[$member->user->toString()] = 0.0;
                             }

@@ -7,7 +7,7 @@ use App\BillMember;
 use App\Item;
 use App\ItemMember;
 use Datetime;
-
+use Exception;
 
 class BillBuilder {
 
@@ -102,16 +102,18 @@ class BillBuilder {
         $bill = $this->makeBill($object->bill);
         $billMembers = [];
         $totalContribution = 0.0;
+        $totalValue = 0.0;
         foreach($object->bill->members as $inputMember){
-            $totalContribution = bcadd($totalContribution, $inputMember->contribution);
+            $totalContribution = bcadd($totalContribution, $inputMember->contribution, 2);
+            $totalValue = bcadd($totalValue, $inputMember->value, 2);
             array_push($billMembers, $this->makeBillMember($inputMember));
         }
         $items = [];
         $itemMembers = [];
         $totalItems = 0.0;
         foreach($object->bill->items as $inputItem){
-            $itemValue = bcmul($inputItem->qt, $inputItem->price);
-            $totalItems = bcadd($totalItems, $itemValue);
+            $itemValue = bcmul($inputItem->qt, $inputItem->price, 2);
+            $totalItems = bcadd($totalItems, $itemValue, 2);
             array_push($items, $this->makeItem($inputItem));
             $members = [];
             $totalDistribution = 0.0;
@@ -120,14 +122,14 @@ class BillBuilder {
                 array_push($members, $this->makeItemMember($inputMember));
             }
             if($totalDistribution != $itemValue){
-                echo "item fail";
-                return;
+                throw new Exception("Fail: value of ".$inputItem->name."(".$itemValue.") != distribution (".$totalDistribution.")");
             }
             array_push($itemMembers, $members);
         }
         if($totalItems != $totalContribution){
-            echo "total fail";
-            return;
+            throw new Exception("Fail: items value (".$totalItems.") != contribution value(".$totalContribution.")");
+        }else if($totalItems != $totalValue){
+            throw new Exception("Fail: items value (".$totalItems.") != member value(".$totalValue.")");
         }
         $bill->total = $totalItems;
         if($object->bill->id != -1){

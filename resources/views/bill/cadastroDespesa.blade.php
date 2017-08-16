@@ -274,6 +274,10 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
 
 
         function calculeValuePerMember() {
+            //reset values
+            for (var i = 0; i < $scope.bill.members.length; i++) {
+                $scope.bill.members[i].value = 0.0;
+            }
             for (var i = 0; i < $scope.bill.items.length; i++) {
                 for (var j = 0; j < $scope.bill.items[i].members.length; j++) {
                     var member = getMemberById($scope.bill.items[i].members[j].user.id);

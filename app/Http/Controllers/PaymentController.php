@@ -80,9 +80,11 @@ class PaymentController extends Controller {
             $user = Auth::user();
             $object = json_decode($request->get("paymentJson"));
             $payment = new Payment();
+            $payment->status = "confirmed";
             $payment->value = 0.0;
             $payment->payerUserId = $object->payerUser->id;
             $payment->receiverUserId = $user->id;
+            $payment->description = (isset($object->description)) ? $object->description : null;
             $paymentBills = [];
             foreach ($object->paymentBills as $input) {
                 if($input->value > 0){
@@ -117,7 +119,7 @@ class PaymentController extends Controller {
         $user = Auth::user();
         $generalPayment = Payment::Find($id);
         $feedback = new Feedback();
-        if ($generalPayment != null) {
+        if ($generalPayment != null && $generalPayment->status == "confirmed") {
             $generalPayment->rollback();
             $feedback->success = "Pagamento revertido com sucesso";
             return redirect(action("PaymentController@index"))->with('generalInformation', User::getGeneralInformation($user))

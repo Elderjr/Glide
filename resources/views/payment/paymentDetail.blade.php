@@ -17,8 +17,9 @@
         <div class="col-md-12 col-sm-12 col-xs-12">
             <div class="x_panel">
                 <div class="x_title">
-
-                    <h2>Pagamento de {{$payment->payerUser->name}} para {{$payment->receiverUser->name}}</h2>
+                    <h2>
+                        Pagamento de {{$payment->payerUser->name}} para {{$payment->receiverUser->name}}
+                    </h2>
                     <ul class="nav navbar-right panel_toolbox">
                         <li><a class="collapse-link"><i class="fa fa-chevron-up"></i></a>
                         </li>
@@ -37,6 +38,12 @@
                     <div class="clearfix"></div>
                 </div>
                 <div class="x_content">
+                    Status: 
+                    @if($payment->status == "confirmed")
+                        <span class="badge bg-blue">confirmado</span>
+                    @else
+                        <span class="badge bg-red">cancelado</span>
+                    @endif
                     <table class="table table-striped" width='30%'>
                         <thead>
                         <th>#</th>
@@ -66,12 +73,14 @@
                         </div>
                     </div>
                     @endif
+                    @if($payment->status == "confirmed")
                     <br/>
                     <div class="row">
                         <div class="col-md-3 col-md-offset-9">
                             <a href="{{action("PaymentController@rollback", $payment->id)}}" class='btn btn-danger btn-block'>Reverter Recebimento</a>
                         </div>
                     </div>
+                    @endif
                 </div>
             </div>
         </div>

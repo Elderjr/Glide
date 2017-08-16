@@ -16,7 +16,7 @@ class CreatePaymentsBillsTable extends Migration
         Schema::create('paymentsBills', function (Blueprint $table) {
             $table->increments('id');
             $table->unsignedInteger('billId')->nullable();
-            $table->foreign('billId')->references('id')->on('bills')
+            $table  ->foreign('billId')->references('id')->on('bills')
                     ->onDelete('set null')->onUpdate('cascade');
             $table->unsignedInteger('paymentId');
             $table->foreign('paymentId')->references('id')->on('payments')

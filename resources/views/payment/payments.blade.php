@@ -70,7 +70,12 @@
                         <?php $count = 1; ?>
                         @foreach($payments as $payment)
                         <tr>
-                            <td>{{$count}}</td>
+                            <td>
+                                {{$count}}
+                                @if($payment->status == "canceled")
+                                    <span class="badge bg-red">cancelado</span>
+                                @endif
+                            </td>
                             <td>{{$payment->receiverUser->toString()}}</td>
                             <td>{{$payment->payerUser->toString()}}</td>
                             <td>

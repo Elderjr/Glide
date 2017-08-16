@@ -33,14 +33,15 @@ class Payment extends Model {
 
     public function rollback() {
         foreach ($this->paymentBills as $payment) {
-            echo BillMember::where('billId', $payment->billId)
+            BillMember::where('billId', $payment->billId)
                     ->where('userId', $this->receiverUserId)
                     ->increment('paid', $payment->value);
-            echo BillMember::where('billId', $payment->billId)
+            BillMember::where('billId', $payment->billId)
                     ->where('userId', $this->payerUserId)
                     ->decrement('paid', $payment->value);
         }
-        $this->delete();
+        $this->status = "canceled";
+        $this->save();
     }
 
     public static function filterSearch($myId, $userId, $date, $pag) {

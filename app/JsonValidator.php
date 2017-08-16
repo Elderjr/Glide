@@ -47,13 +47,11 @@ class JsonValidator{
         if($validator->fails()){
             return $validator;
         }
-        return Validator::make(json_decode($request->paymentsJson, true), [
-            'payment' => 'required',
-            'payment.payerUser.id' => 'required|integer',
-            'payment.receiverUser.id' => 'required|integer',
-            'payment.paymentBills' => 'required|array',
-            'payment.paymentBills.*.bill.id' => 'required|integer',
-            'payment.paymentBills.*.value' => 'required|numeric'
+        return Validator::make(json_decode($request->paymentJson, true), [
+            'payerUser.id' => 'required|integer',
+            'paymentBills' => 'required|array',
+            'paymentBills.*.bill.id' => 'required|integer',
+            'paymentBills.*.value' => 'required|numeric'
         ]);
     }
     

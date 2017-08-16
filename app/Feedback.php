@@ -29,7 +29,7 @@ class Feedback {
        $feedback = new Feedback();
        $feedback->error = "";
        foreach($errors as $msg){
-            $feedback->error = $feedback->error. $msg . "\n";
+            $feedback->error = $feedback->error. $msg . "\\n";
        }
        return $feedback;
    }

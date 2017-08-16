@@ -8,6 +8,7 @@ use App\User;
 use App\Payment;
 use App\PaymentBill;
 use App\Feedback;
+use App\JsonValidator;
 use Illuminate\Support\Facades\Auth;
 
 class PaymentController extends Controller {
@@ -34,7 +35,7 @@ class PaymentController extends Controller {
         } else if ($user != null) {
             $payments = Payment::filterSearch($user->id, null, null, 1);
             return view('payment.payments')->with('generalInformation', $generalInformation)
-                    ->with('payments', $payments);
+                            ->with('payments', $payments);
         }
         return redirect('/');
     }
@@ -48,21 +49,23 @@ class PaymentController extends Controller {
             $payerUser = User::where('username', $request->get("username"))->first();
             if ($payerUser != null) {
                 $bills = Bill::getBillsInDebtWithUser($user->id, $payerUser->id);
-                $billsInDebt = [];
+                $paymentBills = [];
                 foreach ($bills as $bill) {
-                    $simpleBill = (object) array(
-                                'id' => $bill->id,
-                                'name' => $bill->name,
-                                'debt' => $bill->getDebt($user->id, $payerUser->id),
-                                'payment' => 0.0
+                    $paymentBill = (object) array(
+                        'bill' => (object) array(
+                            'id' => $bill->id,
+                            'name' => $bill->name,
+                            'debt' => $bill->getDebt($user->id, $payerUser->id)
+                        ),
+                        'value' => 0.0
                     );
-                    array_push($billsInDebt, $simpleBill);
+                    array_push($paymentBills, $paymentBill);
                 }
-                $payement = (object) array(
-                            'payerUser' => $payerUser,
-                            'bills' => $billsInDebt
+                $payment = (object) array(
+                    'paymentBills' => $paymentBills,
+                    'payerUser' => $payerUser
                 );
-                return view('payment.payment')->with('generalInformation', $generalInformation)->with('paymentsJson', $payement);
+                return view('payment.payment')->with('generalInformation', $generalInformation)->with('payment', $payment);
             } else {
                 $feedback = new Feedback();
                 $feedback->alert = "Usuário não encontrado";
@@ -72,26 +75,35 @@ class PaymentController extends Controller {
     }
 
     public function store(Request $request) {
-        $user = Auth::user();
-        $object = json_decode($request->get("paymentsJson"));
-        $payment = new Payment();
-        $payment->value = 0.0;
-        $payment->payerUserId = $object->payerUser->id;
-        $payment->receiverUserId = $user->id;
-        $paymentsBills = [];
-        foreach ($object->bills as $bill) {
-            $paymentBill = new PaymentBill();
-            $paymentBill->billId = $bill->id;
-            $paymentBill->value = $bill->payment;
-            $payment->value += $paymentBill->value;
-            array_push($paymentsBills, $paymentBill);
+        $validator = JsonValidator::validatePaymentRegister($request);
+        if (!$validator->fails()) {
+            $user = Auth::user();
+            $object = json_decode($request->get("paymentJson"));
+            $payment = new Payment();
+            $payment->value = 0.0;
+            $payment->payerUserId = $object->payerUser->id;
+            $payment->receiverUserId = $user->id;
+            $paymentBills = [];
+            foreach ($object->paymentBills as $input) {
+                if($input->value > 0){
+                    $paymentBill = new PaymentBill();
+                    $paymentBill->billId = $input->bill->id;
+                    $paymentBill->value = $input->value;
+                    $payment->value = bcadd($payment->value, $input->value, 2);
+                    array_push($paymentBills, $paymentBill);
+                }
+            }
+            $payment->save();
+            $payment->paymentBills()->saveMany($paymentBills);
+            $payment->doPayment();
+            $feedback = new Feedback();
+            $feedback->success = "Pagamento efetuado com sucesso";
+            return back()->with('feedback', $feedback);
+        } else {
+            $feedback = \App\Feedback::feedbackWithErrors($validator->errors()->all());
+            return redirect(action("PaymentController@create"))
+                            ->with('feedback', \App\Feedback::feedbackWithErrors($validator->errors()->all()));
         }
-        $payment->save();
-        $payment->paymentBills()->saveMany($paymentsBills);
-        $payment->doPayment();
-        $feedback = new Feedback();
-        $feedback->success = "Pagamento efetuado com sucesso";
-        return back()->with('feedback', $feedback);
     }
 
     public function show($id) {

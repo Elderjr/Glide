@@ -34,9 +34,6 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
         $scope.bill.group = null;
         $scope.totalItems = 0.0;
         $scope.step = 1;
-        $scope.output = {
-            bill: $scope.bill
-        };
         $scope.searchUser = function () {
             if ($scope.username != "") {
                 $scope.loadMsg = "Procurando usuario...";
@@ -562,7 +559,7 @@ function validateBillForm() {
                         <div class="col-md-3">
                             <form action="{{action("BillController@create")}}" id="billForm" method="post" onsubmit="return validateBillForm();" >
                                 {{csrf_field()}}
-                                <input type="hidden" value="<% output %>" name="billJson" />
+                                <input type="hidden" value="<% bill %>" name="billJson" />
                                 <button type="submit" class='btn btn-success btn-block'>Cadastrar Despesa</button>
                             </form>
                         </div>

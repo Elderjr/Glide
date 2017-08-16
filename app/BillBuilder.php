@@ -98,12 +98,12 @@ class BillBuilder {
         $this->billMembersToNotDelete = [];
         $this->itemsMembersToNotDelete = [];
         $this->itemsToNotDelete = [];
-        $object = json_decode($billJson);
-        $bill = $this->makeBill($object->bill);
+        $inputBill = json_decode($billJson);
+        $bill = $this->makeBill($inputBill);
         $billMembers = [];
         $totalContribution = 0.0;
         $totalValue = 0.0;
-        foreach($object->bill->members as $inputMember){
+        foreach($inputBill->members as $inputMember){
             $totalContribution = bcadd($totalContribution, $inputMember->contribution, 2);
             $totalValue = bcadd($totalValue, $inputMember->value, 2);
             array_push($billMembers, $this->makeBillMember($inputMember));
@@ -111,7 +111,7 @@ class BillBuilder {
         $items = [];
         $itemMembers = [];
         $totalItems = 0.0;
-        foreach($object->bill->items as $inputItem){
+        foreach($inputBill->items as $inputItem){
             $itemValue = bcmul($inputItem->qt, $inputItem->price, 2);
             $totalItems = bcadd($totalItems, $itemValue, 2);
             array_push($items, $this->makeItem($inputItem));
@@ -132,7 +132,7 @@ class BillBuilder {
             throw new Exception("Fail: items value (".$totalItems.") != member value(".$totalValue.")");
         }
         $bill->total = $totalItems;
-        if($object->bill->id != -1){
+        if($inputBill->id != -1){
             $this->deleteleRelationships($bill);
         }
         $bill->save();

@@ -27,16 +27,13 @@ app.filter('itemParticipants', function () {
     };
 });
 app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function ($scope, itemParticipantsFilter, $http) {
-        $scope.output = {
-            bill: JSON.parse('{!!$bill!!}')
-        };
-        for(var i = 0; i < $scope.output.bill.members.length; i++){
-            var member = $scope.output.bill.members[i];
+        $scope.bill = JSON.parse('{!!$bill!!}');
+        for(var i = 0; i < $scope.bill.members.length; i++){
+            var member = $scope.bill.members[i];
             member.itemParticipant = true;
             member.billParticipant = true;
             member.contributor = member.contribution > 0;
         }
-        $scope.bill = $scope.output.bill;
         $scope.totalItems = 0.0;
         $scope.step = 1;
         
@@ -551,7 +548,7 @@ function validateBillForm() {
                         <div class="col-md-3">
                             <form action="{{action("BillController@update")}}" id="billForm" method="post" onsubmit="return validateBillForm();" >
                                 {{csrf_field()}}
-                                <input type="hidden" value="<% output %>" name="billJson" />
+                                <input type="hidden" value="<% bill %>" name="billJson" />
                                 <button type="submit" class='btn btn-success btn-block'>Cadastrar Despesa</button>
                             </form>
                         </div>

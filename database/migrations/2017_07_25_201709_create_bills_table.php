@@ -20,9 +20,9 @@ class CreateBillsTable extends Migration
             $table->text('description')->nullable();
             $table->date('date')->nullable();
             $table->date('alertDate')->nullable();
-            $table->unsignedInteger('groupId');
+            $table->unsignedInteger('groupId')->nullable;
             $table->foreign('groupId')->references('id')->on('groups')
-                    ->onDelete('cascade')->onUpdate('cascade');
+                    ->onDelete('set null')->onUpdate('cascade');
             $table->timestamps();
         });
     }

@@ -15,9 +15,9 @@ class CreatePaymentsBillsTable extends Migration
     {
         Schema::create('paymentsBills', function (Blueprint $table) {
             $table->increments('id');
-            $table->unsignedInteger('billId');
+            $table->unsignedInteger('billId')->nullable();
             $table->foreign('billId')->references('id')->on('bills')
-                    ->onDelete('cascade')->onUpdate('cascade');
+                    ->onDelete('set null')->onUpdate('cascade');
             $table->unsignedInteger('paymentId');
             $table->foreign('paymentId')->references('id')->on('payments')
                     ->onDelete('cascade')->onUpdate('cascade');

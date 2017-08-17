@@ -88,7 +88,7 @@
                             <th>Nome</th>
                             <th>Valor</th>
                             <th>Data</th>
-                            <th>Detalhes</th>
+                            <th>Açoes</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -108,6 +108,7 @@
                             </td>
                             <td>
                                 <a href="{{action("BillController@show", $bill->id)}}" class="btn btn-primary btn-xs">detalhes</a>
+                                <a href="{{action("BillController@edit", $bill->id)}}" class="btn btn-primary btn-xs btn-warning">editar</a>
                             </td>
                         </tr>
                         <?php $count++ ?>

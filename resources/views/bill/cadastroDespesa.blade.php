@@ -405,7 +405,7 @@ function validateBillForm() {
                             <div class="col-md-6 col-sm-4 col-xs-8 form-group has-feedback">
                                 <div class="form-group">
                                     <label>Nome:</label>
-                                    <input type="text" ng-model="rItem.name" class="form-control has-feedback-left" placeholder="Nome da despesa">
+                                    <input type="text" ng-model="rItem.name" class="form-control has-feedback-left" placeholder="Nome do item">
                                     <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
                                 </div>
                             </div>

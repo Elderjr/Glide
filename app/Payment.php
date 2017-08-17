@@ -82,7 +82,7 @@ class Payment extends Model {
         if ($date != null) {
             $payments = $payments->where('created_at', '>=', $date);
         }
-        return $payments->paginate(2, ['*'], 'page', $pag);
+        return $payments->paginate(20, ['*'], 'page', $pag);
     }
 
 }

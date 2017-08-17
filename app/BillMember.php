@@ -18,7 +18,7 @@ class BillMember extends Model {
 
     public function valueToPay() {
         if ($this->needToPay()) {
-            return $this->value - $this->paid;
+            return bcsub($this->value,$this->paid,2);
         }
         return 0;
     }
@@ -29,7 +29,7 @@ class BillMember extends Model {
 
     public function valueToReceiver() {
         if ($this->needToReceiver()) {
-            return $this->paid - $this->value;
+            return bcsub($this->paid,$this->value,2);
         }
         return 0;
     }
@@ -45,21 +45,6 @@ class BillMember extends Model {
             return $this->valueToReceiver();
         }
         return 0;
-    }
-
-    public static function registerBillMemberFromObjectJson($input, $bill) {
-        if ($input->id != -1) {
-            $member = BillMember::find($input->id);
-            $member->paid = $member->paid - ($member->contribution - $input->contribution);
-        } else {
-            $member = new BillMember();
-            $member->paid = $input->contribution;
-        }
-        $member->billId = $bill->id;
-        $member->userId = $input->user->id;
-        $member->value = $input->value;
-        $member->contribution = $input->contribution;
-        $member->save();
     }
 
 }

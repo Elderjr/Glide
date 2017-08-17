@@ -111,9 +111,9 @@ class Bill extends Model {
             $member = $bill->getMemberById($userId);
             if ($member != null) {
                 if ($member->needToPay()) {
-                    $pendingValues->valueToPay += $member->valueToPay();
+                    $pendingValues->valueToPay = bcadd($pendingValues->valueToPay, $member->valueToPay(),2);
                 } else if ($member->needToReceiver()) {
-                    $pendingValues->valueToReceiver += $member->valueToReceiver();
+                    $pendingValues->valueToReceiver = bcadd($pendingValues->valueToReceiver,$member->valueToReceiver(),2);
                 }
             }
         }
@@ -147,13 +147,13 @@ class Bill extends Model {
                             if (!isset($sugestions[$member->user->toString()])) {
                                 $sugestions[$member->user->toString()] = 0.0;
                             }
-                            $sugestions[$member->user->toString()] += $debt;
-                            $value -= $debt;
+                            $sugestions[$member->user->toString()] = bcadd($sugestions[$member->user->toString()],$debt);
+                            $value = bcsub($value,$debt,2);
                         } else if($debt > 0){
                             if (!isset($sugestions[$member->user->toString()])) {
                                 $sugestions[$member->user->toString()] = 0.0;
                             }
-                            $sugestions[$member->user->toString()] += $value;
+                            $sugestions[$member->user->toString()] = bcadd($sugestions[$member->user->toString()],$value,2);
                             $value = 0;
                             break;
                         }

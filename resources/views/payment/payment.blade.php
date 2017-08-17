@@ -27,7 +27,7 @@ app.controller("myCtrl", function ($scope) {
         var value = $scope.automaticPayment;
         for (var i = 0; i < $scope.pageInfo.paymentBills.length; i++) {
             if (value > $scope.pageInfo.paymentBills[i].bill.debt) {
-                $scope.pageInfo.paymentBills[i].value = $scope.pageInfo.paymentBills[i].bill.debt;
+                $scope.pageInfo.paymentBills[i].value = parseFloat($scope.pageInfo.paymentBills[i].bill.debt);
                 value = Decimal.sub(value, $scope.pageInfo.paymentBills[i].bill.debt).toNumber();
             } else if (value > 0) {
                 $scope.pageInfo.paymentBills[i].value = value;
@@ -120,7 +120,7 @@ app.controller("myCtrl", function ($scope) {
                                                 Pagamento esta na forma incorreta
                                             </div>
                                             <div class="col-md-3 col-sm-3 col-xs-6">
-                                                <input type="number" step="0.01" ng-model="paymentBill.value" min="0" class="form-control">
+                                                <input type="number" step="0.01" ng-model="paymentBill.value" min="0" class="form-control" />
                                             </div>
                                         </td>
                                     </tr>

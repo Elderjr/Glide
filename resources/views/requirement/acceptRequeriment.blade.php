@@ -30,7 +30,7 @@ app.controller("myCtrl", function ($scope) {
         var value = $scope.pageInfo.requirement.value;
         for (var i = 0; i < $scope.pageInfo.paymentBills.length; i++) {
             if (value > $scope.pageInfo.paymentBills[i].bill.debt){
-                $scope.pageInfo.paymentBills[i].value = $scope.pageInfo.paymentBills[i].bill.debt;
+                $scope.pageInfo.paymentBills[i].value = parseFloat($scope.pageInfo.paymentBills[i].bill.debt);
                 value = Decimal.sub(value, $scope.pageInfo.paymentBills[i].bill.debt).toNumber();
             } else if (value > 0){
                 $scope.pageInfo.paymentBills[i].value = value;

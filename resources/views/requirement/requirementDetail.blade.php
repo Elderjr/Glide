@@ -47,8 +47,8 @@
                     && $requirement->destinationUser->id == Illuminate\Support\Facades\Auth::user()->id)
                 <div class="ln_solid"></div>
                 <div style="text-align: right;">
-                    <button class='btn btn-danger btn-sm'>Cancelar</button>
-                    <button class="btn btn-success btn-sm">Confirmar</button>
+                    <a href="{{action("RequerimentController@reject", $requirement->id)}}" class='btn btn-danger btn-sm'>Cancelar</a>
+                    <a href="{{action("RequerimentController@showAccept", $requirement->id)}}" class="btn btn-success btn-sm">Confirmar</a>
                 </div>
                 @endif
             </div>

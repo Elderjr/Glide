@@ -79,25 +79,7 @@ class PaymentController extends Controller {
         if (!$validator->fails()) {
             $user = Auth::user();
             $object = json_decode($request->get("paymentJson"));
-            $payment = new Payment();
-            $payment->status = "confirmed";
-            $payment->value = 0.0;
-            $payment->payerUserId = $object->payerUser->id;
-            $payment->receiverUserId = $user->id;
-            $payment->description = (isset($object->description)) ? $object->description : null;
-            $paymentBills = [];
-            foreach ($object->paymentBills as $input) {
-                if($input->value > 0){
-                    $paymentBill = new PaymentBill();
-                    $paymentBill->billId = $input->bill->id;
-                    $paymentBill->value = $input->value;
-                    $payment->value = bcadd($payment->value, $input->value, 2);
-                    array_push($paymentBills, $paymentBill);
-                }
-            }
-            $payment->save();
-            $payment->paymentBills()->saveMany($paymentBills);
-            $payment->doPayment();
+            Payment::registerPaymentFromObjectJson($object, $user->id);
             $feedback = new Feedback();
             $feedback->success = "Pagamento efetuado com sucesso";
             return back()->with('feedback', $feedback);

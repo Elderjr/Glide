@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+use App\PaymentBill;
 class Payment extends Model {
 
     protected $table = "payments";
@@ -44,6 +45,28 @@ class Payment extends Model {
         $this->save();
     }
 
+    public static function registerPaymentFromObjectJson($object, $receiverUserId) {
+        $payment = new Payment();
+        $payment->status = "confirmed";
+        $payment->value = 0.0;
+        $payment->payerUserId = $object->payerUser->id;
+        $payment->receiverUserId = $receiverUserId;
+        $payment->description = (isset($object->description)) ? $object->description : null;
+        $paymentBills = [];
+        foreach ($object->paymentBills as $input) {
+            if ($input->value > 0) {
+                $paymentBill = new PaymentBill();
+                $paymentBill->billId = $input->bill->id;
+                $paymentBill->value = $input->value;
+                $payment->value = bcadd($payment->value, $input->value, 2);
+                array_push($paymentBills, $paymentBill);
+            }
+        }
+        $payment->save();
+        $payment->paymentBills()->saveMany($paymentBills);
+        $payment->doPayment();
+    }
+
     public static function filterSearch($myId, $userId, $date, $pag) {
         $payments = Payment::select('payments.*');
         $payments = $payments->where(function ($query) use ($myId) {
@@ -59,7 +82,8 @@ class Payment extends Model {
         if ($date != null) {
             $payments = $payments->where('created_at', '>=', $date);
         }
-        return $payments->paginate(20, ['*'], 'page', $pag);;
+        return $payments->paginate(20, ['*'], 'page', $pag);
+        ;
     }
 
 }

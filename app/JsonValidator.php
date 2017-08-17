@@ -6,21 +6,18 @@ class JsonValidator{
     
     public static function validateAcceptRequirement($request){
         $validator = Validator::make($request->all(), [
-            'requirementJson' => 'required|json'
+            'acceptedRequirementJson' => 'required|json'
         ]);
         if($validator->fails()){
             return $validator;
         }
-        $requirementJson = json_decode($request->requirementJson, true);
-        return Validator::make($requirementJson, [
+        $object = json_decode($request->acceptedRequirementJson, true);
+        return Validator::make($object, [
             'requirement' => 'required',
             'requirement.id' => 'required|integer',
-            'payment' => 'required',
-            'payment.payerUser.id' => 'required|integer',
-            'payment.receiverUser.id' => 'required|integer',
-            'payment.paymentBills' => 'required|array',
-            'payment.paymentBills.*.bill.id' => 'required|integer',
-            'payment.paymentBills.*.value' => 'required|numeric'
+            'paymentBills' => 'required|array',
+            'paymentBills.*.bill.id' => 'required|integer',
+            'paymentBills.*.value' => 'required|numeric'
         ]);
     }
     

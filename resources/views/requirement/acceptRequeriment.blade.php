@@ -16,7 +16,6 @@ var app = angular.module('myApp', [], function ($interpolateProvider) {
 });
 app.controller("myCtrl", function ($scope) {
     $scope.pageInfo = JSON.parse('{!!json_encode($pageInfo)!!}');
-    
     $scope.total = function () {
         var sum = 0.0;
         for (var i = 0; i < $scope.pageInfo.paymentBills.length; i++) {
@@ -115,7 +114,7 @@ function validateRequirementForm() {
                                             Pagamento nao esta no formato correto
                                         </div>
                                         <div class="col-md-3 col-sm-3 col-xs-6">
-                                            <input type="number" step="0.01" ng-model="payment.value" min="0" class="form-control" />
+                                            <input type="number" step="0.01" ng-value="payment.value" ng-model="payment.value" min="0" class="form-control" />
                                         </div>
                                     </td>
                                 </tr>

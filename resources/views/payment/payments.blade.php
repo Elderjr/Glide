@@ -51,7 +51,7 @@
     <div class="col-md-12 col-sm-12 col-xs-12">
         <div class="x_panel">
             <div class="x_title">
-                <h2>Resultado da busca</h2>
+                <h2>Resultado da busca ({{$payments->total()}} pagamento(s) encontrado(s))</h2>
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
@@ -73,7 +73,7 @@
                             <td>
                                 {{$count}}
                                 @if($payment->status == "canceled")
-                                    <span class="badge bg-red">cancelado</span>
+                                <span class="badge bg-red">cancelado</span>
                                 @endif
                             </td>
                             <td>{{$payment->receiverUser->toString()}}</td>
@@ -89,6 +89,19 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="row">
+                    <div class="btn-group">
+                        <a href="{{$payments->url(1)}}" class="btn btn-default">Inicio</a>
+                        @if($payments->currentPage() - 1 >= 1)
+                        <a  href="{{$payments->previousPageUrl()}}" class="btn btn-default"> {{$payments->currentPage() - 1}} </a>
+                        @endif
+                        <a href="{{$payments->url($payments->currentPage())}}" class="btn btn-success" >{{$payments->currentPage()}}</a>
+                        @if($payments->currentPage() + 1 <= $payments->lastPage())
+                        <a href="{{$payments->nextPageUrl()}}" class="btn btn-default">{{$payments->currentPage() + 1}}</a>
+                        @endif
+                        <a href="{{$payments->url($payments->lastPage())}}" class="btn btn-default" type="button">Fim</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

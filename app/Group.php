@@ -61,7 +61,6 @@ class Group extends Model {
                 ->update(['admin' => $isAdmin]);
     }
 
-
     public static function updateName($groupId, $newName) {
         Group::where('id', $groupId)
                 ->update(['name' => $newName]);
@@ -71,6 +70,13 @@ class Group extends Model {
         GroupMembers::where('groupId', $groupId)
                 ->where('userId', $userId)
                 ->delete();
+    }
+
+    public static function filterSearch($userId, $pag) {
+        $groups = Group::whereHas('members', function ($query) use($userId) {
+                    $query->where('userId', '=', $userId);
+                });
+        return $groups->paginate(20, ['*'], 'page', $pag);
     }
 
 }

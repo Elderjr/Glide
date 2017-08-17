@@ -9,6 +9,7 @@ use App\Bill;
 use App\JsonValidator;
 use App\BillBuilder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Input;
 
 class BillController extends Controller {
 
@@ -16,17 +17,16 @@ class BillController extends Controller {
         $user = Auth::user();
         if ($user != null) {
             $generalInformation = User::getGeneralInformation($user);
+            $page = (isset($request->page)) ? $request->page : 1;
             if ($request->exists("billName")) {
-                $bills = Bill::filterSearch($user->id, $request->billName, $request->billDate, null, $request->billStatus, 1);
-                return view('bill.bills')->with('generalInformation', $generalInformation)
-                                ->with('myGroups', Group::getGroupsByUserId($user->id))
-                                ->with('bills', $bills);
+                $bills = Bill::filterSearch($user->id, $request->billName, $request->billDate, null, $request->billStatus, $page);
             } else {
-                $bills = Bill::filterSearch($user->id, null, null, null, null, 1);
-                return view('bill.bills')->with('generalInformation', $generalInformation)
-                                ->with('myGroups', Group::getGroupsByUserId($user->id))
-                                ->with('bills', $bills);
+                $bills = Bill::filterSearch($user->id, null, null, null, null, $page);
             }
+            $bills = $bills->appends(Input::except('page'));
+            return view('bill.bills')->with('generalInformation', $generalInformation)
+                            ->with('myGroups', Group::getGroupsByUserId($user->id))
+                            ->with('bills', $bills);
         }
         return redirect('/');
     }
@@ -40,13 +40,13 @@ class BillController extends Controller {
 
     public function store(Request $request) {
         $validator = JsonValidator::validateBill($request);
-        if(!$validator->fails()){
+        if (!$validator->fails()) {
             $builder = new BillBuilder();
             $bill = $builder->save($request->billJson);
             return redirect(action("BillController@show", $bill->id));
-        }else{
+        } else {
             return redirect(action("BillController@create"))
-                    ->with('feedback', \App\Feedback::feedbackWithErrors($validator->errors()));
+                            ->with('feedback', \App\Feedback::feedbackWithErrors($validator->errors()));
         }
     }
 
@@ -68,13 +68,13 @@ class BillController extends Controller {
 
     public function update(Request $request) {
         $validator = JsonValidator::validateBill($request);
-        if(!$validator->fails()){
+        if (!$validator->fails()) {
             $builder = new BillBuilder();
             $bill = $builder->save($request->billJson);
             return redirect(action("BillController@show", $bill->id));
-        }else{
+        } else {
             return redirect(action("BillController@create"))
-                    ->with('feedback', \App\Feedback::feedbackWithErrors($validator->errors()));
+                            ->with('feedback', \App\Feedback::feedbackWithErrors($validator->errors()));
         }
     }
 

@@ -41,7 +41,7 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="col-md-3 col-sm-8 col-xs-6">
                     <div class="form-group">
                         <label>Grupo</label>
@@ -53,7 +53,7 @@
                         </select>
                     </div>
                 </div>
-                
+
                 <div class="col-md-3 col-sm-4 col-xs-12">
                     <div class="form-group">
                         <label class="control-label">A partir de</label>
@@ -71,64 +71,77 @@
     </div>
 </div>
 @if(isset($bills))
-    @if(count($bills) > 0)
-        <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel">
-                    <div class="x_title">
-                        <h2>Resultado da busca</h2>
-                        <div class="clearfix"></div>
-                    </div>
-                    <div class="x_content">
+@if(count($bills) > 0)
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Resultado da busca</h2>
+                <div class="clearfix"></div>
+            </div>
+            <div class="x_content">
 
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Nome</th>
-                                    <th>Valor</th>
-                                    <th>Data</th>
-                                    <th>Detalhes</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <?php $count = 1; ?>
-                                @foreach($bills as $bill)
-                                <tr>
-                                    <td>{{$count}}</td>
-                                    <td>
-                                        {{$bill->name}}      
-                                        @if($bill->isInAlert() && !$bill->getMemberById($userId)->isSettled())
-                                        <span class="badge bg-red">Em Alerta</span>
-                                        @endif
-                                    </td>
-                                    <td>{{$bill->total}}</td>
-                                    <td>
-                                        {{Carbon\Carbon::parse($bill->created_at)->format('d/m/Y')}}
-                                    </td>
-                                    <td>
-                                        <a href="{{action("BillController@show", $bill->id)}}" class="btn btn-primary btn-xs">detalhes</a>
-                                    </td>
-                                </tr>
-                                <?php $count++ ?>
-                                @endforeach
-                            </tbody>
-                        </table>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Nome</th>
+                            <th>Valor</th>
+                            <th>Data</th>
+                            <th>Detalhes</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php $count = 1; ?>
+                        @foreach($bills as $bill)
+                        <tr>
+                            <td>{{$count}}</td>
+                            <td>
+                                {{$bill->name}}      
+                                @if($bill->isInAlert() && !$bill->getMemberById($userId)->isSettled())
+                                <span class="badge bg-red">Em Alerta</span>
+                                @endif
+                            </td>
+                            <td>{{$bill->total}}</td>
+                            <td>
+                                {{Carbon\Carbon::parse($bill->created_at)->format('d/m/Y')}}
+                            </td>
+                            <td>
+                                <a href="{{action("BillController@show", $bill->id)}}" class="btn btn-primary btn-xs">detalhes</a>
+                            </td>
+                        </tr>
+                        <?php $count++ ?>
+                        @endforeach
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="btn-group">
+                        <a href="{{$bills->url(1)}}" class="btn btn-default">Inicio</a>
+                        @if($bills->currentPage() - 1 >= 1)
+                        <a  href="{{$bills->previousPageUrl()}}" class="btn btn-default"> {{$bills->currentPage() - 1}} </a>
+                        @endif
+                        <a href="{{$bills->url($bills->currentPage())}}" class="btn btn-success" >{{$bills->currentPage()}}</a>
+                        @if($bills->currentPage() + 1 <= $bills->lastPage())
+                        <a href="{{$bills->nextPageUrl()}}" class="btn btn-default">{{$bills->currentPage() + 1}}</a>
+                        @endif
+                        <a href="{{$bills->url($bills->lastPage())}}" class="btn btn-default" type="button">Fim</a>
                     </div>
                 </div>
             </div>
         </div>
-    @else
-        <div class="row">
-            <div class="col-md-12 col-sm-12 col-xs-12">
-                <div class="x_panel">
-                    <div class="x_title">
-                        <h2>Nenhuma Despesa encontrada</h2>
-                        <div class="clearfix"></div>
-                    </div>
-                </div>
+    </div>
+</div>
+@else
+<div class="row">
+    <div class="col-md-12 col-sm-12 col-xs-12">
+        <div class="x_panel">
+            <div class="x_title">
+                <h2>Nenhuma Despesa encontrada</h2>
+                <div class="clearfix"></div>
             </div>
         </div>
-    @endif
+    </div>
+</div>
+@endif
 @endif
 @stop

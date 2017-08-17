@@ -11,6 +11,7 @@ use App\User;
 use App\Bill;
 use App\Feedback;
 use App\JsonValidator;
+use Illuminate\Support\Facades\Input;
 
 class RequerimentController extends Controller {
 
@@ -18,23 +19,27 @@ class RequerimentController extends Controller {
         $user = Auth::user();
         $feedback = new Feedback();
         $generalInformation = User::getGeneralInformation($user);
+        $page = (isset($request->page)) ? $request->page : 1;
         if ($user != null && $request->exists("username")) {
             if ($request->username != null) {
                 $filterUser = User::getUserByUsername($request->username);
                 if ($filterUser != null) {
-                    $requirements = Requeriment::filterSearch($user->id, $filterUser->id, $request->status, $request->sentOrReceived, $request->date, 1);
+                    $requirements = Requeriment::filterSearch($user->id, $filterUser->id, $request->status, $request->sentOrReceived, $request->date, $page);
+                    $requirements = $requirements->appends(Input::except('page'));
                 } else {
                     $feedback->error = "Usuario " . $request->username . " nao foi encontrado";
                     return view('requirement.requirements')->with('generalInformation', $generalInformation)
                                     ->with('feedback', $feedback);
                 }
             } else {
-                $requirements = Requeriment::filterSearch($user->id, null, $request->status, $request->sentOrReceived, $request->date, 1);
+                $requirements = Requeriment::filterSearch($user->id, null, $request->status, $request->sentOrReceived, $request->date, $page);
+                $requirements = $requirements->appends(Input::except('page'));
             }
             return view('requirement.requirements')->with('generalInformation', $generalInformation)
                             ->with('requirements', $requirements);
         } else if ($user != null) {
-            $requirements = Requeriment::filterSearch($user->id, null, null, null, null, 1);
+            $requirements = Requeriment::filterSearch($user->id, null, null, null, null, $page);
+            $requirements = $requirements->appends(Input::except('page'));
             return view('requirement.requirements')->with('generalInformation', $generalInformation)
                             ->with('requirements', $requirements);
         }

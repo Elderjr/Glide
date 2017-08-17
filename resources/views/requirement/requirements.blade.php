@@ -126,6 +126,19 @@
                                 @endforeach
                             </tbody>
                         </table>
+                        <div class="row">
+                            <div class="btn-group">
+                                <a href="{{$requirements->url(1)}}" class="btn btn-default">Inicio</a>
+                                @if($requirements->currentPage() - 1 >= 1)
+                                <a  href="{{$requirements->previousPageUrl()}}" class="btn btn-default"> {{$requirements->currentPage() - 1}} </a>
+                                @endif
+                                <a href="{{$requirements->url($requirements->currentPage())}}" class="btn btn-success" >{{$requirements->currentPage()}}</a>
+                                @if($requirements->currentPage() + 1 <= $requirements->lastPage())
+                                <a href="{{$requirements->nextPageUrl()}}" class="btn btn-default">{{$requirements->currentPage() + 1}}</a>
+                                @endif
+                                <a href="{{$requirements->url($requirements->lastPage())}}" class="btn btn-default" type="button">Fim</a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

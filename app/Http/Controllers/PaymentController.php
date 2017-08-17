@@ -10,6 +10,8 @@ use App\PaymentBill;
 use App\Feedback;
 use App\JsonValidator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Input;
+
 
 class PaymentController extends Controller {
 
@@ -17,23 +19,26 @@ class PaymentController extends Controller {
         $user = Auth::user();
         $feedback = new Feedback();
         $generalInformation = User::getGeneralInformation($user);
+        $page = (isset($request->page)) ? $request->page : 1;
         if ($user != null && $request->exists("username")) {
             if ($request->username != null) {
                 $filterUser = User::getUserByUsername($request->username);
                 if ($filterUser != null) {
-                    $payments = Payment::filterSearch($user->id, $filterUser->id, $request->date, 1);
+                    $payments = Payment::filterSearch($user->id, $filterUser->id, $request->date, $page);
                 } else {
                     $feedback->error = "Usuario " . $request->username . " nao foi encontrado";
                     return view('payment.payments')->with('generalInformation', $generalInformation)
                                     ->with('feedback', $feedback);
                 }
             } else {
-                $payments = Payment::filterSearch($user->id, null, $request->date, 1);
+                $payments = Payment::filterSearch($user->id, null, $request->date, $page);
             }
+            $payments = $payments->appends(Input::except('page'));
             return view('payment.payments')->with('generalInformation', $generalInformation)
                             ->with('payments', $payments);
         } else if ($user != null) {
-            $payments = Payment::filterSearch($user->id, null, null, 1);
+            $payments = Payment::filterSearch($user->id, null, null, $page);
+            $payments = $payments->appends(Input::except('page'));
             return view('payment.payments')->with('generalInformation', $generalInformation)
                             ->with('payments', $payments);
         }

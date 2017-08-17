@@ -21,7 +21,7 @@
                 <h2>Meus Grupos</h2>
                 <div class="clearfix"></div>
             </div>
-            <div class="x_content" style="text-align: center;">
+            <div class="x_content">
                 <table class="table table-striped" width='30%'>
                     <thead>
                         <th>#</th>
@@ -53,6 +53,19 @@
                         @endforeach
                     </tbody>
                 </table>
+                <div class="row">
+                    <div class="btn-group">
+                        <a href="{{$pageInfo->myGroups->url(1)}}" class="btn btn-default">Inicio</a>
+                        @if($pageInfo->myGroups->currentPage() - 1 >= 1)
+                        <a  href="{{$pageInfo->myGroups->previousPageUrl()}}" class="btn btn-default"> {{$pageInfo->myGroups->currentPage() - 1}} </a>
+                        @endif
+                        <a href="{{$pageInfo->myGroups->url($pageInfo->myGroups->currentPage())}}" class="btn btn-success" >{{$pageInfo->myGroups->currentPage()}}</a>
+                        @if($pageInfo->myGroups->currentPage() + 1 <= $pageInfo->myGroups->lastPage())
+                        <a href="{{$pageInfo->myGroups->nextPageUrl()}}" class="btn btn-default">{{$pageInfo->myGroups->currentPage() + 1}}</a>
+                        @endif
+                        <a href="{{$pageInfo->myGroups->url($pageInfo->myGroups->lastPage())}}" class="btn btn-default" type="button">Fim</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

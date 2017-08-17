@@ -17,11 +17,12 @@ class GroupController extends Controller {
      *
      * @return \Illuminate\Http\Response
      */
-    public function index() {
+    public function index(Request $request) {
         $user = Auth::user();
         if ($user != null) {
             $generalInformation = User::getGeneralInformation($user);
-            $myGroups = Group::getGroupsByUserId($user->id);
+            $page = (isset($request->page)) ? $request->page : 1; 
+            $myGroups = Group::filterSearch($user->id, $page);
             $pageInfo = (object) array(
                         'user' => $user,
                         'myGroups' => $myGroups

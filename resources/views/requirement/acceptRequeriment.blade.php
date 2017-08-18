@@ -2,10 +2,6 @@
 
 @section('title') Confirmaçao de Requerimento @stop
 
-@section('cssImport')
-<link href="{{URL::asset('css/pnotify.custom.min.css')}}" rel="stylesheet">
-@stop
-
 @section('jsImport')
 <script src="{{URL::asset('js/angular.min.js')}}"></script>
 <script src="{{URL::asset('js/decimal.min.js')}}"></script>
@@ -104,7 +100,10 @@ function validateRequirementForm() {
                             <tbody>
                                 <tr ng-repeat="payment in pageInfo.paymentBills">
                                     <td>@{pageInfo.paymentBills.indexOf(payment) + 1}</td>
-                                    <td>@{payment.bill.name}</td>
+                                    <td>
+                                        @{payment.bill.name}
+                                        <span class="badge bg-red" ng-if="payment.bill.isInAlert">Em Alerta</span>
+                                    </td>
                                     <td>@{payment.bill.debt}</td>
                                     <td>
                                         <div ng-if="payment.value > payment.bill.debt">

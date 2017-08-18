@@ -62,6 +62,7 @@
                             <th>#</th>
                             <th>Credor</th>
                             <th>Devedor</th>
+                            <th>Valor</th>
                             <th>Data</th>
                             <th>Detalhes</th>
                         </tr>
@@ -78,6 +79,7 @@
                             </td>
                             <td>{{$payment->receiverUser->toString()}}</td>
                             <td>{{$payment->payerUser->toString()}}</td>
+                            <td>R$ {{$payment->value}}</td>
                             <td>
                                 {{Carbon\Carbon::parse($payment->created_at)->format('d/m/Y')}}
                             </td>

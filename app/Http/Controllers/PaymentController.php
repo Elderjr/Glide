@@ -60,6 +60,7 @@ class PaymentController extends Controller {
                         'bill' => (object) array(
                             'id' => $bill->id,
                             'name' => $bill->name,
+                            'isInAlert' => $bill->isInAlert(),
                             'debt' => $bill->getDebt($user->id, $payerUser->id)
                         ),
                         'value' => 0.0

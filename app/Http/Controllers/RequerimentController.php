@@ -84,47 +84,42 @@ class RequerimentController extends Controller {
     public function show($id) {
         $user = Auth::user();
         if ($user != null) {
-            $req = Requeriment::find($id);
+            $requirement = Requeriment::find($id);
             $generalInformation = User::getGeneralInformation($user);
+            $requirement->load('destinationUser');
+            $requirement->load('sourceUser');
+            $billsInDebt = Bill::getBillsInDebtWithUser($requirement->destinationUserId, $requirement->sourceUserId);
+            $value = $requirement->value;
+            $paymentBills = [];
+            foreach ($billsInDebt as $bill) {
+                $debt = $bill->getDebt($requirement->destinationUserId, $requirement->sourceUserId);
+                if ($value > $debt) {
+                    $payment = $debt;
+                    $value = bcsub($value, $debt, 2);
+                } else {
+                    $payment = $value;
+                    $value = 0;
+                }
+                $paymentBill = (object) array(
+                            'bill' => (object) array(
+                                'id' => $bill->id,
+                                'name' => $bill->name,
+                                'isInAlert' => $bill->isInAlert(),
+                                'debt' => $debt
+                            ),
+                            'value' => $payment
+                );
+                array_push($paymentBills, $paymentBill);
+            }
+            $pageInfo = (object) array(
+                        'requirement' => $requirement,
+                        'userId' => $user->id,
+                        'paymentBills' => $paymentBills
+            );            
             return view('requirement.requirementDetail')->with('generalInformation', $generalInformation)
-                            ->with('requirement', $req);
+                            ->with('pageInfo', $pageInfo);
         }
         return redirect('/');
-    }
-
-    public function showAccept($id) {
-        $user = Auth::user();
-        $requirement = Requeriment::find($id);
-        $requirement->load('destinationUser');
-        $requirement->load('sourceUser');
-        $billsInDebt = Bill::getBillsInDebtWithUser($requirement->destinationUserId, $requirement->sourceUserId);
-        $value = $requirement->value;
-        $paymentBills = [];
-        foreach ($billsInDebt as $bill) {
-            $debt = $bill->getDebt($requirement->destinationUserId, $requirement->sourceUserId);
-            if ($value > $debt) {
-                $payment = $debt;
-                $value = bcsub($value, $debt, 2);
-            } else {
-                $payment = $value;
-                $value = 0;
-            }
-            $paymentBill = (object) array(
-                        'bill' => (object) array(
-                            'id' => $bill->id,
-                            'name' => $bill->name,
-                            'debt' => $debt
-                        ),
-                        'value' => $payment
-            );
-            array_push($paymentBills, $paymentBill);
-        }
-        $pageInfo = (object) array(
-                    'requirement' => $requirement,
-                    'paymentBills' => $paymentBills
-        );
-        return view('requirement.acceptRequeriment')->with('generalInformation', User::getGeneralInformation($user))
-                        ->with('pageInfo', $pageInfo);
     }
 
     public function accept(Request $request) {
@@ -132,7 +127,7 @@ class RequerimentController extends Controller {
         if (!$validator->fails()) {
             $object = json_decode($request->get("acceptedRequirementJson"));
             $object->payerUser = (object) array(
-                'id' => $object->requirement->source_user->id
+                        'id' => $object->requirement->source_user->id
             );
             Payment::registerPaymentFromObjectJson($object, $object->requirement->destination_user->id);
             $requirement = Requeriment::Find($object->requirement->id);

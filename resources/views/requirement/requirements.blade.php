@@ -86,7 +86,7 @@
                                     <th>#</th>
                                     <th>Remetente</th>
                                     <th>Destinatário</th>
-                                    <th>Enviado/Recebido</th>
+                                    <th>Valor</th>
                                     <th>Estado</th>
                                     <th>Data</th>
                                     <th>Detalhes</th>
@@ -100,11 +100,7 @@
                                     <td>{{$req->sourceUser->toString()}}</td>
                                     <td>{{$req->destinationUser->toString()}}</td>
                                     <td>
-                                        @if($req->sourceUser->id == Illuminate\Support\Facades\Auth::user()->id)
-                                        Enviado
-                                        @else
-                                        Recebido
-                                        @endif
+                                        R$ {{$req->value}}
                                     </td>
                                     <td>
                                         @if($req->status == "accepted")

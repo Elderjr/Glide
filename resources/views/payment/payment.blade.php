@@ -110,7 +110,10 @@ app.controller("myCtrl", function ($scope) {
                                 <tbody>
                                     <tr ng-repeat="paymentBill in pageInfo.paymentBills">
                                         <td>@{pageInfo.paymentBills.indexOf(paymentBill) + 1}</td>
-                                        <td>@{paymentBill.bill.name}</td>
+                                        <td>
+                                            @{paymentBill.bill.name}
+                                            <span class="badge bg-red" ng-if="paymentBill.bill.isInAlert">Em Alerta</span>
+                                        </td>
                                         <td>@{paymentBill.bill.debt}</td>
                                         <td>
                                             <div ng-if="paymentBill.value > paymentBill.bill.debt">

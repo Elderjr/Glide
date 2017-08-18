@@ -122,7 +122,7 @@ app.controller("myCtrl", function ($scope, $http) {
                                             <input type="checkbox" ng-disabled="true" checked=""/>
                                         </td>
                                         <td>
-                                            <input type="checkbox" ng-disabled="true" />
+                                            
                                         </td>
                                     </tr>
                                     <tr ng-repeat="member in group.members">

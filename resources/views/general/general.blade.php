@@ -74,8 +74,8 @@
             </div>
         </div>
     </div>
-
 </div>
+
 @if(count($pageInfo->waitingRequirements) > 0)
 <div class="row">
     <div class="col-md-12 col-sm-12 col-xs-12">
@@ -85,11 +85,7 @@
                 <div class="clearfix"></div>
             </div>
             <div class="x_content">
-                <?php $count = 0; ?>
                 @foreach($pageInfo->waitingRequirements as $requeriment)
-                @if($count % 3 == 0)
-                <div class="row">
-                    @endif
                     <div class="col-md-4 col-sm-4 col-xs-10">
                         <div class="x_panel">
                             <div class="x_title">
@@ -97,29 +93,24 @@
                                 <div class="clearfix"></div>
                             </div>
                             <div class="x_content">
-                                {{$requeriment->sourceUser->toString()}} requeriu o pagamento de R$ {{$requeriment->value}} em 
+                                {{$requeriment->sourceUser->toString()}} requeriu o pagamento de R$&nbsp;{{$requeriment->value}} em 
                                 {{ Carbon\Carbon::parse($requeriment->created_at)->format('d/m/Y') }}.
                                 <br/>
                                 Descriçao: {{$requeriment->description}}
                                 <div class="divider"></div>
                                 <div style="text-align: right;">
                                     <a href="{{action("RequerimentController@reject", $requeriment->id)}}" class='btn btn-danger btn-sm'>Cancelar</a>
-                                    <a href="{{action("RequerimentController@showAccept", $requeriment->id)}}" class="btn btn-success btn-sm">Confirmar</a>
+                                    <a href="{{action("RequerimentController@show", $requeriment->id)}}" class="btn btn-success btn-sm">Confirmar</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    @if($count % 3 == 0)
-                </div>
-                @endif
-                <?php $count++; ?>
                 @endforeach
             </div>
         </div>
     </div>
 </div>
 @endif
-</div>
 <!-- /page content -->
 @stop
 

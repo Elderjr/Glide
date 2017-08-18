@@ -203,6 +203,12 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
             return (getMemberById(userId) != null);
         }
 
+        function clearItem(){
+            $scope.rItem.name = "";
+            $scope.rItem.price = 0.0;
+            $scope.rItem.qt = 1;
+        }
+        
         $scope.addItem = function () {
             var itemMembers = itemParticipantsFilter($scope.bill.members);
             var item = {
@@ -222,6 +228,7 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', function 
                     item.members.push(member);
                 }
             }
+            clearItem();
             $scope.bill.items.push(item);
         }
 

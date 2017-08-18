@@ -8,6 +8,7 @@ class PaymentBill extends Model{
     
     protected $table = "paymentsBills";
     public $timestamps = false;
+    protected $casts = [ 'value' => 'float'];
     
     public function bill(){
         return $this->hasOne('App\Bill', 'id', 'billId');

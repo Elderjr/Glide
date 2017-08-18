@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 class BillMember extends Model {
 
     protected $table = "billsMembers";
+    protected $casts = [ 'paid' => 'float', 'value' => 'float', 'contribution' => 'float' ];
 
     public function user() {
         return $this->belongsTo('App\User', 'userId', 'id');

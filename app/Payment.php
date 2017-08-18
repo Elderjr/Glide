@@ -8,7 +8,8 @@ use App\PaymentBill;
 class Payment extends Model {
 
     protected $table = "payments";
-
+    protected $casts = [ 'value' => 'float'];
+    
     public function paymentBills() {
         return $this->hasMany('App\PaymentBill', 'paymentId', 'id');
     }

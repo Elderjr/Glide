@@ -7,7 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 class Requeriment extends Model {
 
     protected $table = "requirements";
-
+    protected $casts = [ 'value' => 'float'];
+    
     public function sourceUser() {
         return $this->hasOne('App\User', 'id', 'sourceUserId');
     }

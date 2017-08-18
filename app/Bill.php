@@ -8,8 +8,9 @@ use Carbon;
 
 class Bill extends Model {
 
-    //
+    
     protected $table = "bills";
+    protected $casts = [ 'total' => 'float'];
 
     public function members() {
         return $this->hasMany('App\BillMember', 'billId', 'id');

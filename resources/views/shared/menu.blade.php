@@ -91,14 +91,14 @@
                     <ul id="menu1" class="dropdown-menu list-unstyled msg_list" role="menu">
                         @if($generalInformation->totalAlertBills > 0)
                         <li>
-                            <a>
+                            <a href="{{action("BillController@index")}}?billStatus=inAlert">
                                 Existem {{$generalInformation->totalAlertBills}} despesas em alerta. 
                             </a>
                         </li>
                         @endif
                         @if($generalInformation->totalWaitingRequirements > 0)
                         <li>
-                            <a>
+                            <a href="{{action("RequerimentController@index")}}?status=waiting">
                                 Existem {{$generalInformation->totalWaitingRequirements}} requerimentos em estado de espera
                             </a>
                         </li>

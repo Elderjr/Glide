@@ -37,37 +37,39 @@ class Requeriment extends Model {
                 ->where('status','waiting')->count();
     }
     
-    public static function filterSearch($myId, $userId, $status, $sentOrReceived, $date, $pag) {
+    public static function filterSearch($search) {
         $requirements = Requeriment::select('requirements.*');
+        $myId = $search->myId;
         $requirements = $requirements->where(function ($query) use ($myId) {
             $query->where('sourceUserId', $myId)
                     ->orWhere('destinationUserId', $myId);
         });
-        if ($sentOrReceived != null && $sentOrReceived == 'sent') {
-            $requirements = $requirements->where('sourceUserId', $myId);
-            if ($userId != null) {
-                $requirements = $requirements->where('destinationUserId', $userId);
+        if ($search->sentOrReceived != null && $search->sentOrReceived == 'sent') {
+            $requirements = $requirements->where('sourceUserId', $search->myId);
+            if ($search->userId != null) {
+                $requirements = $requirements->where('destinationUserId', $search->userId);
             }
-        } else if ($sentOrReceived != null && $sentOrReceived == 'received') {
-            $requirements = $requirements->where('destinationUserId', $myId);
-            if ($userId != null) {
-                $requirements = $requirements->where('sourceUserId', $userId);
+        } else if ($search->sentOrReceived != null && $search->sentOrReceived == 'received') {
+            $requirements = $requirements->where('destinationUserId', $search->myId);
+            if ($search->userId != null) {
+                $requirements = $requirements->where('sourceUserId', $search->userId);
             }
-        } else if ($sentOrReceived == null) {
-            if($userId != null){
+        } else if ($search->sentOrReceived == null) {
+            if($search->userId != null){
+                $userId = $search->userId;
                 $requirements = $requirements->where(function ($query) use ($userId) {
                     $query->where('sourceUserId', $userId)
                             ->orWhere('destinationUserId', $userId);
                 });
             }
         }
-        if ($status != null && in_array($status, ["waiting", "accepted", "rejected"])) {
-            $requirements = $requirements->where('status', $status);
+        if ($search->status != null && in_array($search->status, ["waiting", "accepted", "rejected"])) {
+            $requirements = $requirements->where('status', $search->status);
         }
-        if ($date != null) {
-            $requirements = $requirements->where('created_at', '>=', $date);
+        if ($search->date != null) {
+            $requirements = $requirements->where('created_at', '>=', $search->date);
         }
-        return $requirements->paginate(20, ['*'], 'page', $pag);
+        return $requirements->paginate(20, ['*'], 'page', $search->page);
     }
 
 }

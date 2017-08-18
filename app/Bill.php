@@ -173,28 +173,28 @@ class Bill extends Model {
         return Bill::makeSuggestion($bills, $userId, true);
     }
 
-    public static function filterSearch($myId, $billName, $billDate, $billGroupId, $billStatus, $pag = 1) {
+    public static function filterSearch($search) {       
         $bills = Bill::select('bills.*')->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
-                ->where('BM.userId', '=', $myId);
-        if ($billName != null) {
-            $bills = $bills->where('bills.name', $billName);
+                ->where('BM.userId', '=', $search->myId);
+        if ($search->billName != null) {
+            $bills = $bills->where('bills.name','like','%'.$search->billName.'%');
         }
-        if ($billDate != null) {
-            $bills = $bills->where('bills.created_at', '>=', $billDate);
+        if ($search->billDate != null) {
+            $bills = $bills->where('bills.created_at', '>=', $search->billDate);
         }
-        if ($billGroupId != null) {
-            $bills = $bills->where('bills.groupId', '=', $billGroupId);
+        if ($search->billGroupId != null) {
+            $bills = $bills->where('bills.groupId', '=', $search->billGroupId);
         }
-        if ($billStatus != null && in_array($billStatus, ["inAlert", "finished", "pending"])) {
-            if ($billStatus == "inAlert") {
+        if ($search->billStatus != null && in_array($search->billStatus, ["inAlert", "finished", "pending"])) {
+            if ($search->billStatus == "inAlert") {
                 $bills = $bills->where('bills.alertDate', '<', Carbon\Carbon::now());
-            } else if ($billStatus == "finished") {
+            } else if ($search->billStatus == "finished") {
                 $bills = $bills->whereColumn("BM.paid", "=", "BM.value");
-            } else if ($billStatus == "pending") {
+            } else if ($search->billStatus == "pending") {
                 $bills = $bills->whereColumn("BM.paid", "!=", "BM.value");
             }
         }
-        return $bills->paginate(20, ['*'], 'page', $pag);
+        return $bills->paginate(20, ['*'], 'page', $search->page);
     }
 
 }

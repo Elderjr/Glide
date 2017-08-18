@@ -15,30 +15,35 @@ use Illuminate\Support\Facades\Input;
 
 class RequerimentController extends Controller {
 
+    private function createSearchObject(Request $request, $myId, $userId){
+        return (object) array(
+            'myId' => $myId,
+            'page' => (isset($request->page)) ? $request->page : 1,
+            'userId' => $userId,
+            'status' => (isset($request->status)) ? $request->status : null,
+            'sentOrReceived' => (isset($request->sentOrReceived)) ? $request->sentOrReceived : null,
+            'date' => (isset($request->date)) ? $request->date : null
+        );
+    }
     public function index(Request $request) {
         $user = Auth::user();
-        $feedback = new Feedback();
-        $generalInformation = User::getGeneralInformation($user);
-        $page = (isset($request->page)) ? $request->page : 1;
-        if ($user != null && $request->exists("username")) {
-            if ($request->username != null) {
-                $filterUser = User::getUserByUsername($request->username);
-                if ($filterUser != null) {
-                    $requirements = Requeriment::filterSearch($user->id, $filterUser->id, $request->status, $request->sentOrReceived, $request->date, $page);
-                    $requirements = $requirements->appends(Input::except('page'));
-                } else {
-                    $feedback->error = "Usuario " . $request->username . " nao foi encontrado";
+        if ($user != null) {
+            $generalInformation = User::getGeneralInformation($user);
+            $userId = null;
+            if($request->exists("username") && $request->username != null){
+                $user = User::getUserByUsername($request->username);
+                if($user != null){
+                    $userId = $user->id;
+                }else{
+                    $feedback = new Feedback();
+                    $feedback->error = "Usuario ".$request->username." nao encontrado";
                     return view('requirement.requirements')->with('generalInformation', $generalInformation)
+                                    ->with('requirements', [])
                                     ->with('feedback', $feedback);
                 }
-            } else {
-                $requirements = Requeriment::filterSearch($user->id, null, $request->status, $request->sentOrReceived, $request->date, $page);
-                $requirements = $requirements->appends(Input::except('page'));
             }
-            return view('requirement.requirements')->with('generalInformation', $generalInformation)
-                            ->with('requirements', $requirements);
-        } else if ($user != null) {
-            $requirements = Requeriment::filterSearch($user->id, null, null, null, null, $page);
+            $search = $this->createSearchObject($request, $user->id, $userId);
+            $requirements = Requeriment::filterSearch($search);
             $requirements = $requirements->appends(Input::except('page'));
             return view('requirement.requirements')->with('generalInformation', $generalInformation)
                             ->with('requirements', $requirements);

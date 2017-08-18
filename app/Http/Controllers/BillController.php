@@ -13,16 +13,22 @@ use Illuminate\Support\Facades\Input;
 
 class BillController extends Controller {
 
+    private function createSearchObject(Request $request, $userId){
+        return (object) array(
+            'myId' => $userId,
+            'page' => (isset($request->page)) ? $request->page : 1,
+            'billName' => (isset($request->billName)) ? $request->billName : null,
+            'billDate' => (isset($request->page)) ? $request->billDate : null,
+            'billStatus' => (isset($request->page)) ? $request->billStatus : null,
+            'billGroupId' => (isset($request->page)) ? $request->billGroupId : null
+        );
+    }
     public function index(Request $request) {
         $user = Auth::user();
         if ($user != null) {
             $generalInformation = User::getGeneralInformation($user);
-            $page = (isset($request->page)) ? $request->page : 1;
-            if ($request->exists("billName")) {
-                $bills = Bill::filterSearch($user->id, $request->billName, $request->billDate, null, $request->billStatus, $page);
-            } else {
-                $bills = Bill::filterSearch($user->id, null, null, null, null, $page);
-            }
+            $search = $this->createSearchObject($request, $user->id);
+            $bills = Bill::filterSearch($search);
             $bills = $bills->appends(Input::except('page'));
             return view('bill.bills')->with('generalInformation', $generalInformation)
                             ->with('myGroups', Group::getGroupsByUserId($user->id))

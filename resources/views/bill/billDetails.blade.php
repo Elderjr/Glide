@@ -38,15 +38,16 @@ app.controller('myCtrl', ['$scope', function ($scope) {
                     <div class="form-vertical form-label-left">
                         <ul>
                             <li ng-repeat="member in bill.members">
-                                <div ng-if="member.paid > member.value">
-                                    @{member.user.name} (@{member.user.username}) precisa receber R$ @{sub(member.paid,member.value)}
-                                </div>
-                                <div ng-if="member.paid < member.value">
-                                    @{member.user.name} (@{member.user.username}) precisa pagar R$ @{sub(member.value, member.paid)}
-                                </div>
-                                <div ng-if="member.paid == member.value">
-                                    @{member.user.name} (@{member.user.username}) esta quite
-                                </div>
+                                @{member.user.name} (@{member.user.username}) esta com saldo R$ @{member.paid} e
+                                <span ng-if="member.paid > member.value">
+                                    precisa receber R$ @{sub(member.paid,member.value)}
+                                </span>
+                                <span ng-if="member.paid < member.value">
+                                   precisa pagar R$ @{sub(member.value, member.paid)}
+                                </span>
+                                <span ng-if="member.paid == member.value">
+                                   esta quite
+                                </span>
                             </li>
                         </ul>
                     </div>

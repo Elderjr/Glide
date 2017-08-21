@@ -74,10 +74,6 @@ Route::get('/usuario/despesas', "BillController@index");
 Route::get('/api/usuario/{username}', 'ApiController@getUserByUsername');
 Route::get('/api/grupo/{groupId}', 'ApiController@getGroupById');
 
-//test
-
-use App\Group;
-
 Route::get('/import', function() {
     DB::transaction(function () {
         $conn = new mysqli("localhost", "root", "zzz", "glide");

@@ -160,7 +160,7 @@ class Bill extends Model {
                             if (!isset($sugestions[$member->user->toString()])) {
                                 $sugestions[$member->user->toString()] = 0.0;
                             }
-                            $sugestions[$member->user->toString()] = bcadd($sugestions[$member->user->toString()],$debt);
+                            $sugestions[$member->user->toString()] = bcadd($sugestions[$member->user->toString()], $debt, 2);
                             $value = bcsub($value,$debt,2);
                         } else if($debt > 0){
                             if (!isset($sugestions[$member->user->toString()])) {

@@ -34,7 +34,7 @@
                     <div class="form-group">
                         <label>Estado</label>
                         <select class="form-control" name="billStatus">
-                            <option>Todas</option>
+                            <option value="all">Todas</option>
                             <option value="pending">Pendente</option>
                             <option value="inAlert">Em alerta</option>
                             <option value="finished">Concluída</option>
@@ -45,10 +45,10 @@
                 <div class="col-md-3 col-sm-8 col-xs-6">
                     <div class="form-group">
                         <label>Grupo</label>
-                        <select class="form-control" name="billGroupId">
-                            <option>Todos</option>
+                        <select class="form-control" name="billGroup">
+                            <option value="all">Todos</option>
                             @foreach($myGroups as $group)
-                            <option>{{$group->name}}</option>
+                            <option value="{{$group->name}}">{{$group->name}}</option>
                             @endforeach
                         </select>
                     </div>

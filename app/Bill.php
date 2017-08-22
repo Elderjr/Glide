@@ -10,10 +10,14 @@ class Bill extends Model {
 
     
     protected $table = "bills";
-    protected $casts = [ 'total' => 'float'];
+    protected $casts = [ 'total' => 'float', 'date' => 'date', 'alertDate' => 'date'];
 
     public function members() {
         return $this->hasMany('App\BillMember', 'billId', 'id');
+    }
+    
+    public function payments() {
+        return $this->hasMany('App\PaymentBill', 'billId', 'id');
     }
 
     public function items() {
@@ -23,6 +27,8 @@ class Bill extends Model {
     public function group() {
         return $this->hasOne('App\Group', 'id', 'groupId');
     }
+    
+    
 
     public function getMemberById($id) {
         foreach ($this->members as $member) {
@@ -57,7 +63,7 @@ class Bill extends Model {
     public function isInAlert() {
         if ($this->alertDate != null) {
             $currentDate = Carbon\Carbon::now();
-            return Carbon\Carbon::parse($this->alertDate) < $currentDate;
+            return Carbon\Carbon::parse($this->alertDate) > $currentDate;
         }
 
         return false;
@@ -70,6 +76,12 @@ class Bill extends Model {
         $bill->load('items');
         foreach ($bill->members as $member) {
             $member->load('user');
+        }
+        foreach ($bill->payments as $payment) {
+            $payment->load('generalPayment');
+            $payment->generalPayment->load('payerUser');
+            $payment->generalPayment->load('receiverUser');
+            
         }
         foreach ($bill->items as $item) {
             $item->load('members');
@@ -126,7 +138,7 @@ class Bill extends Model {
                         ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
                         ->whereColumn("BM.paid", '!=', 'BM.value')
                         ->where('BM.userId', '=', $userId)
-                        ->where('bills.alertDate', '<', Carbon\Carbon::now())
+                        ->where('bills.alertDate', '>', Carbon\Carbon::now())
                         ->count();
     }
 
@@ -187,7 +199,8 @@ class Bill extends Model {
         }
         if ($search->billStatus != null && in_array($search->billStatus, ["inAlert", "finished", "pending"])) {
             if ($search->billStatus == "inAlert") {
-                $bills = $bills->where('bills.alertDate', '<', Carbon\Carbon::now());
+                $bills = $bills->where('bills.alertDate', '>', Carbon\Carbon::now());
+                $bills = $bills->whereColumn("BM.paid", "!=", "BM.value");
             } else if ($search->billStatus == "finished") {
                 $bills = $bills->whereColumn("BM.paid", "=", "BM.value");
             } else if ($search->billStatus == "pending") {

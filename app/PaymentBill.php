@@ -14,4 +14,8 @@ class PaymentBill extends Model{
         return $this->hasOne('App\Bill', 'id', 'billId');
     }
     
+    public function generalPayment() {
+        return $this->belongsTo('App\Payment', 'paymentId', 'id');
+    }
+    
 }

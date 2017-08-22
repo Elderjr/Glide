@@ -18,9 +18,9 @@ class BillController extends Controller {
             'myId' => $userId,
             'page' => (isset($request->page)) ? $request->page : 1,
             'billName' => (isset($request->billName)) ? $request->billName : null,
-            'billDate' => (isset($request->page)) ? $request->billDate : null,
-            'billStatus' => (isset($request->page)) ? $request->billStatus : null,
-            'billGroupId' => (isset($request->page)) ? $request->billGroupId : null
+            'billDate' => (isset($request->billDate)) ? $request->billDate : null,
+            'billStatus' => (isset($request->billStatus)) ? $request->billStatus : null,
+            'billGroupId' => (isset($request->billGroup)) ? null : null
         );
     }
     public function index(Request $request) {

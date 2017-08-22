@@ -12,7 +12,6 @@ var app = angular.module('myApp', [], function ($interpolateProvider) {
 });
 app.controller('myCtrl', ['$scope', function ($scope) {
         $scope.bill = JSON.parse('{!!json_encode($bill)!!}');
-        
         $scope.sub = function(a,b){
             return Decimal.sub(a,b).toNumber();
         }
@@ -50,6 +49,19 @@ app.controller('myCtrl', ['$scope', function ($scope) {
                                 </span>
                             </li>
                         </ul>
+                    </div>
+                    <div>
+                        <a href="" data-toggle="collapse" data-target="#history">Ver Pagamentos da Despesa</a>
+                        <div id='history' class='collapse'>
+                            <ul>
+                                <li ng-repeat="payment in bill.payments">
+                                    <p>Pagamento de @{payment.general_payment.payer_user.name} (@{payment.general_payment.payer_user.username})
+                                        para @{payment.general_payment.receiver_user.name} (@{payment.general_payment.receiver_user.username})
+                                        no valor de R$ @{payment.value}
+                                    </p>
+                                </li>
+                            </ul>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -119,7 +131,7 @@ app.controller('myCtrl', ['$scope', function ($scope) {
                         <table class='table table-striped'>
                             <thead>
                             <th>Item</th>
-                            <th>Valor</th>
+                            <th>Preço Unitario x Quantidade</th>
                             <th>Distribuiçao</th>
                             </thead>
                             <tbody>
@@ -128,7 +140,7 @@ app.controller('myCtrl', ['$scope', function ($scope) {
                                         @{item.name}
                                     </td>
                                     <td>
-                                        @{item.price} x @{item.qt} (@{item.price * item.qt})
+                                        R$ @{item.price} x @{item.qt} (R$ @{item.price * item.qt})
                                     </td>
                                     <td>
                                         <ul>

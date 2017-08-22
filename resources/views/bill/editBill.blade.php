@@ -9,6 +9,7 @@
 <script src="{{URL::asset('js/angular.min.js')}}"></script>
 <script src="{{URL::asset('js/decimal.min.js')}}"></script>
 <script src="{{URL::asset('js/bills/registerBillApp.js')}}"></script>
+<script src="{{URL::asset('js/shared/ngEnterDirective.js')}}"></script>
 <script>    
     app.value("bill", JSON.parse('{!!$bill!!}'));
     app.value("myGroups", []);
@@ -124,7 +125,7 @@
                             <div class="col-md-6 col-sm-4 col-xs-8 form-group has-feedback">
                                 <div class="form-group">
                                     <label>Nome:</label>
-                                    <input type="text" ng-model="rItem.name" class="form-control has-feedback-left" placeholder="Nome do item">
+                                    <input type="text" id="rItemName" ng-model="rItem.name" class="form-control has-feedback-left" placeholder="Nome do item">
                                     <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
                                 </div>
                             </div>
@@ -141,7 +142,7 @@
                                     <label>Preço unitario:</label>
                                     <div class='row'>
                                         <div class='col-md-6 col-xs-8'>
-                                            <input type="number" ng-model="rItem.price" class='form-control' step='0.01' />
+                                            <input type="number" ng-model="rItem.price" class='form-control' step='0.01' ng-enter="addItem()" />
                                         </div>
                                         <div class='col-md-6 col-xs-4'>
                                             <button class='btn btn-primary btn-block' ng-click="addItem()">Adicionar</button>
@@ -235,7 +236,7 @@
                                 <label>Valor</label>
                                 <div class="row">
                                     <div class="col-md-3 col-xs-6">
-                                        <input type="number" ng-model="rContributor.value" min="0" step="0.01" class="form-control" />
+                                        <input type="number" ng-model="rContributor.value" min="0" step="0.01" class="form-control" ng-enter="addContributor()" />
                                     </div>
                                     <div class="col-md-3 col-xs-6">
                                         <button type="button" class="btn btn-primary btn-block"ng-click="addContributor()">Adicionar</button>

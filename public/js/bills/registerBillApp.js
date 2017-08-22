@@ -173,6 +173,7 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', 'bill', '
                 var member = getMemberById($scope.rContributor.member.user.id);
                 member.contribution = $scope.rContributor.value;
                 member.contributor = true;
+                $scope.rContributor.value = 0;
             }
         }
 
@@ -233,6 +234,7 @@ app.controller('myCtrl', ['$scope', 'itemParticipantsFilter', '$http', 'bill', '
                     item.members.push(member);
                 }
             }
+            document.querySelector('#rItemName').focus();
             clearItem();
             $scope.bill.items.push(item);
         }

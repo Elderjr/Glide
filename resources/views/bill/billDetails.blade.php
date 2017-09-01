@@ -11,9 +11,9 @@ var app = angular.module('myApp', [], function ($interpolateProvider) {
     $interpolateProvider.endSymbol('}');
 });
 app.controller('myCtrl', ['$scope', function ($scope) {
-        $scope.bill = JSON.parse('{!!json_encode($bill)!!}');
-        $scope.sub = function(a,b){
-            return Decimal.sub(a,b).toNumber();
+        $scope.bill = JSON.parse('{!!$bill->toJson()!!}');
+        $scope.sub = function (a, b) {
+            return Decimal.sub(a, b).toNumber();
         }
     }]);</script>
 @stop
@@ -42,10 +42,10 @@ app.controller('myCtrl', ['$scope', function ($scope) {
                                     precisa receber R$ @{sub(member.paid,member.value)}
                                 </span>
                                 <span ng-if="member.paid < member.value">
-                                   precisa pagar R$ @{sub(member.value, member.paid)}
+                                    precisa pagar R$ @{sub(member.value, member.paid)}
                                 </span>
                                 <span ng-if="member.paid == member.value">
-                                   esta quite
+                                    esta quite
                                 </span>
                             </li>
                         </ul>
@@ -61,7 +61,7 @@ app.controller('myCtrl', ['$scope', function ($scope) {
                                     </p>
                                 </li>
                             </ul>
-                    </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -108,9 +108,7 @@ app.controller('myCtrl', ['$scope', function ($scope) {
                     <h5>Informaçao adicional</h5>
                     <div class="row">
                         <div class="col-md-12">
-                            <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
-                                @{bill.description}
-                            </p>    
+                            <textarea class="well-sm no-shadow form-control" disabled="">@{bill.description}</textarea>
                         </div>
                     </div>
                 </div>

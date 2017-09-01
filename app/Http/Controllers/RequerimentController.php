@@ -89,7 +89,7 @@ class RequerimentController extends Controller {
     public function show($id) {
         $user = Auth::user();
         if ($user != null) {
-            $requirement = Requeriment::find($id);
+            $requirement = Requeriment::getById($id);
             $generalInformation = User::getGeneralInformation($user);
             $requirement->load('destinationUser');
             $requirement->load('sourceUser');

@@ -10,10 +10,10 @@
 <script src="{{URL::asset('js/decimal.min.js')}}"></script>
 <script src="{{URL::asset('js/bills/registerBillApp.js')}}"></script>
 <script src="{{URL::asset('js/shared/ngEnterDirective.js')}}"></script>
-<script>    
-    app.value("bill", JSON.parse('{!!$bill!!}'));
-    app.value("myGroups", []);
-    app.constant('USER_REST', "{{URL::asset('api/usuario')}}/");
+<script>
+app.value("bill", JSON.parse('{!!$bill!!}'));
+app.value("myGroups", []);
+app.constant('USER_REST', "{{URL::asset('api/usuario')}}/");
 </script>
 @stop
 
@@ -43,13 +43,13 @@
                                     <span class="fa fa-user form-control-feedback left" aria-hidden="true"></span>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6 col-sm-6 col-xs-12">
                                 <label class="control-label">Grupo*:</label>
                                 <input type="text" value="<% bill.group.name %>" class="form-control" ng-disabled="true" >
                             </div>
                         </div>
-                        
+
                         <div class="row">
                             <div class="col-md-6 col-sm-6 col-xs-12">
                                 <div class="form-group">
@@ -64,7 +64,7 @@
                                     <input type="date" ng-model="bill.alertDate" class='form-control' />
                                 </div>
                             </div>
-                            
+
                         </div>
                     </div>
                     <h4>Integrantes da Despesa</h4>

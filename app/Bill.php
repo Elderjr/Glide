@@ -10,7 +10,7 @@ class Bill extends Model {
 
     
     protected $table = "bills";
-    protected $casts = [ 'total' => 'float', 'date' => 'date', 'alertDate' => 'date'];
+    protected $casts = [ 'total' => 'float', 'date' => 'date', 'alertDate' => 'date'    ];
 
     public function members() {
         return $this->hasMany('App\BillMember', 'billId', 'id');
@@ -88,6 +88,10 @@ class Bill extends Model {
             foreach ($item->members as $member) {
                 $member->load('user');
             }
+        }
+        if($bill->description != null){
+            $bill->description = str_replace("\r", "\\r", $bill->description);
+            $bill->description = str_replace("\n", "\\n", $bill->description);
         }
         return $bill;
     }

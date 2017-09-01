@@ -93,9 +93,7 @@ function validateRequirementForm() {
                     <h4 class="heading">Detalhes</h4>
                     <div class="row">
                         <div class="col-md-12">
-                            <p class="text-muted well well-sm no-shadow" style="margin-top: 10px;">
-                                @{pageInfo.requirement.description}
-                            </p>    
+                            <textarea class="text-muted well well-sm no-shadow form-control" style="margin-top: 10px;" disabled="">@{pageInfo.requirement.description}</textarea>    
                         </div>
                     </div>
                 </div>

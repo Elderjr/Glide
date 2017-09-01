@@ -27,6 +27,14 @@ class Requeriment extends Model {
         $this->save();
     }
     
+    public static function getById($id){
+        $requirement = Requeriment::find($id);
+        if($requirement->description != null){
+            $requirement->description = str_replace("\r", "\\r", $requirement->description);
+            $requirement->description = str_replace("\n", "\\n", $requirement->description);
+        }
+        return $requirement;
+    }
     public static function getWaitingRequirements($destinationUserId){
         return Requeriment::where('destinationUserId', $destinationUserId)
                 ->where('status','waiting')->get();

@@ -144,7 +144,7 @@ class Bill extends Model {
                         ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
                         ->whereColumn("BM.paid", '!=', 'BM.value')
                         ->where('BM.userId', '=', $userId)
-                        ->where(Carbon\Carbon::now(), '>', 'bills.alertDate')
+                        ->where('bills.alertDate', '<', Carbon\Carbon::now())
                         ->count();
     }
 

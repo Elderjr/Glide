@@ -93,7 +93,7 @@ class BillController extends Controller {
                         'billsInDebt' => $billsInDebt,
                         'pendingValues' => Bill::getPendingValues($billsInDebt, $user->id),
                         'user' => $user
-            );
+            );    
             return view('bill.despesasPendentes')->with('generalInformation', $generalInformation)
                             ->with('pageInfo', $pageInfo);
         }

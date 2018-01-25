@@ -3,6 +3,8 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+
 use DateTime;
 use Carbon;
 
@@ -63,9 +65,8 @@ class Bill extends Model {
     public function isInAlert() {
         if ($this->alertDate != null) {
             $currentDate = Carbon\Carbon::now();
-            return Carbon\Carbon::parse($this->alertDate) > $currentDate;
+            return $currentDate > Carbon\Carbon::parse($this->alertDate);
         }
-
         return false;
     }
 
@@ -114,7 +115,8 @@ class Bill extends Model {
     public static function getPendingBills($userId) {
         return Bill::select('bills.*')
                         ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
-                        ->whereColumn('BM.paid', '!=', 'BM.value')
+                        //->whereColumn('BM.paid', '!=', 'BM.value')
+                        ->whereRaw('round("BM"."paid") != round("BM"."value")')
                         ->where('BM.userId', '=', $userId)
                         ->get();
     }

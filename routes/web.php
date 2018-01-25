@@ -74,85 +74,85 @@ Route::get('/usuario/despesas', "BillController@index");
 Route::get('/api/usuario/{username}', 'ApiController@getUserByUsername');
 Route::get('/api/grupo/{groupId}', 'ApiController@getGroupById');
 
-Route::get('/import', function() {
-    DB::transaction(function () {
-        $conn = new mysqli("localhost", "root", "zzz", "glide");
-        $conn->set_charset("utf8");
-        $sql = "SELECT * FROM usuario";
-        $result = $conn->query($sql);
-        while ($row = $result->fetch_assoc()) {
-            $user = new App\User();
-            $user->id = $row["Id"];
-            $user->email = $row["Email"];
-            $user->name = $row["Nome"];
-            $user->password = Hash::make($row["Senha"]);
-            $user->username = $row["Username"];
-            $user->save();
-        }
-        $sql = "SELECT * FROM grupo";
-        $result = $conn->query($sql);
-        while ($row = $result->fetch_assoc()) {
-            $group = new App\Group();
-            $group->id = $row["Id"];
-            $group->name = $row["Nome"];
-            $group->save();
-        }
-        $sql = "SELECT * FROM integrantes_grupo";
-        $result = $conn->query($sql);
-        while ($row = $result->fetch_assoc()) {
-            $member = new App\GroupMembers();
-            $member->groupId = $row["IdGrupo"];
-            $member->userId = $row["IdUsuario"];
-            $member->admin = $row["Administrador"];
-            $member->save();
-        }
-        $sql = "SELECT * FROM despesa";
-        $result = $conn->query($sql);
-        while ($row = $result->fetch_assoc()) {
-            $bill = new App\Bill();
-            $bill->id = $row["Id"];
-            $bill->name = $row["Nome"];
-            $bill->total = $row["ValorTotal"];
-            $bill->groupId = $row["IdGrupo"];
-            $bill->date = new Datetime($row["Data"]);
-            if (isset($row["DescricaoAdicional"])) {
-                $bill->description = $row["DescricaoAdicional"];
-            }
-            if (isset($row["DataAlerta"])) {
-                $bill->alertDate = $row["DataAlerta"];
-            }
-            $bill->save();
-        }
-        $sql = "SELECT * FROM integrantes_despesa";
-        $result = $conn->query($sql);
-        while ($row = $result->fetch_assoc()) {
-            $member = new \App\BillMember();
-            $member->userId = $row["IdUsuario"];
-            $member->billId = $row["IdDespesa"];
-            $member->value = $row["Valor"];
-            $member->contribution = $row["ValorDeEntrada"];
-            $member->paid = $row["ValorPago"];
-            $member->save();
-        }
-        $sql = "SELECT * FROM item";
-        $result = $conn->query($sql);
-        while ($row = $result->fetch_assoc()) {
-            $item = new App\Item();
-            $item->id = $row["Id"];
-            $item->billId = $row["IdDespesa"];
-            $item->name = $row["Nome"];
-            $item->price = $row["Valor"];
-            $item->qt = $row["Qtd"];
-            $item->save();
-        }
-        $sql = "SELECT * FROM distribuicao";
-        $result = $conn->query($sql);
-        while ($row = $result->fetch_assoc()) {
-            $member = new App\ItemMember();
-            $member->itemId = $row["IdItem"];
-            $member->userId = $row["IdUsuario"];
-            $member->distribution = $row["Valor"];
-            $member->save();
-        }
-    });
-});
+//Route::get('/import', function() {
+//    DB::transaction(function () {
+//        $conn = new mysqli("localhost", "root", "zzz", "glide");
+//        $conn->set_charset("utf8");
+//        $sql = "SELECT * FROM usuario";
+//        $result = $conn->query($sql);
+//        while ($row = $result->fetch_assoc()) {
+//            $user = new App\User();
+//            $user->id = $row["Id"];
+//            $user->email = $row["Email"];
+//            $user->name = $row["Nome"];
+//            $user->password = Hash::make($row["Senha"]);
+//            $user->username = $row["Username"];
+//            $user->save();
+//        }
+//        $sql = "SELECT * FROM grupo";
+//        $result = $conn->query($sql);
+//        while ($row = $result->fetch_assoc()) {
+//            $group = new App\Group();
+//            $group->id = $row["Id"];
+//            $group->name = $row["Nome"];
+//            $group->save();
+//        }
+//        $sql = "SELECT * FROM integrantes_grupo";
+//        $result = $conn->query($sql);
+//        while ($row = $result->fetch_assoc()) {
+//            $member = new App\GroupMembers();
+//            $member->groupId = $row["IdGrupo"];
+//            $member->userId = $row["IdUsuario"];
+//            $member->admin = $row["Administrador"];
+//            $member->save();
+//        }
+//        $sql = "SELECT * FROM despesa";
+//        $result = $conn->query($sql);
+//        while ($row = $result->fetch_assoc()) {
+//            $bill = new App\Bill();
+//            $bill->id = $row["Id"];
+//            $bill->name = $row["Nome"];
+//            $bill->total = $row["ValorTotal"];
+//            $bill->groupId = $row["IdGrupo"];
+//            $bill->date = new Datetime($row["Data"]);
+//            if (isset($row["DescricaoAdicional"])) {
+//                $bill->description = $row["DescricaoAdicional"];
+//            }
+//            if (isset($row["DataAlerta"])) {
+//                $bill->alertDate = $row["DataAlerta"];
+//            }
+//            $bill->save();
+//        }
+//        $sql = "SELECT * FROM integrantes_despesa";
+//        $result = $conn->query($sql);
+//        while ($row = $result->fetch_assoc()) {
+//            $member = new \App\BillMember();
+//            $member->userId = $row["IdUsuario"];
+//            $member->billId = $row["IdDespesa"];
+//            $member->value = $row["Valor"];
+//            $member->contribution = $row["ValorDeEntrada"];
+//            $member->paid = $row["ValorPago"];
+//            $member->save();
+//        }
+//        $sql = "SELECT * FROM item";
+//        $result = $conn->query($sql);
+//        while ($row = $result->fetch_assoc()) {
+//            $item = new App\Item();
+//            $item->id = $row["Id"];
+//            $item->billId = $row["IdDespesa"];
+//            $item->name = $row["Nome"];
+//            $item->price = $row["Valor"];
+//            $item->qt = $row["Qtd"];
+//            $item->save();
+//        }
+//        $sql = "SELECT * FROM distribuicao";
+//        $result = $conn->query($sql);
+//        while ($row = $result->fetch_assoc()) {
+//            $member = new App\ItemMember();
+//            $member->itemId = $row["IdItem"];
+//            $member->userId = $row["IdUsuario"];
+//            $member->distribution = $row["Valor"];
+//            $member->save();
+//        }
+//    });
+//});

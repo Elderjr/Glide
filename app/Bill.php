@@ -115,8 +115,7 @@ class Bill extends Model {
     public static function getPendingBills($userId) {
         return Bill::select('bills.*')
                         ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
-                        //->whereColumn('BM.paid', '!=', 'BM.value')
-                        ->whereRaw('round("BM"."paid") != round("BM"."value")')
+                        ->where(DB::raw('round(CAST("BM"."paid" as numeric) ,2)'), "!=", DB::raw('round(CAST("BM"."value" as numeric), 2)'))
                         ->where('BM.userId', '=', $userId)
                         ->get();
     }
@@ -142,7 +141,7 @@ class Bill extends Model {
     public static function getTotalAlertBills($userId) {
         return Bill::select('bills.*')
                         ->join('billsMembers as BM', 'BM.billId', '=', 'bills.id')
-                        ->whereColumn("BM.paid", '!=', 'BM.value')
+                        ->where(DB::raw('round(CAST("BM"."paid" as numeric) ,2)'), "!=", DB::raw('round(CAST("BM"."value" as numeric), 2)'))
                         ->where('BM.userId', '=', $userId)
                         ->where('bills.alertDate', '<', Carbon\Carbon::now())
                         ->count();
@@ -205,12 +204,12 @@ class Bill extends Model {
         }
         if ($search->billStatus != null && in_array($search->billStatus, ["inAlert", "finished", "pending"])) {
             if ($search->billStatus == "inAlert") {
-                $bills = $bills->where('bills.alertDate', '>', Carbon\Carbon::now());
-                $bills = $bills->whereColumn("BM.paid", "!=", "BM.value");
+                $bills = $bills->where('bills.alertDate', '<', Carbon\Carbon::now());
+                $bills = $bills->where(DB::raw('round(CAST("BM"."paid" as numeric) ,2)'), "!=", DB::raw('round(CAST("BM"."value" as numeric), 2)'));
             } else if ($search->billStatus == "finished") {
                 $bills = $bills->whereColumn("BM.paid", "=", "BM.value");
             } else if ($search->billStatus == "pending") {
-                $bills = $bills->whereColumn("BM.paid", "!=", "BM.value");
+                $bills = $bills->where(DB::raw('round(CAST("BM"."paid" as numeric) ,2)'), "!=", DB::raw('round(CAST("BM"."value" as numeric), 2)'));
             }
         }
         return $bills->paginate(20, ['*'], 'page', $search->page);
